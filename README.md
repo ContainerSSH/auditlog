@@ -1,4 +1,4 @@
-[![](https://containerssh.github.io/images/header.jpg)](https://containerssh.github.io/)
+[![](https://containerssh.github.io/images/logo-for-embedding.png)](https://containerssh.github.io/)
 
 # ContainerSSH Audit Log Encoder and Decoder Library
 
