@@ -1,4 +1,6 @@
-# ContainerSSH Audit Log Encoder and Decoder Library for Go
+[![](https://containerssh.github.io/images/header.jpg)](https://containerssh.github.io/)
+
+# ContainerSSH Audit Log Encoder and Decoder Library
 
 This is an encoder and decoder library for the [ContainerSSH Audit Log Format](https://containerssh.github.io/audit/format/) written in Go. In order to use it you will need depend on `github.com/containerssh/containerssh-auditlog-go`.
 
