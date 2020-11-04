@@ -1,4 +1,4 @@
-[![ContainerSSH - Launch Contaienrs on Demand](https://containerssh.github.io/images/logo-for-embedding.svg)](https://containerssh.github.io/)
+[![ContainerSSH - Launch Containers on Demand](https://containerssh.github.io/images/logo-for-embedding.svg)](https://containerssh.github.io/)
 
 <h1 align="center">ContainerSSH Audit Log Encoder and Decoder Library</h1>
 
