@@ -1,4 +1,4 @@
-# ContainerSSH Audit Log Encoder and Decoder Library
+# ContainerSSH Audit Log Encoder and Decoder Library for Go
 
 This is an encoder and decoder library for the [ContainerSSH Audit Log Format](https://containerssh.github.io/audit/format/) written in Go. In order to use it you will need depend on `github.com/containerssh/containerssh-auditlog-go`.
 
@@ -16,13 +16,20 @@ messageChannel := make(chan message.Message)
 // Initialize storage backend
 storage := YourNewStorage()
 
-err := encoder.Encode(messageChannel, storage)
-if err != nil {
-    log.Fatalf("failed to encode messages (%v)", err)        
+go func() {
+    err := encoder.Encode(messageChannel, storage)
+    if err != nil {
+        log.Fatalf("failed to encode messages (%v)", err)        
+    }
+}()
+
+messageChannel <- &message.Message{
+    //Fill in message details here
 }
+close(messageChannel)
 ```
 
-**Note:** The encoder will block until the message channel is closed. You may want to run it in a goroutine.
+**Note:** The encoder will run until the message channel is closed, or a disconnect message is sent.
 
 ### Implementing a storage
 
