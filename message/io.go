@@ -15,7 +15,7 @@ type PayloadIO struct {
 	Data   []byte `json:"data" yaml:"data"`
 }
 
-func (p * PayloadIO) Equals(other Payload) bool {
+func (p *PayloadIO) Equals(other Payload) bool {
 	p2, ok := other.(*PayloadIO)
 	if !ok {
 		return false

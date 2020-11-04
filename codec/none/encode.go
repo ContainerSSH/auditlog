@@ -1,8 +1,9 @@
-package binary
+package none
 
 import (
-	"github.com/containerssh/containerssh-auditlog-go/codec"
-	"github.com/containerssh/containerssh-auditlog-go/message"
+	"github.com/containerssh/auditlog/codec"
+	"github.com/containerssh/auditlog/message"
+	"github.com/containerssh/auditlog/storage"
 )
 
 func NewEncoder() codec.Encoder {
@@ -20,7 +21,7 @@ func (e *encoder) GetFileExtension() string {
 	return ""
 }
 
-func (e *encoder) Encode(messages <-chan message.Message, _ codec.StorageWriter) error {
+func (e *encoder) Encode(messages <-chan message.Message, _ storage.Writer) error {
 	for {
 		msg, ok := <-messages
 		if !ok {

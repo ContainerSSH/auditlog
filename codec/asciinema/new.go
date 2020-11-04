@@ -1,6 +1,6 @@
 package asciinema
 
-import "github.com/containerssh/containerssh-auditlog-go/codec"
+import "github.com/containerssh/auditlog/codec"
 
 //goland:noinspection GoUnusedExportedFunction
 func NewEncoder() codec.Encoder {

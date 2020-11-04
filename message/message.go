@@ -2,19 +2,20 @@ package message
 
 import "bytes"
 
+type ConnectionID []byte
 type ChannelID int64
 
 type Message struct {
 	// ConnectionID is an opaque ID of the connection
-	ConnectionID []byte      `json:"connectionId" yaml:"connectionId"`
+	ConnectionID ConnectionID `json:"connectionId" yaml:"connectionId"`
 	// Timestamp is a nanosecond timestamp when the message was created
-	Timestamp    int64       `json:"timestamp" yaml:"timestamp"`
+	Timestamp int64 `json:"timestamp" yaml:"timestamp"`
 	// Type of the Payload object
-	MessageType  MessageType `json:"type" yaml:"type"`
+	MessageType MessageType `json:"type" yaml:"type"`
 	// Payload is always a pointer to a payload object.
-	Payload      Payload `json:"payload" yaml:"payload"`
+	Payload Payload `json:"payload" yaml:"payload"`
 	// ChannelID is a identifier for an SSH channel, if applicable. -1 otherwise.
-	ChannelID    ChannelID   `json:"channelId" yaml:"channelId"`
+	ChannelID ChannelID `json:"channelId" yaml:"channelId"`
 }
 
 type Payload interface {

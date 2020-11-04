@@ -5,9 +5,9 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/containerssh/containerssh-auditlog-go/codec"
-	"github.com/containerssh/containerssh-auditlog-go/codec/binary"
-	"github.com/containerssh/containerssh-auditlog-go/message"
+	"github.com/containerssh/auditlog/codec"
+	"github.com/containerssh/auditlog/codec/binary"
+	"github.com/containerssh/auditlog/message"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -43,10 +43,10 @@ func testPipeline(t *testing.T, msg *message.Message) {
 		defer wg.Done()
 		decodedMessageChannel, errorsChannel, done := decoder.Decode(pipeReader)
 		select {
-			case decodedMessage = <-decodedMessageChannel:
-			case decodeError = <-errorsChannel:
+		case decodedMessage = <-decodedMessageChannel:
+		case decodeError = <-errorsChannel:
 		}
-		<- done
+		<-done
 	}()
 	wg.Wait()
 	if encodeError != nil {
@@ -64,10 +64,10 @@ func TestTypeConnect(t *testing.T) {
 		ConnectionID: []byte("1234"),
 		Timestamp:    1234,
 		MessageType:  message.TypeConnect,
-		Payload:      &message.PayloadConnect{
+		Payload: &message.PayloadConnect{
 			RemoteAddr: "127.0.0.1",
 		},
-		ChannelID:    -1,
+		ChannelID: -1,
 	}
 
 	testPipeline(t, &msg)
@@ -90,11 +90,11 @@ func TestTypeAuthPassword(t *testing.T) {
 		ConnectionID: []byte("1234"),
 		Timestamp:    1234,
 		MessageType:  message.TypeAuthPassword,
-		Payload:      &message.PayloadAuthPassword{
+		Payload: &message.PayloadAuthPassword{
 			Username: "foo",
 			Password: []byte("bar"),
 		},
-		ChannelID:    -1,
+		ChannelID: -1,
 	}
 
 	testPipeline(t, &msg)
@@ -105,11 +105,11 @@ func TestTypeAuthPasswordSuccessful(t *testing.T) {
 		ConnectionID: []byte("1234"),
 		Timestamp:    1234,
 		MessageType:  message.TypeAuthPasswordSuccessful,
-		Payload:      &message.PayloadAuthPassword{
+		Payload: &message.PayloadAuthPassword{
 			Username: "foo",
 			Password: []byte("bar"),
 		},
-		ChannelID:    -1,
+		ChannelID: -1,
 	}
 
 	testPipeline(t, &msg)
@@ -120,11 +120,11 @@ func TestTypeAuthPasswordFailed(t *testing.T) {
 		ConnectionID: []byte("1234"),
 		Timestamp:    1234,
 		MessageType:  message.TypeAuthPasswordFailed,
-		Payload:      &message.PayloadAuthPassword{
+		Payload: &message.PayloadAuthPassword{
 			Username: "foo",
 			Password: []byte("bar"),
 		},
-		ChannelID:    -1,
+		ChannelID: -1,
 	}
 
 	testPipeline(t, &msg)
@@ -135,11 +135,12 @@ func TestTypeAuthPasswordBackendError(t *testing.T) {
 		ConnectionID: []byte("1234"),
 		Timestamp:    1234,
 		MessageType:  message.TypeAuthPasswordBackendError,
-		Payload:      &message.PayloadAuthPassword{
+		Payload: &message.PayloadAuthPasswordBackendError{
 			Username: "foo",
 			Password: []byte("bar"),
+			Reason:   "test",
 		},
-		ChannelID:    -1,
+		ChannelID: -1,
 	}
 
 	testPipeline(t, &msg)
@@ -150,11 +151,11 @@ func TestTypeAuthPubKey(t *testing.T) {
 		ConnectionID: []byte("1234"),
 		Timestamp:    1234,
 		MessageType:  message.TypeAuthPubKey,
-		Payload:      &message.PayloadAuthPubKey{
+		Payload: &message.PayloadAuthPubKey{
 			Username: "foo",
 			Key:      []byte("bar"),
 		},
-		ChannelID:    -1,
+		ChannelID: -1,
 	}
 
 	testPipeline(t, &msg)
@@ -165,11 +166,11 @@ func TestTypeAuthPubKeySuccessful(t *testing.T) {
 		ConnectionID: []byte("1234"),
 		Timestamp:    1234,
 		MessageType:  message.TypeAuthPubKeySuccessful,
-		Payload:      &message.PayloadAuthPubKey{
+		Payload: &message.PayloadAuthPubKey{
 			Username: "foo",
 			Key:      []byte("bar"),
 		},
-		ChannelID:    -1,
+		ChannelID: -1,
 	}
 
 	testPipeline(t, &msg)
@@ -180,11 +181,11 @@ func TestTypeAuthPubKeyFailed(t *testing.T) {
 		ConnectionID: []byte("1234"),
 		Timestamp:    1234,
 		MessageType:  message.TypeAuthPubKeyFailed,
-		Payload:      &message.PayloadAuthPubKey{
+		Payload: &message.PayloadAuthPubKey{
 			Username: "foo",
 			Key:      []byte("bar"),
 		},
-		ChannelID:    -1,
+		ChannelID: -1,
 	}
 
 	testPipeline(t, &msg)
@@ -195,11 +196,12 @@ func TestTypeAuthPubKeyBackendError(t *testing.T) {
 		ConnectionID: []byte("1234"),
 		Timestamp:    1234,
 		MessageType:  message.TypeAuthPubKeyBackendError,
-		Payload:      &message.PayloadAuthPubKey{
+		Payload: &message.PayloadAuthPubKeyBackendError{
 			Username: "foo",
 			Key:      []byte("bar"),
+			Reason:   "test",
 		},
-		ChannelID:    -1,
+		ChannelID: -1,
 	}
 
 	testPipeline(t, &msg)
@@ -210,10 +212,10 @@ func TestTypeGlobalRequestUnknown(t *testing.T) {
 		ConnectionID: []byte("1234"),
 		Timestamp:    1234,
 		MessageType:  message.TypeGlobalRequestUnknown,
-		Payload:      &message.PayloadGlobalRequestUnknown{
+		Payload: &message.PayloadGlobalRequestUnknown{
 			RequestType: "channel",
 		},
-		ChannelID:    -1,
+		ChannelID: -1,
 	}
 
 	testPipeline(t, &msg)
@@ -224,10 +226,10 @@ func TestTypeNewChannel(t *testing.T) {
 		ConnectionID: []byte("1234"),
 		Timestamp:    1234,
 		MessageType:  message.TypeNewChannel,
-		Payload:      &message.PayloadNewChannel{
+		Payload: &message.PayloadNewChannel{
 			ChannelType: "session",
 		},
-		ChannelID:    -1,
+		ChannelID: -1,
 	}
 
 	testPipeline(t, &msg)
@@ -238,11 +240,11 @@ func TestTypeNewChannelFailed(t *testing.T) {
 		ConnectionID: []byte("1234"),
 		Timestamp:    1234,
 		MessageType:  message.TypeNewChannelFailed,
-		Payload:      &message.PayloadNewChannelFailed{
+		Payload: &message.PayloadNewChannelFailed{
 			ChannelType: "session",
 			Reason:      "test",
 		},
-		ChannelID:    -1,
+		ChannelID: -1,
 	}
 
 	testPipeline(t, &msg)
@@ -253,10 +255,10 @@ func TestTypeNewChannelSuccessful(t *testing.T) {
 		ConnectionID: []byte("1234"),
 		Timestamp:    1234,
 		MessageType:  message.TypeNewChannelSuccessful,
-		Payload:      &message.PayloadNewChannelSuccessful{
+		Payload: &message.PayloadNewChannelSuccessful{
 			ChannelType: "session",
 		},
-		ChannelID:    0,
+		ChannelID: 0,
 	}
 
 	testPipeline(t, &msg)
@@ -267,10 +269,10 @@ func TestTypeChannelRequestUnknownType(t *testing.T) {
 		ConnectionID: []byte("1234"),
 		Timestamp:    1234,
 		MessageType:  message.TypeChannelRequestUnknownType,
-		Payload:      &message.PayloadChannelRequestUnknownType{
+		Payload: &message.PayloadChannelRequestUnknownType{
 			RequestType: "test",
 		},
-		ChannelID:    0,
+		ChannelID: 0,
 	}
 
 	testPipeline(t, &msg)
@@ -281,11 +283,11 @@ func TestTypeChannelRequestDecodeFailed(t *testing.T) {
 		ConnectionID: []byte("1234"),
 		Timestamp:    1234,
 		MessageType:  message.TypeChannelRequestDecodeFailed,
-		Payload:      &message.PayloadChannelRequestDecodeFailed{
+		Payload: &message.PayloadChannelRequestDecodeFailed{
 			RequestType: "test",
-			Reason: "test",
+			Reason:      "test",
 		},
-		ChannelID:    0,
+		ChannelID: 0,
 	}
 
 	testPipeline(t, &msg)
@@ -296,11 +298,11 @@ func TestTypeChannelRequestSetEnv(t *testing.T) {
 		ConnectionID: []byte("1234"),
 		Timestamp:    1234,
 		MessageType:  message.TypeChannelRequestSetEnv,
-		Payload:      &message.PayloadChannelRequestSetEnv{
+		Payload: &message.PayloadChannelRequestSetEnv{
 			Name:  "foo",
 			Value: "bar",
 		},
-		ChannelID:    0,
+		ChannelID: 0,
 	}
 
 	testPipeline(t, &msg)
@@ -311,10 +313,10 @@ func TestTypeChannelRequestExec(t *testing.T) {
 		ConnectionID: []byte("1234"),
 		Timestamp:    1234,
 		MessageType:  message.TypeChannelRequestExec,
-		Payload:      &message.PayloadChannelRequestExec{
+		Payload: &message.PayloadChannelRequestExec{
 			Program: "bash",
 		},
-		ChannelID:    0,
+		ChannelID: 0,
 	}
 
 	testPipeline(t, &msg)
@@ -325,11 +327,11 @@ func TestTypeChannelRequestPty(t *testing.T) {
 		ConnectionID: []byte("1234"),
 		Timestamp:    1234,
 		MessageType:  message.TypeChannelRequestPty,
-		Payload:      &message.PayloadChannelRequestPty{
+		Payload: &message.PayloadChannelRequestPty{
 			Columns: 80,
 			Rows:    25,
 		},
-		ChannelID:    0,
+		ChannelID: 0,
 	}
 
 	testPipeline(t, &msg)
@@ -340,8 +342,7 @@ func TestTypeChannelRequestShell(t *testing.T) {
 		ConnectionID: []byte("1234"),
 		Timestamp:    1234,
 		MessageType:  message.TypeChannelRequestShell,
-		Payload:      &message.PayloadChannelRequestShell{
-		},
+		Payload:      &message.PayloadChannelRequestShell{},
 		ChannelID:    0,
 	}
 
@@ -353,10 +354,10 @@ func TestTypeChannelRequestSignal(t *testing.T) {
 		ConnectionID: []byte("1234"),
 		Timestamp:    1234,
 		MessageType:  message.TypeChannelRequestSignal,
-		Payload:      &message.PayloadChannelRequestSignal{
+		Payload: &message.PayloadChannelRequestSignal{
 			Signal: "TERM",
 		},
-		ChannelID:    0,
+		ChannelID: 0,
 	}
 
 	testPipeline(t, &msg)
@@ -367,10 +368,10 @@ func TestTypeChannelRequestSubsystem(t *testing.T) {
 		ConnectionID: []byte("1234"),
 		Timestamp:    1234,
 		MessageType:  message.TypeChannelRequestSubsystem,
-		Payload:      &message.PayloadChannelRequestSubsystem{
+		Payload: &message.PayloadChannelRequestSubsystem{
 			Subsystem: "sftp",
 		},
-		ChannelID:    0,
+		ChannelID: 0,
 	}
 
 	testPipeline(t, &msg)
@@ -381,11 +382,11 @@ func TestTypeChannelRequestWindow(t *testing.T) {
 		ConnectionID: []byte("1234"),
 		Timestamp:    1234,
 		MessageType:  message.TypeChannelRequestWindow,
-		Payload:      &message.PayloadChannelRequestWindow{
+		Payload: &message.PayloadChannelRequestWindow{
 			Columns: 80,
 			Rows:    25,
 		},
-		ChannelID:    0,
+		ChannelID: 0,
 	}
 
 	testPipeline(t, &msg)

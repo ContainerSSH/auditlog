@@ -2,7 +2,7 @@ package asciinema
 
 import "encoding/json"
 
-type AsciicastHeader struct {
+type Header struct {
 	Version   uint              `json:"version"`
 	Width     uint              `json:"width"`
 	Height    uint              `json:"height"`
@@ -12,20 +12,20 @@ type AsciicastHeader struct {
 	Env       map[string]string `json:"env"`
 }
 
-type AsciicastEventType string
+type EventType string
 
 //goland:noinspection GoUnusedConst
 const (
-	AsciicastEventTypeOutput AsciicastEventType = "o"
-	AsciicastEventTypeInput AsciicastEventType = "i"
+	EventTypeOutput EventType = "o"
+	EventTypeInput  EventType = "i"
 )
 
-type AsciicastFrame struct {
+type Frame struct {
 	Time      float64
-	EventType AsciicastEventType
+	EventType EventType
 	Data      string
 }
 
-func (f *AsciicastFrame) MarshalJSON() ([]byte, error) {
+func (f *Frame) MarshalJSON() ([]byte, error) {
 	return json.Marshal([]interface{}{f.Time, f.EventType, f.Data})
 }

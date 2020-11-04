@@ -3,10 +3,10 @@ package asciinema
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/containerssh/containerssh-auditlog-go/message"
 	"io"
 
-	"github.com/containerssh/containerssh-auditlog-go/codec"
+	"github.com/containerssh/auditlog/message"
+	"github.com/containerssh/auditlog/storage"
 )
 
 type encoder struct {
@@ -20,7 +20,7 @@ func (e *encoder) GetFileExtension() string {
 	return ".cast"
 }
 
-func (e *encoder) sendHeader(header AsciicastHeader, storage io.Writer) error {
+func (e *encoder) sendHeader(header Header, storage io.Writer) error {
 	data, err := json.Marshal(header)
 	if err != nil {
 		return err
@@ -33,7 +33,7 @@ func (e *encoder) sendHeader(header AsciicastHeader, storage io.Writer) error {
 	return nil
 }
 
-func (e *encoder) sendFrame(frame AsciicastFrame, storage io.Writer) error {
+func (e *encoder) sendFrame(frame Frame, storage io.Writer) error {
 	data, err := frame.MarshalJSON()
 	if err != nil {
 		return fmt.Errorf("failed to marshal Asciicast frame (%v)", err)
@@ -45,8 +45,8 @@ func (e *encoder) sendFrame(frame AsciicastFrame, storage io.Writer) error {
 	return nil
 }
 
-func (e *encoder) Encode(messages <-chan message.Message, storage codec.StorageWriter) error {
-	asciicastHeader := AsciicastHeader{
+func (e *encoder) Encode(messages <-chan message.Message, storage storage.Writer) error {
+	asciicastHeader := Header{
 		Version:   2,
 		Width:     80,
 		Height:    25,
@@ -135,9 +135,9 @@ func (e *encoder) Encode(messages <-chan message.Message, storage codec.StorageW
 			if payload.Stream == message.StreamStdout ||
 				payload.Stream == message.StreamStderr {
 				time := float64(msg.Timestamp-startTime) / 1000000000
-				frame := AsciicastFrame{
+				frame := Frame{
 					Time:      time,
-					EventType: AsciicastEventTypeOutput,
+					EventType: EventTypeOutput,
 					Data:      string(payload.Data),
 				}
 				if err := e.sendFrame(frame, storage); err != nil {

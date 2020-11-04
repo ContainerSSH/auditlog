@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/containerssh/containerssh-auditlog-go/codec"
-	"github.com/containerssh/containerssh-auditlog-go/message"
+	"github.com/containerssh/auditlog/codec"
+	"github.com/containerssh/auditlog/message"
 
 	"github.com/fxamacker/cbor"
 	"github.com/mitchellh/mapstructure"
@@ -51,7 +51,7 @@ func (d *decoder) Decode(reader io.Reader) (<-chan *message.Message, <-chan erro
 		}
 
 		for _, v := range messages {
-			decodedMessage, err  := decodeMessage(v)
+			decodedMessage, err := decodeMessage(v)
 			if err != nil {
 				errors <- err
 			} else {
@@ -68,15 +68,15 @@ func (d *decoder) Decode(reader io.Reader) (<-chan *message.Message, <-chan erro
 
 type decodedMessage struct {
 	// ConnectionID is an opaque ID of the connection
-	ConnectionID []byte      `json:"connectionId" yaml:"connectionId"`
+	ConnectionID []byte `json:"connectionId" yaml:"connectionId"`
 	// Timestamp is a nanosecond timestamp when the message was created
-	Timestamp    int64       `json:"timestamp" yaml:"timestamp"`
+	Timestamp int64 `json:"timestamp" yaml:"timestamp"`
 	// Type of the Payload object
-	MessageType  message.MessageType `json:"type" yaml:"type"`
+	MessageType message.MessageType `json:"type" yaml:"type"`
 	// Payload is always a pointer to a payload object.
-	Payload      map[string]interface{} `json:"payload" yaml:"payload"`
+	Payload map[string]interface{} `json:"payload" yaml:"payload"`
 	// ChannelID is a identifier for an SSH channel, if applicable. -1 otherwise.
-	ChannelID    message.ChannelID   `json:"channelId" yaml:"channelId"`
+	ChannelID message.ChannelID `json:"channelId" yaml:"channelId"`
 }
 
 func decodeMessage(v decodedMessage) (*message.Message, error) {
@@ -95,7 +95,7 @@ func decodeMessage(v decodedMessage) (*message.Message, error) {
 	case message.TypeAuthPasswordFailed:
 		payload = &message.PayloadAuthPassword{}
 	case message.TypeAuthPasswordBackendError:
-		payload = &message.PayloadAuthPassword{}
+		payload = &message.PayloadAuthPasswordBackendError{}
 
 	case message.TypeAuthPubKey:
 		payload = &message.PayloadAuthPubKey{}
@@ -104,7 +104,7 @@ func decodeMessage(v decodedMessage) (*message.Message, error) {
 	case message.TypeAuthPubKeyFailed:
 		payload = &message.PayloadAuthPubKey{}
 	case message.TypeAuthPubKeyBackendError:
-		payload = &message.PayloadAuthPubKey{}
+		payload = &message.PayloadAuthPubKeyBackendError{}
 
 	case message.TypeGlobalRequestUnknown:
 		payload = &message.PayloadGlobalRequestUnknown{}

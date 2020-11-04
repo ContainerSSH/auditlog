@@ -4,8 +4,10 @@ import (
 	"compress/gzip"
 	"fmt"
 
-	"github.com/containerssh/containerssh-auditlog-go/codec"
-	"github.com/containerssh/containerssh-auditlog-go/message"
+	"github.com/containerssh/auditlog/storage"
+
+	"github.com/containerssh/auditlog/codec"
+	"github.com/containerssh/auditlog/message"
 
 	"github.com/fxamacker/cbor"
 )
@@ -25,7 +27,7 @@ func (e *encoder) GetFileExtension() string {
 	return ""
 }
 
-func (e *encoder) Encode(messages <-chan message.Message, storage codec.StorageWriter) error {
+func (e *encoder) Encode(messages <-chan message.Message, storage storage.Writer) error {
 	var gzipHandle *gzip.Writer
 	var encoder *cbor.Encoder
 	gzipHandle = gzip.NewWriter(storage)

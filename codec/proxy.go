@@ -1,8 +1,12 @@
 package codec
 
-import "io"
+import (
+	"io"
 
-func NewStorageWriterProxy(backend io.WriteCloser) StorageWriter {
+	"github.com/containerssh/auditlog/storage"
+)
+
+func NewStorageWriterProxy(backend io.WriteCloser) storage.Writer {
 	return &storageWriterProxy{backend: backend}
 }
 
