@@ -17,7 +17,7 @@ type WritableStorage interface {
 }
 
 type ReadableStorage interface {
-	OpenReader(name string) (io.Reader, error)
+	OpenReader(name string) (io.ReadCloser, error)
 	List() (<-chan Entry, <-chan error)
 }
 
@@ -32,5 +32,5 @@ type Writer interface {
 	// sourceIp  is the IP address the user connected from
 	// username  is the username the user entered. The first time this method is called the username will be nil,
 	//           may be called subsequently is the user authenticated.
-	SetMetadata(startTime int64, sourceIp string, username *string)
+	SetMetadata(startTime int64, sourceIP string, username *string)
 }

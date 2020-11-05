@@ -8,7 +8,7 @@ import (
 )
 
 type Logger interface {
-	OnConnect(connectionId message.ConnectionID, ip net.TCPAddr) (Connection, error)
+	OnConnect(connectionID message.ConnectionID, ip net.TCPAddr) (Connection, error)
 }
 
 type Connection interface {
@@ -28,7 +28,7 @@ type Connection interface {
 
 	OnNewChannel(channelType string)
 	OnNewChannelFailed(channelType string, reason string)
-	OnNewChannelSuccess(channelType string, channelId message.ChannelID) Channel
+	OnNewChannelSuccess(channelType string, channelID message.ChannelID) Channel
 }
 
 type Channel interface {

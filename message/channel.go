@@ -4,8 +4,8 @@ type PayloadNewChannel struct {
 	ChannelType string `json:"channelType" yaml:"channelType"`
 }
 
-func (p *PayloadNewChannel) Equals(other Payload) bool {
-	p2, ok := other.(*PayloadNewChannel)
+func (p PayloadNewChannel) Equals(other Payload) bool {
+	p2, ok := other.(PayloadNewChannel)
 	if !ok {
 		return false
 	}
@@ -17,8 +17,8 @@ type PayloadNewChannelFailed struct {
 	Reason      string `json:"reason" yaml:"reason"`
 }
 
-func (p *PayloadNewChannelFailed) Equals(other Payload) bool {
-	p2, ok := other.(*PayloadNewChannelFailed)
+func (p PayloadNewChannelFailed) Equals(other Payload) bool {
+	p2, ok := other.(PayloadNewChannelFailed)
 	if !ok {
 		return false
 	}
@@ -29,8 +29,8 @@ type PayloadNewChannelSuccessful struct {
 	ChannelType string `json:"channelType" yaml:"channelType"`
 }
 
-func (p *PayloadNewChannelSuccessful) Equals(other Payload) bool {
-	p2, ok := other.(*PayloadNewChannelSuccessful)
+func (p PayloadNewChannelSuccessful) Equals(other Payload) bool {
+	p2, ok := other.(PayloadNewChannelSuccessful)
 	if !ok {
 		return false
 	}

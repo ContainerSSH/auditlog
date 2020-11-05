@@ -7,8 +7,8 @@ type PayloadAuthPassword struct {
 	Password []byte `json:"password" yaml:"password"`
 }
 
-func (p *PayloadAuthPassword) Equals(other Payload) bool {
-	p2, ok := other.(*PayloadAuthPassword)
+func (p PayloadAuthPassword) Equals(other Payload) bool {
+	p2, ok := other.(PayloadAuthPassword)
 	if !ok {
 		return false
 	}
@@ -21,8 +21,8 @@ type PayloadAuthPasswordBackendError struct {
 	Reason   string `json:"reason" yaml:"reason"`
 }
 
-func (p *PayloadAuthPasswordBackendError) Equals(other Payload) bool {
-	p2, ok := other.(*PayloadAuthPasswordBackendError)
+func (p PayloadAuthPasswordBackendError) Equals(other Payload) bool {
+	p2, ok := other.(PayloadAuthPasswordBackendError)
 	if !ok {
 		return false
 	}
@@ -34,8 +34,8 @@ type PayloadAuthPubKey struct {
 	Key      []byte `json:"key" yaml:"key"`
 }
 
-func (p *PayloadAuthPubKey) Equals(other Payload) bool {
-	p2, ok := other.(*PayloadAuthPubKey)
+func (p PayloadAuthPubKey) Equals(other Payload) bool {
+	p2, ok := other.(PayloadAuthPubKey)
 	if !ok {
 		return false
 	}
@@ -48,8 +48,8 @@ type PayloadAuthPubKeyBackendError struct {
 	Reason   string `json:"reason" yaml:"reason"`
 }
 
-func (p *PayloadAuthPubKeyBackendError) Equals(other Payload) bool {
-	p2, ok := other.(*PayloadAuthPubKeyBackendError)
+func (p PayloadAuthPubKeyBackendError) Equals(other Payload) bool {
+	p2, ok := other.(PayloadAuthPubKeyBackendError)
 	if !ok {
 		return false
 	}

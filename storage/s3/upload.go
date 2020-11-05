@@ -13,14 +13,14 @@ import (
 func (q *uploadQueue) initializeMultiPartUpload(s3Connection *s3.S3, name string, metadata queueEntryMetadata) (*string, error) {
 	q.logger.Debugf("initializing multipart upload for audit log %s...", name)
 	multipartUpload, err := s3Connection.CreateMultipartUpload(&s3.CreateMultipartUploadInput{
-		Bucket:      aws.String(q.bucket),
-		Key:         aws.String(name),
-		ContentType: aws.String("application/octet-stream"),
 		ACL:         q.acl,
-		Metadata:    metadata.ToMap(q.metadataUsername, q.metadataIp),
+		Bucket:      aws.String(q.bucket),
+		ContentType: aws.String("application/octet-stream"),
+		Key:         aws.String(name),
+		Metadata:    metadata.ToMap(q.metadataUsername, q.metadataIP),
 	})
 	if err != nil {
-		q.logger.Warningf("failed to initialize audit log file upload %s (%v)", name, err)
+		q.logger.Warningf("failed to initialize audit log file upload %s (%w)", name, err)
 		return nil, err
 	}
 	return multipartUpload.UploadId, nil
@@ -29,7 +29,7 @@ func (q *uploadQueue) initializeMultiPartUpload(s3Connection *s3.S3, name string
 func (q *uploadQueue) processMultiPartUploadPart(
 	s3Connection *s3.S3,
 	name string,
-	uploadId string,
+	uploadID string,
 	partNumber int64,
 	handle *os.File,
 	startingByte int64,
@@ -43,15 +43,14 @@ func (q *uploadQueue) processMultiPartUploadPart(
 		ContentLength: aws.Int64(contentLength),
 		Key:           aws.String(name),
 		PartNumber:    aws.Int64(partNumber),
-		UploadId:      aws.String(uploadId),
+		UploadId:      aws.String(uploadID),
 	})
 	etag := ""
 	if err != nil {
-		q.logger.Warningf("failed to upload part %d of audit log %s (%v)", partNumber, name, err)
-		return 0, "", fmt.Errorf("failed to upload part %d of audit log file %s (%v)", partNumber, name, err)
-	} else {
-		etag = *response.ETag
+		q.logger.Warningf("failed to upload part %d of audit log %s (%w)", partNumber, name, err)
+		return 0, "", fmt.Errorf("failed to upload part %d of audit log file %s (%w)", partNumber, name, err)
 	}
+	etag = *response.ETag
 	q.logger.Debugf("completed upload of part %d of audit log %s", partNumber, name)
 	return contentLength, etag, nil
 }
@@ -60,27 +59,27 @@ func (q *uploadQueue) processSingleUpload(s3Connection *s3.S3, name string, hand
 	q.logger.Debugf("processing single upload for audit log %s...", name)
 	stat, err := handle.Stat()
 	if err != nil {
-		return 0, fmt.Errorf("failed to upload audit log %s (%v)", name, err)
+		return 0, fmt.Errorf("failed to upload audit log %s (%w)", name, err)
 	}
 	contentLength := stat.Size()
 	_, err = s3Connection.PutObject(&s3.PutObjectInput{
+		ACL:           q.acl,
 		Body:          handle,
 		Bucket:        aws.String(q.bucket),
-		Key:           aws.String(name),
 		ContentLength: aws.Int64(contentLength),
 		ContentType:   aws.String("application/octet-stream"),
-		ACL:           q.acl,
-		Metadata:      metadata.ToMap(q.metadataUsername, q.metadataIp),
+		Key:           aws.String(name),
+		Metadata:      metadata.ToMap(q.metadataUsername, q.metadataIP),
 	})
 	if err != nil {
-		q.logger.Debugf("single upload failed for audit log %s (%v)", name, err)
+		q.logger.Debugf("single upload failed for audit log %s (%w)", name, err)
 	} else {
 		q.logger.Debugf("single upload complete for audit log %s", name)
 	}
 	return contentLength, err
 }
 
-func (q *uploadQueue) finalizeUpload(s3Connection *s3.S3, name string, uploadId string, completedParts []*s3.CompletedPart) error {
+func (q *uploadQueue) finalizeUpload(s3Connection *s3.S3, name string, uploadID string, completedParts []*s3.CompletedPart) error {
 	q.logger.Debugf("finalizing multipart upload for audit log %s...", name)
 	_, err := s3Connection.CompleteMultipartUpload(&s3.CompleteMultipartUploadInput{
 		Bucket: aws.String(q.bucket),
@@ -88,10 +87,13 @@ func (q *uploadQueue) finalizeUpload(s3Connection *s3.S3, name string, uploadId 
 		MultipartUpload: &s3.CompletedMultipartUpload{
 			Parts: completedParts,
 		},
-		UploadId: aws.String(uploadId),
+		UploadId: aws.String(uploadID),
+
+		ExpectedBucketOwner: nil,
+		RequestPayer:        nil,
 	})
 	if err != nil {
-		q.logger.Warningf("finalizing multipart upload failed for audit log %s (%v)", name, err)
+		q.logger.Warningf("finalizing multipart upload failed for audit log %s (%w)", name, err)
 	} else {
 		q.logger.Debugf("finalizing multipart upload complete for audit log %s", name)
 	}
@@ -105,7 +107,7 @@ func (q *uploadQueue) upload(name string) error {
 	}
 	s3Connection := s3.New(q.awsSession)
 	go func() {
-		var uploadId *string = nil
+		var uploadID *string = nil
 		uploadedBytes := int64(0)
 		errorHappened := false
 		var completedParts []*s3.CompletedPart
@@ -117,9 +119,6 @@ func (q *uploadQueue) upload(name string) error {
 			}
 			entry := rawEntry.(*queueEntry)
 			entry.waitPartAvailable()
-			if len(q.workerSem) == int(q.parallelUploads) {
-				q.logger.Debugf("upload queue is full, waiting to upload audit log %s", name)
-			}
 			q.workerSem <- 42
 			errorHappened = false
 
@@ -128,66 +127,25 @@ func (q *uploadQueue) upload(name string) error {
 			if err == nil {
 				remainingBytes = stat.Size() - uploadedBytes
 			} else {
-				q.logger.Warningf("failed to stat audit queue file %s before upload (%v)", name, err)
+				q.logger.Warningf("failed to stat audit queue file %s before upload (%w)", name, err)
 				errorHappened = true
 			}
 
 			if !errorHappened {
-				if entry.finished && uploadedBytes == 0 {
-					// If the entry is finished and nothing has been uploaded yet, upload it as a single file.
-					partBytes, err := q.processSingleUpload(s3Connection, name, entry.readHandle, entry.metadata)
-					if err != nil {
-						q.logger.Warningf("failed to upload audit log %s (%v)", name, err)
-						errorHappened = true
-					} else {
-						uploadedBytes = uploadedBytes + partBytes
-					}
-				} else if (entry.finished && remainingBytes > 0) || remainingBytes >= int64(q.partSize) {
-					// If the entry is finished and there are bytes remaining, upload. Otherwise, we only upload if
-					// more than the part size is available.
-					if uploadId == nil {
-						uploadId, err = q.initializeMultiPartUpload(s3Connection, name, entry.metadata)
-						if err != nil {
-							errorHappened = true
-						}
-					}
-					if !errorHappened && uploadId != nil {
-						partNumber := uploadedBytes / int64(q.partSize)
-						startingByte := partNumber * int64(q.partSize)
-						endingByte := (partNumber + 1) * int64(q.partSize)
-						if stat.Size() < endingByte {
-							endingByte = stat.Size()
-						}
-
-						if entry.finished && stat.Size()-endingByte < int64(q.partSize) {
-							endingByte = stat.Size()
-						}
-
-						partBytes, etag, err := q.processMultiPartUploadPart(s3Connection, name, *uploadId, partNumber, entry.readHandle, startingByte, endingByte)
-						if err == nil {
-							uploadedBytes = uploadedBytes + partBytes
-							completedParts = append(completedParts, &s3.CompletedPart{
-								ETag:       aws.String(etag),
-								PartNumber: aws.Int64(partNumber),
-							})
-						}
-					}
-				} else if entry.finished && remainingBytes == 0 {
-					//If the entry is finished and no data is left to be uploaded, finalize the upload.
-					if uploadId != nil {
-						err := q.finalizeUpload(s3Connection, name, *uploadId, completedParts)
-						if err != nil {
-							errorHappened = true
-						}
-					}
-					if !errorHappened {
-						if err := entry.remove(); err != nil {
-							q.logger.Warningf("failed to remove queue entry (%v)", err)
-						}
-						q.queue.Delete(name)
-						<-q.workerSem
-						break
-					}
+				var finished bool
+				errorHappened, finished, uploadedBytes, completedParts, uploadID = q.processUpload(
+					entry,
+					uploadedBytes,
+					s3Connection,
+					name,
+					remainingBytes,
+					uploadID,
+					stat,
+					completedParts,
+				)
+				if finished {
+					<-q.workerSem
+					break
 				}
 			}
 
@@ -205,14 +163,92 @@ func (q *uploadQueue) upload(name string) error {
 	return nil
 }
 
+func (q *uploadQueue) processUpload(
+	entry *queueEntry,
+	uploadedBytes int64,
+	s3Connection *s3.S3,
+	name string,
+	remainingBytes int64,
+	uploadID *string,
+	stat os.FileInfo,
+	completedParts []*s3.CompletedPart,
+) (bool, bool, int64, []*s3.CompletedPart, *string) {
+	if entry.finished && uploadedBytes == 0 {
+		// If the entry is finished and nothing has been uploaded yet, upload it as a single file.
+		partBytes, err := q.processSingleUpload(s3Connection, name, entry.readHandle, entry.metadata)
+		if err != nil {
+			q.logger.Warningf("failed to upload audit log %s (%w)", name, err)
+			return true, false, uploadedBytes, completedParts, uploadID
+		}
+		uploadedBytes = uploadedBytes + partBytes
+	} else if (entry.finished && remainingBytes > 0) || remainingBytes >= int64(q.partSize) {
+		// If the entry is finished and there are bytes remaining, upload. Otherwise, we only upload if
+		// more than the part size is available.
+		if uploadID == nil {
+			var err error
+			uploadID, err = q.initializeMultiPartUpload(s3Connection, name, entry.metadata)
+			if err != nil {
+				return true, false, uploadedBytes, completedParts, uploadID
+			}
+		}
+		if uploadID != nil {
+			uploadedBytes, completedParts = q.doMultipartUpload(entry, uploadedBytes, s3Connection, name, stat, uploadID, completedParts)
+		}
+	} else if entry.finished && remainingBytes == 0 {
+		//If the entry is finished and no data is left to be uploaded, finalize the upload.
+		if uploadID != nil {
+			err := q.finalizeUpload(s3Connection, name, *uploadID, completedParts)
+			if err != nil {
+				return true, false, uploadedBytes, completedParts, uploadID
+			}
+		}
+		if err := entry.remove(); err != nil {
+			q.logger.Warningf("failed to remove queue entry (%w)", err)
+		}
+		q.queue.Delete(name)
+		return false, true, uploadedBytes, completedParts, uploadID
+	}
+	return false, false, uploadedBytes, completedParts, uploadID
+}
+
+func (q *uploadQueue) doMultipartUpload(entry *queueEntry, uploadedBytes int64, s3Connection *s3.S3, name string, stat os.FileInfo, uploadID *string, completedParts []*s3.CompletedPart) (int64, []*s3.CompletedPart) {
+	partNumber := uploadedBytes / int64(q.partSize)
+	startingByte := partNumber * int64(q.partSize)
+	endingByte := (partNumber + 1) * int64(q.partSize)
+	if stat.Size() < endingByte {
+		endingByte = stat.Size()
+	}
+
+	if entry.finished && stat.Size()-endingByte < int64(q.partSize) {
+		endingByte = stat.Size()
+	}
+
+	partBytes, etag, err := q.processMultiPartUploadPart(s3Connection, name, *uploadID, partNumber, entry.readHandle, startingByte, endingByte)
+	if err == nil {
+		uploadedBytes = uploadedBytes + partBytes
+		completedParts = append(completedParts, &s3.CompletedPart{
+			ETag:       aws.String(etag),
+			PartNumber: aws.Int64(partNumber),
+		})
+	}
+	return uploadedBytes, completedParts
+}
+
 func (q *uploadQueue) abortMultiPartUpload(name string) error {
 	s3Connection := s3.New(q.awsSession)
 	multiPartUpload, err := s3Connection.ListMultipartUploads(&s3.ListMultipartUploadsInput{
 		Bucket: aws.String(q.bucket),
 		Prefix: aws.String(name),
+
+		Delimiter:           nil,
+		EncodingType:        nil,
+		ExpectedBucketOwner: nil,
+		KeyMarker:           nil,
+		MaxUploads:          nil,
+		UploadIdMarker:      nil,
 	})
 	if err != nil {
-		return fmt.Errorf("failed to list existing multipart upload for audit log %s (%v)", name, err)
+		return fmt.Errorf("failed to list existing multipart upload for audit log %s (%w)", name, err)
 	}
 	for _, upload := range multiPartUpload.Uploads {
 		if *upload.Key == name {
@@ -221,9 +257,12 @@ func (q *uploadQueue) abortMultiPartUpload(name string) error {
 				Bucket:   aws.String(q.bucket),
 				Key:      upload.Key,
 				UploadId: upload.UploadId,
+
+				ExpectedBucketOwner: nil,
+				RequestPayer:        nil,
 			})
 			if err != nil {
-				return fmt.Errorf("failed to abort  %s (%v)", name, err)
+				return fmt.Errorf("failed to abort  %s (%w)", name, err)
 			}
 		}
 	}

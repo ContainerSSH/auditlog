@@ -25,7 +25,7 @@ type loggerConnection struct {
 
 	ip             net.TCPAddr
 	messageChannel chan message.Message
-	connectionId   message.ConnectionID
+	connectionID   message.ConnectionID
 }
 
 type loggerChannel struct {
@@ -35,8 +35,8 @@ type loggerChannel struct {
 }
 
 //region Connection
-func (l *loggerImplementation) OnConnect(connectionId message.ConnectionID, ip net.TCPAddr) (Connection, error) {
-	name := hex.EncodeToString(connectionId)
+func (l *loggerImplementation) OnConnect(connectionID message.ConnectionID, ip net.TCPAddr) (Connection, error) {
+	name := hex.EncodeToString(connectionID)
 	writer, err := l.storage.OpenWriter(name)
 	if err != nil {
 		return nil, err
@@ -44,7 +44,7 @@ func (l *loggerImplementation) OnConnect(connectionId message.ConnectionID, ip n
 	conn := &loggerConnection{
 		l:              l,
 		ip:             ip,
-		connectionId:   connectionId,
+		connectionID:   connectionID,
 		messageChannel: make(chan message.Message),
 	}
 	go func() {
@@ -54,7 +54,7 @@ func (l *loggerImplementation) OnConnect(connectionId message.ConnectionID, ip n
 		}
 	}()
 	conn.messageChannel <- message.Message{
-		ConnectionID: connectionId,
+		ConnectionID: connectionID,
 		Timestamp:    time.Now().UnixNano(),
 		MessageType:  message.TypeConnect,
 		Payload: &message.PayloadConnect{
@@ -67,7 +67,7 @@ func (l *loggerImplementation) OnConnect(connectionId message.ConnectionID, ip n
 
 func (c *loggerConnection) OnDisconnect() {
 	c.messageChannel <- message.Message{
-		ConnectionID: c.connectionId,
+		ConnectionID: c.connectionID,
 		Timestamp:    time.Now().UnixNano(),
 		MessageType:  message.TypeDisconnect,
 		Payload:      nil,
@@ -78,7 +78,7 @@ func (c *loggerConnection) OnDisconnect() {
 
 func (c *loggerConnection) OnAuthPassword(username string, password []byte) {
 	c.messageChannel <- message.Message{
-		ConnectionID: c.connectionId,
+		ConnectionID: c.connectionID,
 		Timestamp:    time.Now().UnixNano(),
 		MessageType:  message.TypeAuthPassword,
 		Payload: &message.PayloadAuthPassword{
@@ -91,7 +91,7 @@ func (c *loggerConnection) OnAuthPassword(username string, password []byte) {
 
 func (c *loggerConnection) OnAuthPasswordSuccess(username string, password []byte) {
 	c.messageChannel <- message.Message{
-		ConnectionID: c.connectionId,
+		ConnectionID: c.connectionID,
 		Timestamp:    time.Now().UnixNano(),
 		MessageType:  message.TypeAuthPasswordSuccessful,
 		Payload: &message.PayloadAuthPassword{
@@ -104,7 +104,7 @@ func (c *loggerConnection) OnAuthPasswordSuccess(username string, password []byt
 
 func (c *loggerConnection) OnAuthPasswordFailed(username string, password []byte) {
 	c.messageChannel <- message.Message{
-		ConnectionID: c.connectionId,
+		ConnectionID: c.connectionID,
 		Timestamp:    time.Now().UnixNano(),
 		MessageType:  message.TypeAuthPubKeyFailed,
 		Payload: &message.PayloadAuthPassword{
@@ -117,7 +117,7 @@ func (c *loggerConnection) OnAuthPasswordFailed(username string, password []byte
 
 func (c *loggerConnection) OnAuthPasswordBackendError(username string, password []byte, reason string) {
 	c.messageChannel <- message.Message{
-		ConnectionID: c.connectionId,
+		ConnectionID: c.connectionID,
 		Timestamp:    time.Now().UnixNano(),
 		MessageType:  message.TypeAuthPasswordBackendError,
 		Payload: &message.PayloadAuthPasswordBackendError{
@@ -131,7 +131,7 @@ func (c *loggerConnection) OnAuthPasswordBackendError(username string, password 
 
 func (c *loggerConnection) OnAuthPubKey(username string, pubKey []byte) {
 	c.messageChannel <- message.Message{
-		ConnectionID: c.connectionId,
+		ConnectionID: c.connectionID,
 		Timestamp:    time.Now().UnixNano(),
 		MessageType:  message.TypeAuthPubKey,
 		Payload: &message.PayloadAuthPubKey{
@@ -144,7 +144,7 @@ func (c *loggerConnection) OnAuthPubKey(username string, pubKey []byte) {
 
 func (c *loggerConnection) OnAuthPubKeySuccess(username string, pubKey []byte) {
 	c.messageChannel <- message.Message{
-		ConnectionID: c.connectionId,
+		ConnectionID: c.connectionID,
 		Timestamp:    time.Now().UnixNano(),
 		MessageType:  message.TypeAuthPubKeySuccessful,
 		Payload: &message.PayloadAuthPubKey{
@@ -157,7 +157,7 @@ func (c *loggerConnection) OnAuthPubKeySuccess(username string, pubKey []byte) {
 
 func (c *loggerConnection) OnAuthPubKeyFailed(username string, pubKey []byte) {
 	c.messageChannel <- message.Message{
-		ConnectionID: c.connectionId,
+		ConnectionID: c.connectionID,
 		Timestamp:    time.Now().UnixNano(),
 		MessageType:  message.TypeAuthPubKeyFailed,
 		Payload: &message.PayloadAuthPubKey{
@@ -170,7 +170,7 @@ func (c *loggerConnection) OnAuthPubKeyFailed(username string, pubKey []byte) {
 
 func (c *loggerConnection) OnAuthPubKeyBackendError(username string, pubKey []byte, reason string) {
 	c.messageChannel <- message.Message{
-		ConnectionID: c.connectionId,
+		ConnectionID: c.connectionID,
 		Timestamp:    time.Now().UnixNano(),
 		MessageType:  message.TypeAuthPubKeyBackendError,
 		Payload: &message.PayloadAuthPubKeyBackendError{
@@ -184,7 +184,7 @@ func (c *loggerConnection) OnAuthPubKeyBackendError(username string, pubKey []by
 
 func (c *loggerConnection) OnGlobalRequestUnknown(requestType string) {
 	c.messageChannel <- message.Message{
-		ConnectionID: c.connectionId,
+		ConnectionID: c.connectionID,
 		Timestamp:    time.Now().UnixNano(),
 		MessageType:  message.TypeGlobalRequestUnknown,
 		Payload: &message.PayloadGlobalRequestUnknown{
@@ -196,7 +196,7 @@ func (c *loggerConnection) OnGlobalRequestUnknown(requestType string) {
 
 func (c *loggerConnection) OnNewChannel(channelType string) {
 	c.messageChannel <- message.Message{
-		ConnectionID: c.connectionId,
+		ConnectionID: c.connectionID,
 		Timestamp:    time.Now().UnixNano(),
 		MessageType:  message.TypeNewChannel,
 		Payload: &message.PayloadNewChannel{
@@ -208,7 +208,7 @@ func (c *loggerConnection) OnNewChannel(channelType string) {
 
 func (c *loggerConnection) OnNewChannelFailed(channelType string, reason string) {
 	c.messageChannel <- message.Message{
-		ConnectionID: c.connectionId,
+		ConnectionID: c.connectionID,
 		Timestamp:    time.Now().UnixNano(),
 		MessageType:  message.TypeNewChannelFailed,
 		Payload: &message.PayloadNewChannelFailed{
@@ -219,19 +219,19 @@ func (c *loggerConnection) OnNewChannelFailed(channelType string, reason string)
 	}
 }
 
-func (c *loggerConnection) OnNewChannelSuccess(channelType string, channelId message.ChannelID) Channel {
+func (c *loggerConnection) OnNewChannelSuccess(channelType string, channelID message.ChannelID) Channel {
 	c.messageChannel <- message.Message{
-		ConnectionID: c.connectionId,
+		ConnectionID: c.connectionID,
 		Timestamp:    time.Now().UnixNano(),
 		MessageType:  message.TypeNewChannelSuccessful,
 		Payload: &message.PayloadNewChannelSuccessful{
 			ChannelType: channelType,
 		},
-		ChannelID: channelId,
+		ChannelID: channelID,
 	}
 	return &loggerChannel{
 		c:         c,
-		channelID: channelId,
+		channelID: channelID,
 	}
 }
 
@@ -240,114 +240,124 @@ func (c *loggerConnection) OnNewChannelSuccess(channelType string, channelId mes
 //region Channel
 func (l *loggerChannel) OnRequestUnknown(requestType string) {
 	l.c.messageChannel <- message.Message{
-		ConnectionID: l.c.connectionId,
+		ConnectionID: l.c.connectionID,
 		Timestamp:    time.Now().UnixNano(),
 		MessageType:  message.TypeChannelRequestUnknownType,
 		Payload: &message.PayloadChannelRequestUnknownType{
 			RequestType: requestType,
 		},
+		ChannelID: l.channelID,
 	}
 }
 
 func (l *loggerChannel) OnRequestDecodeFailed(requestType string, reason string) {
 	l.c.messageChannel <- message.Message{
-		ConnectionID: l.c.connectionId,
+		ConnectionID: l.c.connectionID,
 		Timestamp:    time.Now().UnixNano(),
 		MessageType:  message.TypeChannelRequestDecodeFailed,
 		Payload: &message.PayloadChannelRequestDecodeFailed{
 			RequestType: requestType,
 			Reason:      reason,
 		},
+		ChannelID: l.channelID,
 	}
 }
 
 func (l *loggerChannel) OnRequestSetEnv(name string, value string) {
 	l.c.messageChannel <- message.Message{
-		ConnectionID: l.c.connectionId,
+		ConnectionID: l.c.connectionID,
 		Timestamp:    time.Now().UnixNano(),
 		MessageType:  message.TypeChannelRequestSetEnv,
 		Payload: &message.PayloadChannelRequestSetEnv{
 			Name:  name,
 			Value: value,
 		},
+		ChannelID: l.channelID,
 	}
 }
 
 func (l *loggerChannel) OnRequestExec(program string) {
 	l.c.messageChannel <- message.Message{
-		ConnectionID: l.c.connectionId,
+		ConnectionID: l.c.connectionID,
 		Timestamp:    time.Now().UnixNano(),
 		MessageType:  message.TypeChannelRequestExec,
 		Payload: &message.PayloadChannelRequestExec{
 			Program: program,
 		},
+		ChannelID: l.channelID,
 	}
 }
 
 func (l *loggerChannel) OnRequestPty(columns uint, rows uint) {
 	l.c.messageChannel <- message.Message{
-		ConnectionID: l.c.connectionId,
+		ConnectionID: l.c.connectionID,
 		Timestamp:    time.Now().UnixNano(),
 		MessageType:  message.TypeChannelRequestPty,
 		Payload: &message.PayloadChannelRequestPty{
 			Columns: columns,
 			Rows:    rows,
 		},
+		ChannelID: l.channelID,
 	}
 }
 
 func (l *loggerChannel) OnRequestShell() {
 	l.c.messageChannel <- message.Message{
-		ConnectionID: l.c.connectionId,
+		ConnectionID: l.c.connectionID,
 		Timestamp:    time.Now().UnixNano(),
 		MessageType:  message.TypeChannelRequestShell,
 		Payload:      &message.PayloadChannelRequestShell{},
+		ChannelID:    l.channelID,
 	}
 }
 
 func (l *loggerChannel) OnRequestSignal(signal string) {
 	l.c.messageChannel <- message.Message{
-		ConnectionID: l.c.connectionId,
+		ConnectionID: l.c.connectionID,
 		Timestamp:    time.Now().UnixNano(),
 		MessageType:  message.TypeChannelRequestSignal,
 		Payload: &message.PayloadChannelRequestSignal{
 			Signal: signal,
 		},
+		ChannelID: l.channelID,
 	}
 }
 
 func (l *loggerChannel) OnRequestSubsystem(subsystem string) {
 	l.c.messageChannel <- message.Message{
-		ConnectionID: l.c.connectionId,
+		ConnectionID: l.c.connectionID,
 		Timestamp:    time.Now().UnixNano(),
 		MessageType:  message.TypeChannelRequestSubsystem,
 		Payload: &message.PayloadChannelRequestSubsystem{
 			Subsystem: subsystem,
 		},
+		ChannelID: l.channelID,
 	}
 }
 
 func (l *loggerChannel) OnRequestWindow(columns uint, rows uint) {
 	l.c.messageChannel <- message.Message{
-		ConnectionID: l.c.connectionId,
+		ConnectionID: l.c.connectionID,
 		Timestamp:    time.Now().UnixNano(),
 		MessageType:  message.TypeChannelRequestWindow,
 		Payload: &message.PayloadChannelRequestWindow{
 			Columns: columns,
 			Rows:    rows,
 		},
+		ChannelID: l.channelID,
 	}
 }
 
 func (l *loggerChannel) io(stream message.Stream, data []byte) {
 	l.c.messageChannel <- message.Message{
-		ConnectionID: l.c.connectionId,
+		ConnectionID: l.c.connectionID,
 		Timestamp:    time.Now().UnixNano(),
 		MessageType:  message.TypeIO,
 		Payload: &message.PayloadIO{
 			Stream: stream,
 			Data:   data,
 		},
+		ChannelID: l.channelID,
 	}
 }
 

@@ -14,7 +14,7 @@ type Storage struct {
 	directory string
 }
 
-func (s *Storage) OpenReader(name string) (io.Reader, error) {
+func (s *Storage) OpenReader(name string) (io.ReadCloser, error) {
 	return os.Open(path.Join(s.directory, name))
 }
 

@@ -9,6 +9,7 @@ type Config struct {
 	Endpoint        string   `json:"endpoint" yaml:"endpoint"`
 	CaCert          string   `json:"cacert" yaml:"cacert"`
 	ACL             string   `json:"acl" yaml:"acl"`
+	PathStyleAccess bool     `json:"pathStyleAccess" yaml:"pathStyleAccess"`
 	UploadPartSize  uint     `json:"uploadPartSize" yaml:"uploadPartSize"`
 	ParallelUploads uint     `json:"parallelUploads" yaml:"parallelUploads"`
 	Metadata        Metadata `json:"metadata" yaml:"metadata"`

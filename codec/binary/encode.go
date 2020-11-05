@@ -33,7 +33,7 @@ func (e *encoder) Encode(messages <-chan message.Message, storage storage.Writer
 	gzipHandle = gzip.NewWriter(storage)
 	encoder = cbor.NewEncoder(gzipHandle, cbor.EncOptions{})
 	if err := encoder.StartIndefiniteArray(); err != nil {
-		return fmt.Errorf("failed to start infinite array (%v)", err)
+		return fmt.Errorf("failed to start infinite array (%w)", err)
 	}
 
 	startTime := int64(0)
@@ -49,33 +49,33 @@ func (e *encoder) Encode(messages <-chan message.Message, storage storage.Writer
 		}
 		switch msg.MessageType {
 		case message.TypeConnect:
-			payload := msg.Payload.(*message.PayloadConnect)
+			payload := msg.Payload.(message.PayloadConnect)
 			ip = payload.RemoteAddr
 			storage.SetMetadata(startTime/1000000000, ip, username)
 		case message.TypeAuthPasswordSuccessful:
-			payload := msg.Payload.(*message.PayloadAuthPassword)
+			payload := msg.Payload.(message.PayloadAuthPassword)
 			username = &payload.Username
 			storage.SetMetadata(startTime/1000000000, ip, username)
 		case message.TypeAuthPubKeySuccessful:
-			payload := msg.Payload.(*message.PayloadAuthPubKey)
+			payload := msg.Payload.(message.PayloadAuthPubKey)
 			username = &payload.Username
 			storage.SetMetadata(startTime/1000000000, ip, username)
 		}
 		if err := encoder.Encode(&msg); err != nil {
-			return fmt.Errorf("failed to encode audit log message (%v)", err)
+			return fmt.Errorf("failed to encode audit log message (%w)", err)
 		}
 		if msg.MessageType == message.TypeDisconnect {
 			break
 		}
 	}
 	if err := encoder.EndIndefinite(); err != nil {
-		return fmt.Errorf("failed to end audit log infinite array (%v)", err)
+		return fmt.Errorf("failed to end audit log infinite array (%w)", err)
 	}
 	if err := gzipHandle.Flush(); err != nil {
-		return fmt.Errorf("failed to flush audit log gzip stream (%v)", err)
+		return fmt.Errorf("failed to flush audit log gzip stream (%w)", err)
 	}
 	if err := storage.Close(); err != nil {
-		return fmt.Errorf("failed to close audit log gzip stream (%v)", err)
+		return fmt.Errorf("failed to close audit log gzip stream (%w)", err)
 	}
 	return nil
 }

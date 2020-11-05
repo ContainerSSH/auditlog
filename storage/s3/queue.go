@@ -25,7 +25,7 @@ type queueEntryMetadata struct {
 	Username      string `json:"username" yaml:"username"`
 }
 
-func (meta queueEntryMetadata) ToMap(showUsername bool, showIp bool) map[string]*string {
+func (meta queueEntryMetadata) ToMap(showUsername bool, showIP bool) map[string]*string {
 	var username *string
 	if meta.Authenticated {
 		username = &meta.Username
@@ -37,7 +37,7 @@ func (meta queueEntryMetadata) ToMap(showUsername bool, showIp bool) map[string]
 	if showUsername {
 		metadata["username"] = username
 	}
-	if showIp {
+	if showIP {
 		metadata["ip"] = aws.String(meta.RemoteAddr)
 	}
 	return metadata
@@ -72,16 +72,15 @@ func (e *queueEntry) waitPartAvailable() {
 func (e *queueEntry) remove() error {
 	if e.readHandle != nil {
 		if err := e.readHandle.Close(); err != nil {
-			return fmt.Errorf("failed to close audit log file %s (%v)", e.file, err)
-		} else {
-			e.readHandle = nil
+			return fmt.Errorf("failed to close audit log file %s (%w)", e.file, err)
 		}
+		e.readHandle = nil
 	}
 	if err := os.Remove(e.file); err != nil {
-		return fmt.Errorf("failed to remove audit log file %s (%v)", e.name, err)
+		return fmt.Errorf("failed to remove audit log file %s (%w)", e.name, err)
 	}
 	if err := os.Remove(fmt.Sprintf("%s.metadata.json", e.file)); err != nil {
-		e.logger.Warningf("failed to remove audit log metadata file %s (%v)", e.name, err)
+		e.logger.Warningf("failed to remove audit log metadata file %s (%w)", e.name, err)
 	}
 	return nil
 }
@@ -97,7 +96,7 @@ type uploadQueue struct {
 	acl             *string
 	// queue map[string]*queueEntry
 	queue            sync.Map
-	metadataIp       bool
+	metadataIP       bool
 	metadataUsername bool
 }
 
@@ -108,7 +107,7 @@ func newUploadQueue(
 	bucket string,
 	acl string,
 	metadataUsername bool,
-	metadataIp bool,
+	metadataIP bool,
 	awsSession *session.Session,
 	logger log.Logger,
 ) *uploadQueue {
@@ -121,9 +120,9 @@ func newUploadQueue(
 	if parallelUploads < 1 {
 		parallelUploads = 1
 	}
-	var realAcl *string = nil
+	var realACL *string = nil
 	if acl != "" {
-		realAcl = &acl
+		realACL = &acl
 	}
 	return &uploadQueue{
 		directory:        directory,
@@ -134,8 +133,8 @@ func newUploadQueue(
 		awsSession:       awsSession,
 		bucket:           bucket,
 		queue:            sync.Map{},
-		acl:              realAcl,
-		metadataIp:       metadataIp,
+		acl:              realACL,
+		metadataIP:       metadataIP,
 		metadataUsername: metadataUsername,
 	}
 }
@@ -172,6 +171,10 @@ func (q *uploadQueue) OpenWriter(name string) (storage.Writer, error) {
 		return nil, err
 	}
 
+	return q.getMonitoringWriter(name, writeHandle, entry, file), nil
+}
+
+func (q *uploadQueue) getMonitoringWriter(name string, writeHandle *os.File, entry *queueEntry, file string) storage.Writer {
 	return newMonitoringWriter(
 		writeHandle,
 		q.partSize,
@@ -189,20 +192,20 @@ func (q *uploadQueue) OpenWriter(name string) (storage.Writer, error) {
 			metadataFile := fmt.Sprintf("%s.metadata.json", file)
 			metadataFileHandle, err := os.Create(metadataFile)
 			if err != nil {
-				q.logger.Warningf("failed to create local audit log %s metadata file (%v)", name, err)
+				q.logger.Warningf("failed to create local audit log %s metadata file (%w)", name, err)
 			} else {
 				defer func() {
 					if err := metadataFileHandle.Close(); err != nil {
-						q.logger.Warningf("failed to close audit log %s metadata file (%v)", name, err)
+						q.logger.Warningf("failed to close audit log %s metadata file (%w)", name, err)
 					}
 				}()
 				jsonData, err := json.Marshal(entry.metadata)
 				if err != nil {
-					q.logger.Warningf("failed to encode audit log %s metadata to JSON (%v)", name, err)
+					q.logger.Warningf("failed to encode audit log %s metadata to JSON (%w)", name, err)
 				} else {
 					_, err := metadataFileHandle.Write(jsonData)
 					if err != nil {
-						q.logger.Warningf("failed to write audit log %s metadata file (%v)", name, err)
+						q.logger.Warningf("failed to write audit log %s metadata file (%w)", name, err)
 					}
 				}
 			}
@@ -213,10 +216,10 @@ func (q *uploadQueue) OpenWriter(name string) (storage.Writer, error) {
 		func() {
 			err := q.finish(name)
 			if err != nil {
-				q.logger.Warningf("failed to finish audit log %s (%v)", name, err)
+				q.logger.Warningf("failed to finish audit log %s (%w)", name, err)
 			}
 		},
-	), nil
+	)
 }
 
 func (q *uploadQueue) finish(name string) error {
@@ -241,24 +244,24 @@ func (q *uploadQueue) recover(name string) error {
 
 	// Remove existing multipart upload
 	if err = q.abortMultiPartUpload(name); err != nil {
-		return fmt.Errorf("failed to recover upload for audit log %s (%v)", name, err)
+		return fmt.Errorf("failed to recover upload for audit log %s (%w)", name, err)
 	}
 	metadata := &queueEntryMetadata{}
 	metadataHandle, err := os.Open(fmt.Sprintf("%s.metadata.json", file))
 	if err == nil {
 		readBytes, err := ioutil.ReadAll(metadataHandle)
 		if err != nil {
-			q.logger.Warningf("failed to read audit log %s metadata file (%v)", name, err)
+			q.logger.Warningf("failed to read audit log %s metadata file (%w)", name, err)
 		} else {
 			if err := json.Unmarshal(readBytes, metadata); err != nil {
-				q.logger.Warningf("failed to unmarshal audit log %s JSON (%v)", name, err)
+				q.logger.Warningf("failed to unmarshal audit log %s JSON (%w)", name, err)
 			}
 		}
 		if err := metadataHandle.Close(); err != nil {
-			q.logger.Warningf("failed to close audit log %s metadata file (%v)", name, err)
+			q.logger.Warningf("failed to close audit log %s metadata file (%w)", name, err)
 		}
 	} else {
-		q.logger.Warningf("metadata file for recovered audit log %s failed to open (%v)", name, err)
+		q.logger.Warningf("metadata file for recovered audit log %s failed to open (%w)", name, err)
 	}
 
 	// Create a new upload

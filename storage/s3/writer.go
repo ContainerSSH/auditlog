@@ -36,8 +36,8 @@ type monitoringWriter struct {
 	lastPart      int
 }
 
-func (m *monitoringWriter) SetMetadata(startTime int64, sourceIp string, username *string) {
-	m.onMetadata(startTime, sourceIp, username)
+func (m *monitoringWriter) SetMetadata(startTime int64, sourceIP string, username *string) {
+	m.onMetadata(startTime, sourceIP, username)
 }
 
 func (m *monitoringWriter) Write(p []byte) (n int, err error) {

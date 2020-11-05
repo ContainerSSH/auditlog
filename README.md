@@ -26,7 +26,7 @@ storage := YourNewStorage()
 go func() {
     err := encoder.Encode(messageChannel, storage)
     if err != nil {
-        log.Fatalf("failed to encode messages (%v)", err)        
+        log.Fatalf("failed to encode messages (%w)", err)        
     }
 }()
 

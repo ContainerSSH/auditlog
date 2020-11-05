@@ -27,7 +27,7 @@ func (d *decoder) Decode(reader io.Reader) (<-chan *message.Message, <-chan erro
 	gzipReader, err := gzip.NewReader(reader)
 	if err != nil {
 		go func() {
-			errors <- fmt.Errorf("failed to open gzip stream (%v)", err)
+			errors <- fmt.Errorf("failed to open gzip stream (%w)", err)
 			done <- true
 			close(result)
 			close(errors)
@@ -42,7 +42,7 @@ func (d *decoder) Decode(reader io.Reader) (<-chan *message.Message, <-chan erro
 
 	go func() {
 		if err = cborReader.Decode(&messages); err != nil {
-			errors <- fmt.Errorf("failed to decode messages (%v)", err)
+			errors <- fmt.Errorf("failed to decode messages (%w)", err)
 			done <- true
 			close(result)
 			close(errors)
@@ -72,75 +72,52 @@ type decodedMessage struct {
 	// Timestamp is a nanosecond timestamp when the message was created
 	Timestamp int64 `json:"timestamp" yaml:"timestamp"`
 	// Type of the Payload object
-	MessageType message.MessageType `json:"type" yaml:"type"`
+	MessageType message.Type `json:"type" yaml:"type"`
 	// Payload is always a pointer to a payload object.
 	Payload map[string]interface{} `json:"payload" yaml:"payload"`
 	// ChannelID is a identifier for an SSH channel, if applicable. -1 otherwise.
 	ChannelID message.ChannelID `json:"channelId" yaml:"channelId"`
 }
 
+var messageTypeMap = map[message.Type]message.Payload{
+	message.TypeConnect:    message.PayloadConnect{},
+	message.TypeDisconnect: nil,
+
+	message.TypeAuthPassword:             message.PayloadAuthPassword{},
+	message.TypeAuthPasswordSuccessful:   message.PayloadAuthPassword{},
+	message.TypeAuthPasswordFailed:       message.PayloadAuthPassword{},
+	message.TypeAuthPasswordBackendError: message.PayloadAuthPasswordBackendError{},
+
+	message.TypeAuthPubKey:             message.PayloadAuthPubKey{},
+	message.TypeAuthPubKeySuccessful:   message.PayloadAuthPubKey{},
+	message.TypeAuthPubKeyFailed:       message.PayloadAuthPubKey{},
+	message.TypeAuthPubKeyBackendError: message.PayloadAuthPubKeyBackendError{},
+
+	message.TypeGlobalRequestUnknown: message.PayloadGlobalRequestUnknown{},
+	message.TypeNewChannel:           message.PayloadNewChannel{},
+	message.TypeNewChannelSuccessful: message.PayloadNewChannelSuccessful{},
+	message.TypeNewChannelFailed:     message.PayloadNewChannelFailed{},
+
+	message.TypeChannelRequestUnknownType:  message.PayloadChannelRequestUnknownType{},
+	message.TypeChannelRequestDecodeFailed: message.PayloadChannelRequestDecodeFailed{},
+	message.TypeChannelRequestSetEnv:       message.PayloadChannelRequestSetEnv{},
+	message.TypeChannelRequestExec:         message.PayloadChannelRequestExec{},
+	message.TypeChannelRequestPty:          message.PayloadChannelRequestPty{},
+	message.TypeChannelRequestShell:        message.PayloadChannelRequestShell{},
+	message.TypeChannelRequestSignal:       message.PayloadChannelRequestSignal{},
+	message.TypeChannelRequestSubsystem:    message.PayloadChannelRequestSubsystem{},
+	message.TypeChannelRequestWindow:       message.PayloadChannelRequestWindow{},
+	message.TypeIO:                         message.PayloadIO{},
+}
+
 func decodeMessage(v decodedMessage) (*message.Message, error) {
-	var payload message.Payload
-
-	switch v.MessageType {
-
-	case message.TypeConnect:
-		payload = &message.PayloadConnect{}
-	case message.TypeDisconnect:
-
-	case message.TypeAuthPassword:
-		payload = &message.PayloadAuthPassword{}
-	case message.TypeAuthPasswordSuccessful:
-		payload = &message.PayloadAuthPassword{}
-	case message.TypeAuthPasswordFailed:
-		payload = &message.PayloadAuthPassword{}
-	case message.TypeAuthPasswordBackendError:
-		payload = &message.PayloadAuthPasswordBackendError{}
-
-	case message.TypeAuthPubKey:
-		payload = &message.PayloadAuthPubKey{}
-	case message.TypeAuthPubKeySuccessful:
-		payload = &message.PayloadAuthPubKey{}
-	case message.TypeAuthPubKeyFailed:
-		payload = &message.PayloadAuthPubKey{}
-	case message.TypeAuthPubKeyBackendError:
-		payload = &message.PayloadAuthPubKeyBackendError{}
-
-	case message.TypeGlobalRequestUnknown:
-		payload = &message.PayloadGlobalRequestUnknown{}
-	case message.TypeNewChannel:
-		payload = &message.PayloadNewChannel{}
-	case message.TypeNewChannelSuccessful:
-		payload = &message.PayloadNewChannelSuccessful{}
-	case message.TypeNewChannelFailed:
-		payload = &message.PayloadNewChannelFailed{}
-
-	case message.TypeChannelRequestUnknownType:
-		payload = &message.PayloadChannelRequestUnknownType{}
-	case message.TypeChannelRequestDecodeFailed:
-		payload = &message.PayloadChannelRequestDecodeFailed{}
-	case message.TypeChannelRequestSetEnv:
-		payload = &message.PayloadChannelRequestSetEnv{}
-	case message.TypeChannelRequestExec:
-		payload = &message.PayloadChannelRequestExec{}
-	case message.TypeChannelRequestPty:
-		payload = &message.PayloadChannelRequestPty{}
-	case message.TypeChannelRequestShell:
-		payload = &message.PayloadChannelRequestShell{}
-	case message.TypeChannelRequestSignal:
-		payload = &message.PayloadChannelRequestSignal{}
-	case message.TypeChannelRequestSubsystem:
-		payload = &message.PayloadChannelRequestSubsystem{}
-	case message.TypeChannelRequestWindow:
-		payload = &message.PayloadChannelRequestWindow{}
-	case message.TypeIO:
-		payload = &message.PayloadIO{}
-	default:
+	payload, ok := messageTypeMap[v.MessageType]
+	if !ok {
 		return nil, fmt.Errorf("invalid message type: %d", v.MessageType)
 	}
 
 	if payload != nil {
-		if err := mapstructure.Decode(v.Payload, payload); err != nil {
+		if err := mapstructure.Decode(v.Payload, &payload); err != nil {
 			return nil, err
 		}
 	}
