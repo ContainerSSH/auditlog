@@ -30,7 +30,7 @@ const (
 	TypeGlobalRequestUnknown Type = 200
 	// TypeNewChannel describes a message that indicates a new channel request
 	TypeNewChannel Type = 300
-	// TypeNewChalleSuccessful describes a message when the new channel request was successful
+	// TypeNewChannelSuccessful describes a message when the new channel request was successful
 	TypeNewChannelSuccessful Type = 301
 	// TypeNewChannelFailed describes a message when the channel request failed for the reason indicated
 	TypeNewChannelFailed Type = 302
@@ -41,19 +41,19 @@ const (
 	TypeChannelRequestDecodeFailed Type = 401
 	// TypeChannelRequestSetEnv describes an in-channel request to set an environment variable
 	TypeChannelRequestSetEnv Type = 402
-	// TypeChannelRequestSetEnv describes an in-channel request to run a program
+	// TypeChannelRequestExec describes an in-channel request to run a program
 	TypeChannelRequestExec Type = 403
-	// TypeChannelRequestSetEnv describes an in-channel request to create an interactive terminal
+	// TypeChannelRequestPty describes an in-channel request to create an interactive terminal
 	TypeChannelRequestPty Type = 404
-	// TypeChannelRequestSetEnv describes an in-channel request to start a shell
+	// TypeChannelRequestShell describes an in-channel request to start a shell
 	TypeChannelRequestShell Type = 405
-	// TypeChannelRequestSetEnv describes an in-channel request to send a signal to the currently running program
+	// TypeChannelRequestSignal describes an in-channel request to send a signal to the currently running program
 	TypeChannelRequestSignal Type = 406
-	// TypeChannelRequestSetEnv describes an in-channel request to start a well-known subsystem (e.g. SFTP)
+	// TypeChannelRequestSubsystem describes an in-channel request to start a well-known subsystem (e.g. SFTP)
 	TypeChannelRequestSubsystem Type = 407
-	// TypeChannelRequestSetEnv describes an in-channel request to resize the current interactive terminal
+	// TypeChannelRequestWindow describes an in-channel request to resize the current interactive terminal
 	TypeChannelRequestWindow Type = 408
-	// TypeChannelRequestSetEnv describes the data transferred to and from the currently running program on the terminal.
+	// TypeIO describes the data transferred to and from the currently running program on the terminal.
 	TypeIO Type = 500
 )
 
@@ -89,6 +89,7 @@ var typeToName = map[Type]string{
 	TypeIO: "io",
 }
 
+// ToName converts the numeric message type to a string representation for human consumption.
 func (messageType Type) ToName() string {
 	if val, ok := typeToName[messageType]; ok {
 		return val

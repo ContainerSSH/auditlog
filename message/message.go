@@ -24,6 +24,7 @@ type Message struct {
 
 // Payload is an interface that makes sure all payloads with Message have a method to compare them.
 type Payload interface {
+	// Equals compares if the current payload is identical to the provided other payload.
 	Equals(payload Payload) bool
 }
 
