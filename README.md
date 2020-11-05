@@ -51,10 +51,10 @@ Alternatively, you can also create the audit logger using the following factory 
 
 ```go
 logger := auditlog.NewLogger(
-	intercept,
-	encoder,
-	storage,
-	logger,
+    intercept,
+    encoder,
+    storage,
+    logger,
 )
 ```
 
