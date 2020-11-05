@@ -29,7 +29,6 @@ func newMonitoringWriter(
 type monitoringWriter struct {
 	backingWriter io.WriteCloser
 	bytesWritten  uint64
-	closed        bool
 	partSize      uint
 	onMetadata    func(startTime int64, remoteAddr string, username *string)
 	onPart        func()

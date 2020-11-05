@@ -20,5 +20,5 @@ func (p *PayloadIO) Equals(other Payload) bool {
 	if !ok {
 		return false
 	}
-	return p.Stream == p2.Stream && bytes.Compare(p.Data, p2.Data) == 0
+	return p.Stream == p2.Stream && bytes.Equal(p.Data, p2.Data)
 }

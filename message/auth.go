@@ -12,7 +12,7 @@ func (p *PayloadAuthPassword) Equals(other Payload) bool {
 	if !ok {
 		return false
 	}
-	return p.Username == p2.Username && bytes.Compare(p.Password, p2.Password) == 0
+	return p.Username == p2.Username && bytes.Equal(p.Password, p2.Password)
 }
 
 type PayloadAuthPasswordBackendError struct {
@@ -26,7 +26,7 @@ func (p *PayloadAuthPasswordBackendError) Equals(other Payload) bool {
 	if !ok {
 		return false
 	}
-	return p.Username == p2.Username && bytes.Compare(p.Password, p2.Password) == 0 && p.Reason == p2.Reason
+	return p.Username == p2.Username && bytes.Equal(p.Password, p2.Password) && p.Reason == p2.Reason
 }
 
 type PayloadAuthPubKey struct {
@@ -39,7 +39,7 @@ func (p *PayloadAuthPubKey) Equals(other Payload) bool {
 	if !ok {
 		return false
 	}
-	return p.Username == p2.Username && bytes.Compare(p.Key, p2.Key) == 0
+	return p.Username == p2.Username && bytes.Equal(p.Key, p2.Key)
 }
 
 type PayloadAuthPubKeyBackendError struct {
@@ -53,5 +53,5 @@ func (p *PayloadAuthPubKeyBackendError) Equals(other Payload) bool {
 	if !ok {
 		return false
 	}
-	return p.Username == p2.Username && bytes.Compare(p.Key, p2.Key) == 0 && p.Reason == p2.Reason
+	return p.Username == p2.Username && bytes.Equal(p.Key, p2.Key) && p.Reason == p2.Reason
 }

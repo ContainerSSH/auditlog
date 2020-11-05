@@ -55,11 +55,11 @@ type writer struct {
 }
 
 func (w *writer) Write(p []byte) (n int, err error) {
-	return w.Write(p)
+	return w.file.Write(p)
 }
 
 func (w *writer) Close() error {
-	return w.Close()
+	return w.file.Close()
 }
 
 func (w *writer) SetMetadata(_ int64, _ string, _ *string) {

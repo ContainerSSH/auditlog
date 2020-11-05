@@ -181,7 +181,6 @@ func (q *uploadQueue) upload(name string) error {
 						}
 					}
 					if !errorHappened {
-						uploadId = nil
 						if err := entry.remove(); err != nil {
 							q.logger.Warningf("failed to remove queue entry (%v)", err)
 						}

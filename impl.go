@@ -25,7 +25,6 @@ type loggerConnection struct {
 
 	ip             net.TCPAddr
 	messageChannel chan message.Message
-	encoder        codec.Encoder
 	connectionId   message.ConnectionID
 }
 

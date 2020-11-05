@@ -23,7 +23,7 @@ type Payload interface {
 }
 
 func (m *Message) Equals(other *Message) bool {
-	if bytes.Compare(m.ConnectionID, other.ConnectionID) != 0 {
+	if !bytes.Equal(m.ConnectionID, other.ConnectionID) {
 		return false
 	}
 	if m.Timestamp != other.Timestamp {
