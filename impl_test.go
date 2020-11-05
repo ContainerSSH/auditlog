@@ -145,7 +145,7 @@ func (c *testCase) getAuditLog(name string) ([]message.Message, error) {
 		_ = reader.Close()
 	}()
 	decoder := binary.NewDecoder()
-	messageChannel, errors, _ := decoder.Decode(reader)
+	messageChannel, errors := decoder.Decode(reader)
 	var result []message.Message
 	for {
 		finished := false

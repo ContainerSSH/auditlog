@@ -20,21 +20,18 @@ func NewDecoder() codec.Decoder {
 type decoder struct {
 }
 
-func (d *decoder) Decode(reader io.Reader) (<-chan message.Message, <-chan error, <-chan bool) {
+func (d *decoder) Decode(reader io.Reader) (<-chan message.Message, <-chan error) {
 	result := make(chan message.Message)
 	errors := make(chan error)
-	done := make(chan bool, 1)
 
 	gzipReader, err := gzip.NewReader(reader)
 	if err != nil {
 		go func() {
 			errors <- fmt.Errorf("failed to open gzip stream (%w)", err)
-			done <- true
 			close(result)
 			close(errors)
-			close(done)
 		}()
-		return result, errors, done
+		return result, errors
 	}
 
 	cborReader := cbor.NewDecoder(gzipReader)
@@ -44,10 +41,8 @@ func (d *decoder) Decode(reader io.Reader) (<-chan message.Message, <-chan error
 	go func() {
 		if err = cborReader.Decode(&messages); err != nil {
 			errors <- fmt.Errorf("failed to decode messages (%w)", err)
-			done <- true
 			close(result)
 			close(errors)
-			close(done)
 			return
 		}
 
@@ -59,12 +54,10 @@ func (d *decoder) Decode(reader io.Reader) (<-chan message.Message, <-chan error
 				result <- *decodedMessage
 			}
 		}
-		done <- true
 		close(result)
 		close(errors)
-		close(done)
 	}()
-	return result, errors, done
+	return result, errors
 }
 
 type decodedMessage struct {

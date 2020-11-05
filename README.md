@@ -65,22 +65,29 @@ Messages can be decoded as follows:
 decoder := binary.NewDecoder()
 
 // Decode messages
-decodedMessageChannel, errorsChannel, done := decoder.Decode(pipeReader)
+decodedMessageChannel, errorsChannel := decoder.Decode(reader)
 
 for {
+    finished := false
     select {
         // Fetch next message or error
-        case msg := <-decodedMessageChannel:
+        case msg, ok := <-decodedMessageChannel:
+            if !ok {
+                //Channel closed
+                finished = true
+                break
+            } 
             //Handle messages
         case err := <-errorsChannel:
+            if !ok {
+                //Channel closed
+                finished = true
+                break
+            } 
             // Handle error
     }
-    select {
-        case <- done:
-            // Break cycle
-            break
-        default: 
-            // Continue cycle
+    if finished {
+        break
     }
 }
 ```

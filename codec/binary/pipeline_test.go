@@ -41,12 +41,11 @@ func testPipeline(t *testing.T, msg message.Message) {
 	}()
 	go func() {
 		defer wg.Done()
-		decodedMessageChannel, errorsChannel, done := decoder.Decode(pipeReader)
+		decodedMessageChannel, errorsChannel := decoder.Decode(pipeReader)
 		select {
 		case decodedMessage = <-decodedMessageChannel:
 		case decodeError = <-errorsChannel:
 		}
-		<-done
 	}()
 	wg.Wait()
 	if encodeError != nil {
