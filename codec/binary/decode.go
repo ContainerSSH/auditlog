@@ -20,8 +20,8 @@ func NewDecoder() codec.Decoder {
 type decoder struct {
 }
 
-func (d *decoder) Decode(reader io.Reader) (<-chan *message.Message, <-chan error, <-chan bool) {
-	result := make(chan *message.Message)
+func (d *decoder) Decode(reader io.Reader) (<-chan message.Message, <-chan error, <-chan bool) {
+	result := make(chan message.Message)
 	errors := make(chan error)
 	done := make(chan bool, 1)
 
@@ -56,7 +56,7 @@ func (d *decoder) Decode(reader io.Reader) (<-chan *message.Message, <-chan erro
 			if err != nil {
 				errors <- err
 			} else {
-				result <- decodedMessage
+				result <- *decodedMessage
 			}
 		}
 		done <- true

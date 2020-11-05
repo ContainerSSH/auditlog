@@ -16,5 +16,5 @@ type Encoder interface {
 
 // Decoder is a module that is resonsible for decoding a binary data stream into audit log messages.
 type Decoder interface {
-	Decode(reader io.Reader) (<-chan *message.Message, <-chan error, <-chan bool)
+	Decode(reader io.Reader) (<-chan message.Message, <-chan error, <-chan bool)
 }

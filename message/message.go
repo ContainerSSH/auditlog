@@ -29,7 +29,7 @@ type Payload interface {
 }
 
 // Equals is a method to compare two messages with each other
-func (m *Message) Equals(other *Message) bool {
+func (m Message) Equals(other Message) bool {
 	if !bytes.Equal(m.ConnectionID, other.ConnectionID) {
 		return false
 	}

@@ -16,13 +16,13 @@ func createPipeline() (codec.Encoder, codec.Decoder) {
 	return binary.NewEncoder(), binary.NewDecoder()
 }
 
-func testPipeline(t *testing.T, msg *message.Message) {
+func testPipeline(t *testing.T, msg message.Message) {
 	encoder, decoder := createPipeline()
 
 	pipeReader, pipeWriter := io.Pipe()
 
 	messageChannel := make(chan message.Message, 1)
-	messageChannel <- *msg
+	messageChannel <- msg
 	close(messageChannel)
 
 	storage := codec.NewStorageWriterProxy(pipeWriter)
@@ -31,7 +31,7 @@ func testPipeline(t *testing.T, msg *message.Message) {
 	wg.Add(2)
 	var encodeError error = nil
 	var decodeError error = nil
-	var decodedMessage *message.Message
+	var decodedMessage message.Message
 	go func() {
 		defer wg.Done()
 		err := encoder.Encode(messageChannel, storage)
@@ -70,7 +70,7 @@ func TestTypeConnect(t *testing.T) {
 		ChannelID: -1,
 	}
 
-	testPipeline(t, &msg)
+	testPipeline(t, msg)
 }
 
 func TestTypeDisconnect(t *testing.T) {
@@ -82,7 +82,7 @@ func TestTypeDisconnect(t *testing.T) {
 		ChannelID:    -1,
 	}
 
-	testPipeline(t, &msg)
+	testPipeline(t, msg)
 }
 
 func TestTypeAuthPassword(t *testing.T) {
@@ -97,7 +97,7 @@ func TestTypeAuthPassword(t *testing.T) {
 		ChannelID: -1,
 	}
 
-	testPipeline(t, &msg)
+	testPipeline(t, msg)
 }
 
 func TestTypeAuthPasswordSuccessful(t *testing.T) {
@@ -112,7 +112,7 @@ func TestTypeAuthPasswordSuccessful(t *testing.T) {
 		ChannelID: -1,
 	}
 
-	testPipeline(t, &msg)
+	testPipeline(t, msg)
 }
 
 func TestTypeAuthPasswordFailed(t *testing.T) {
@@ -127,7 +127,7 @@ func TestTypeAuthPasswordFailed(t *testing.T) {
 		ChannelID: -1,
 	}
 
-	testPipeline(t, &msg)
+	testPipeline(t, msg)
 }
 
 func TestTypeAuthPasswordBackendError(t *testing.T) {
@@ -143,7 +143,7 @@ func TestTypeAuthPasswordBackendError(t *testing.T) {
 		ChannelID: -1,
 	}
 
-	testPipeline(t, &msg)
+	testPipeline(t, msg)
 }
 
 func TestTypeAuthPubKey(t *testing.T) {
@@ -158,7 +158,7 @@ func TestTypeAuthPubKey(t *testing.T) {
 		ChannelID: -1,
 	}
 
-	testPipeline(t, &msg)
+	testPipeline(t, msg)
 }
 
 func TestTypeAuthPubKeySuccessful(t *testing.T) {
@@ -173,7 +173,7 @@ func TestTypeAuthPubKeySuccessful(t *testing.T) {
 		ChannelID: -1,
 	}
 
-	testPipeline(t, &msg)
+	testPipeline(t, msg)
 }
 
 func TestTypeAuthPubKeyFailed(t *testing.T) {
@@ -188,7 +188,7 @@ func TestTypeAuthPubKeyFailed(t *testing.T) {
 		ChannelID: -1,
 	}
 
-	testPipeline(t, &msg)
+	testPipeline(t, msg)
 }
 
 func TestTypeAuthPubKeyBackendError(t *testing.T) {
@@ -204,7 +204,7 @@ func TestTypeAuthPubKeyBackendError(t *testing.T) {
 		ChannelID: -1,
 	}
 
-	testPipeline(t, &msg)
+	testPipeline(t, msg)
 }
 
 func TestTypeGlobalRequestUnknown(t *testing.T) {
@@ -218,7 +218,7 @@ func TestTypeGlobalRequestUnknown(t *testing.T) {
 		ChannelID: -1,
 	}
 
-	testPipeline(t, &msg)
+	testPipeline(t, msg)
 }
 
 func TestTypeNewChannel(t *testing.T) {
@@ -232,7 +232,7 @@ func TestTypeNewChannel(t *testing.T) {
 		ChannelID: -1,
 	}
 
-	testPipeline(t, &msg)
+	testPipeline(t, msg)
 }
 
 func TestTypeNewChannelFailed(t *testing.T) {
@@ -247,7 +247,7 @@ func TestTypeNewChannelFailed(t *testing.T) {
 		ChannelID: -1,
 	}
 
-	testPipeline(t, &msg)
+	testPipeline(t, msg)
 }
 
 func TestTypeNewChannelSuccessful(t *testing.T) {
@@ -261,7 +261,7 @@ func TestTypeNewChannelSuccessful(t *testing.T) {
 		ChannelID: 0,
 	}
 
-	testPipeline(t, &msg)
+	testPipeline(t, msg)
 }
 
 func TestTypeChannelRequestUnknownType(t *testing.T) {
@@ -275,7 +275,7 @@ func TestTypeChannelRequestUnknownType(t *testing.T) {
 		ChannelID: 0,
 	}
 
-	testPipeline(t, &msg)
+	testPipeline(t, msg)
 }
 
 func TestTypeChannelRequestDecodeFailed(t *testing.T) {
@@ -290,7 +290,7 @@ func TestTypeChannelRequestDecodeFailed(t *testing.T) {
 		ChannelID: 0,
 	}
 
-	testPipeline(t, &msg)
+	testPipeline(t, msg)
 }
 
 func TestTypeChannelRequestSetEnv(t *testing.T) {
@@ -305,7 +305,7 @@ func TestTypeChannelRequestSetEnv(t *testing.T) {
 		ChannelID: 0,
 	}
 
-	testPipeline(t, &msg)
+	testPipeline(t, msg)
 }
 
 func TestTypeChannelRequestExec(t *testing.T) {
@@ -319,7 +319,7 @@ func TestTypeChannelRequestExec(t *testing.T) {
 		ChannelID: 0,
 	}
 
-	testPipeline(t, &msg)
+	testPipeline(t, msg)
 }
 
 func TestTypeChannelRequestPty(t *testing.T) {
@@ -334,7 +334,7 @@ func TestTypeChannelRequestPty(t *testing.T) {
 		ChannelID: 0,
 	}
 
-	testPipeline(t, &msg)
+	testPipeline(t, msg)
 }
 
 func TestTypeChannelRequestShell(t *testing.T) {
@@ -346,7 +346,7 @@ func TestTypeChannelRequestShell(t *testing.T) {
 		ChannelID:    0,
 	}
 
-	testPipeline(t, &msg)
+	testPipeline(t, msg)
 }
 
 func TestTypeChannelRequestSignal(t *testing.T) {
@@ -360,7 +360,7 @@ func TestTypeChannelRequestSignal(t *testing.T) {
 		ChannelID: 0,
 	}
 
-	testPipeline(t, &msg)
+	testPipeline(t, msg)
 }
 
 func TestTypeChannelRequestSubsystem(t *testing.T) {
@@ -374,7 +374,7 @@ func TestTypeChannelRequestSubsystem(t *testing.T) {
 		ChannelID: 0,
 	}
 
-	testPipeline(t, &msg)
+	testPipeline(t, msg)
 }
 
 func TestTypeChannelRequestWindow(t *testing.T) {
@@ -389,5 +389,5 @@ func TestTypeChannelRequestWindow(t *testing.T) {
 		ChannelID: 0,
 	}
 
-	testPipeline(t, &msg)
+	testPipeline(t, msg)
 }

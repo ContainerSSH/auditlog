@@ -1,7 +1,7 @@
 [![ContainerSSH - Launch Containers on Demand](https://containerssh.github.io/images/logo-for-embedding.svg)](https://containerssh.github.io/)
 
 <!--suppress HtmlDeprecatedAttribute -->
-<h1 align="center">ContainerSSH Audit Log Encoder and Decoder Library</h1>
+<h1 align="center">ContainerSSH Audit Logging Library</h1>
 
 [![Go Report Card](https://goreportcard.com/badge/github.com/containerssh/auditlog?style=for-the-badge)](https://goreportcard.com/report/github.com/containerssh/auditlog)
 [![LGTM Alerts](https://img.shields.io/lgtm/alerts/github/ContainerSSH/auditlog?style=for-the-badge)](https://lgtm.com/projects/g/ContainerSSH/auditlog/)
