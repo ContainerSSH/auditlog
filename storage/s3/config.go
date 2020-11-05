@@ -1,5 +1,6 @@
 package s3
 
+// Config S3 storage configuration
 type Config struct {
 	Local           string   `json:"local" yaml:"local" default:"/var/lib/audit"`
 	AccessKey       string   `json:"accessKey" yaml:"accessKey"`
@@ -15,6 +16,7 @@ type Config struct {
 	Metadata        Metadata `json:"metadata" yaml:"metadata"`
 }
 
+// Metadata Metadata configuration for the S3 storage
 type Metadata struct {
 	IP       bool `json:"ip" yaml:"ip"`
 	Username bool `json:"username" yaml:"username"`

@@ -1,4 +1,4 @@
 package none
 
-type Storage struct {
+type nopStorage struct {
 }
