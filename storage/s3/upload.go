@@ -192,14 +192,6 @@ func (q *uploadQueue) upload(name string) error {
 				}
 			}
 
-			stat, err = entry.readHandle.Stat()
-			if err == nil {
-				remainingBytes = stat.Size() - uploadedBytes
-			} else {
-				q.logger.Warningf("failed to stat audit queue file %s before upload (%v)", name, err)
-				errorHappened = true
-			}
-
 			<-q.workerSem
 			if errorHappened || entry.finished {
 				// If an error happened, retry immediately.
