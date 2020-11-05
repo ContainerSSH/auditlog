@@ -201,6 +201,7 @@ go func() {
 messageChannel <- message.Message{
     //Fill in message details here
 }
+//make sure to close the message channel so the encoder knows no more messages will come.
 close(messageChannel)
 ```
 
