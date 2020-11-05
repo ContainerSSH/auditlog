@@ -10,15 +10,17 @@ import (
 	"github.com/containerssh/auditlog/storage"
 )
 
-type Storage struct {
+type fileStorage struct {
 	directory string
 }
 
-func (s *Storage) OpenReader(name string) (io.ReadCloser, error) {
+// OpenReader opens a reader for a specific audit log
+func (s *fileStorage) OpenReader(name string) (io.ReadCloser, error) {
 	return os.Open(path.Join(s.directory, name))
 }
 
-func (s *Storage) List() (<-chan storage.Entry, <-chan error) {
+// List lists the available audit logs
+func (s *fileStorage) List() (<-chan storage.Entry, <-chan error) {
 	result := make(chan storage.Entry)
 	errorChannel := make(chan error)
 	go func() {
@@ -39,7 +41,8 @@ func (s *Storage) List() (<-chan storage.Entry, <-chan error) {
 	return result, errorChannel
 }
 
-func (s *Storage) OpenWriter(name string) (storage.Writer, error) {
+// OpenWriter opens a writer to store an audit log
+func (s *fileStorage) OpenWriter(name string) (storage.Writer, error) {
 	file, err := os.Create(path.Join(s.directory, name))
 	if err != nil {
 		return nil, err

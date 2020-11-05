@@ -11,6 +11,7 @@ import (
 	"github.com/containerssh/log"
 )
 
+// NewStorage Create a file storage that stores data in a local directory. The file storage cannot store metadata.
 func NewStorage(cfg Config, _ log.Logger) (storage.ReadWriteStorage, error) {
 	if cfg.Directory == "" {
 		return nil, fmt.Errorf("invalid audit log directory")
@@ -26,7 +27,7 @@ func NewStorage(cfg Config, _ log.Logger) (storage.ReadWriteStorage, error) {
 	if err != nil {
 		return nil, fmt.Errorf("failed to create file in audit log directory %s (%w)", cfg.Directory, err)
 	}
-	return &Storage{
+	return &fileStorage{
 		directory: cfg.Directory,
 	}, nil
 }
