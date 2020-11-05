@@ -175,6 +175,8 @@ for {
 
 **Note:** The Asciinema encoder doesn't have a decoder pair as the Asciinema format does not contain enough information to reconstruct the messages.
 
+## Development
+
 ## Manually encoding messages
 
 If you need to encode messages by hand without a logger pipeline you can do so with an encoder implementation. This is normally not needed. We have two encoder implementations: the binary and the Asciinema encoders. You can use them like this:
@@ -203,8 +205,6 @@ close(messageChannel)
 ```
 
 **Note:** The encoder will run until the message channel is closed, or a disconnect message is sent.
-
-## Development
 
 ### Implementing an encoder and decoder
 
