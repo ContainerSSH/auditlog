@@ -2,7 +2,7 @@ package asciinema
 
 import "encoding/json"
 
-type Header struct {
+type header struct {
 	Version   uint              `json:"version"`
 	Width     uint              `json:"width"`
 	Height    uint              `json:"height"`
@@ -12,17 +12,17 @@ type Header struct {
 	Env       map[string]string `json:"env"`
 }
 
-type EventType string
+type eventType string
 
 //goland:noinspection GoUnusedConst
 const (
-	EventTypeOutput EventType = "o"
-	EventTypeInput  EventType = "i"
+	eventTypeOutput eventType = "o"
+	eventTypeInput  eventType = "i"
 )
 
 type Frame struct {
 	Time      float64
-	EventType EventType
+	EventType eventType
 	Data      string
 }
 

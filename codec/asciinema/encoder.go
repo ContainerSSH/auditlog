@@ -20,7 +20,7 @@ func (e *encoder) GetFileExtension() string {
 	return ".cast"
 }
 
-func (e *encoder) sendHeader(header Header, storage io.Writer) error {
+func (e *encoder) sendHeader(header header, storage io.Writer) error {
 	data, err := json.Marshal(header)
 	if err != nil {
 		return err
@@ -44,7 +44,7 @@ func (e *encoder) sendFrame(frame Frame, storage io.Writer) error {
 }
 
 func (e *encoder) Encode(messages <-chan message.Message, storage storage.Writer) error {
-	asciicastHeader := Header{
+	asciicastHeader := header{
 		Version:   2,
 		Width:     80,
 		Height:    25,
@@ -72,7 +72,7 @@ func (e *encoder) Encode(messages <-chan message.Message, storage storage.Writer
 	return nil
 }
 
-func (e *encoder) encodeMessage(startTime int64, msg message.Message, asciicastHeader *Header, ip string, storage storage.Writer, username *string, headerWritten bool, shell string) (int64, bool, error) {
+func (e *encoder) encodeMessage(startTime int64, msg message.Message, asciicastHeader *header, ip string, storage storage.Writer, username *string, headerWritten bool, shell string) (int64, bool, error) {
 	if startTime == 0 {
 		startTime = msg.Timestamp
 		asciicastHeader.Timestamp = int(startTime / 1000000000)
@@ -114,7 +114,7 @@ func (e *encoder) encodeMessage(startTime int64, msg message.Message, asciicastH
 	return startTime, headerWritten, nil
 }
 
-func (e *encoder) handleRun(startTime int64, headerWritten bool, asciicastHeader *Header, program string, storage storage.Writer) (int64, bool, error) {
+func (e *encoder) handleRun(startTime int64, headerWritten bool, asciicastHeader *header, program string, storage storage.Writer) (int64, bool, error) {
 	if !headerWritten {
 		asciicastHeader.Command = program
 		if err := e.sendHeader(*asciicastHeader, storage); err != nil {
@@ -125,7 +125,7 @@ func (e *encoder) handleRun(startTime int64, headerWritten bool, asciicastHeader
 	return startTime, headerWritten, nil
 }
 
-func (e *encoder) handleIO(startTime int64, msg message.Message, asciicastHeader *Header, headerWritten bool, shell string, storage storage.Writer) (int64, bool, error) {
+func (e *encoder) handleIO(startTime int64, msg message.Message, asciicastHeader *header, headerWritten bool, shell string, storage storage.Writer) (int64, bool, error) {
 	if !headerWritten {
 		asciicastHeader.Command = shell
 		if err := e.sendHeader(*asciicastHeader, storage); err != nil {
@@ -139,7 +139,7 @@ func (e *encoder) handleIO(startTime int64, msg message.Message, asciicastHeader
 		time := float64(msg.Timestamp-startTime) / 1000000000
 		frame := Frame{
 			Time:      time,
-			EventType: EventTypeOutput,
+			EventType: eventTypeOutput,
 			Data:      string(payload.Data),
 		}
 		if err := e.sendFrame(frame, storage); err != nil {
