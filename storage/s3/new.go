@@ -9,15 +9,15 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/containerssh/log"
-
-	"github.com/containerssh/auditlog/storage"
-
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/containerssh/log"
+
+	"github.com/containerssh/auditlog/storage"
 )
 
+// NewStorage Creates a storage driver for an S3-compatible object storage.
 func NewStorage(cfg Config, logger log.Logger) (storage.ReadWriteStorage, error) {
 	httpClient, err := getHTTPClient(cfg)
 	if err != nil {
