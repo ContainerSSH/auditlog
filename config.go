@@ -31,6 +31,7 @@ const (
 	StorageS3 Storage = "s3"
 )
 
+// Config is the configuration structure for audit logging.
 type Config struct {
 	// Format audit format
 	Format Format `json:"format" yaml:"format" default:"none"`
