@@ -53,7 +53,7 @@ const (
 	TypeChannelRequestSubsystem Type = 407
 	// TypeChannelRequestSetEnv describes an in-channel request to resize the current interactive terminal
 	TypeChannelRequestWindow Type = 408
-	// TypeChannelRequestSetEnv describes the data transfered to and from the currently running program on the terminal.
+	// TypeChannelRequestSetEnv describes the data transferred to and from the currently running program on the terminal.
 	TypeIO Type = 500
 )
 

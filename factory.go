@@ -15,6 +15,7 @@ import (
 	"github.com/containerssh/log"
 )
 
+// New Creates a new audit logging pipeline based on the provided configuration.
 //goland:noinspection GoUnusedExportedFunction
 func New(config Config, logger log.Logger) (Logger, error) {
 	encoder, err := NewEncoder(config.Format)
@@ -35,6 +36,7 @@ func New(config Config, logger log.Logger) (Logger, error) {
 	)
 }
 
+// NewLogger creates a new audit logging pipeline with the provided elements.
 func NewLogger(
 	intercept InterceptConfig,
 	encoder codec.Encoder,
@@ -49,6 +51,7 @@ func NewLogger(
 	}, nil
 }
 
+// NewEncoder creates a new audit log encoder of the specified format.
 func NewEncoder(encoder Format) (codec.Encoder, error) {
 	switch encoder {
 	case FormatNone:
@@ -62,6 +65,7 @@ func NewEncoder(encoder Format) (codec.Encoder, error) {
 	}
 }
 
+// NewStorage creates a new audit log storage of the specified type and with the specified configuration.
 func NewStorage(config Config, logger log.Logger) (storage.WritableStorage, error) {
 	switch config.Storage {
 	case StorageNone:
