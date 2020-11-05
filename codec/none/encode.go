@@ -6,6 +6,7 @@ import (
 	"github.com/containerssh/auditlog/storage"
 )
 
+// NewEncoder creates an encoder that swallows everything. This can be used as a dummy encoder to not consume CPU.
 func NewEncoder() codec.Encoder {
 	return &encoder{}
 }

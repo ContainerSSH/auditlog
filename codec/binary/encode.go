@@ -12,6 +12,8 @@ import (
 	"github.com/fxamacker/cbor"
 )
 
+// NewEncoder creates an encoder that encodes messages in CBOR+GZIP format as documented
+//            on https://containerssh.github.io/advanced/audit/format/
 func NewEncoder() codec.Encoder {
 	return &encoder{}
 }
