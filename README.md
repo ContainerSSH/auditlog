@@ -87,7 +87,7 @@ The `OnNewChannelSuccess()` method also allows for the creation of a channel-spe
 
 Once the messages are restored they can be retrieved by the same storage mechanism that was used to store them:
 
-```
+```go
 storage, err := auditlog.NewStorage(config, logger)
 if err != nil {
     log.Fatalf("%v", err)
