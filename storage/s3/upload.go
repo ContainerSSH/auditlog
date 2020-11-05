@@ -109,7 +109,7 @@ func (q *uploadQueue) upload(name string) error {
 	go func() {
 		var uploadID *string = nil
 		uploadedBytes := int64(0)
-		errorHappened := false
+		var errorHappened bool
 		var completedParts []*s3.CompletedPart
 		for {
 			rawEntry, ok := q.queue.Load(name)
