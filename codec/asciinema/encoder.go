@@ -32,7 +32,7 @@ func (e *encoder) sendHeader(header header, storage io.Writer) error {
 	return nil
 }
 
-func (e *encoder) sendFrame(frame Frame, storage io.Writer) error {
+func (e *encoder) sendFrame(frame frame, storage io.Writer) error {
 	data, err := frame.MarshalJSON()
 	if err != nil {
 		return fmt.Errorf("failed to marshal Asciicast frame (%w)", err)
@@ -137,7 +137,7 @@ func (e *encoder) handleIO(startTime int64, msg message.Message, asciicastHeader
 	if payload.Stream == message.StreamStdout ||
 		payload.Stream == message.StreamStderr {
 		time := float64(msg.Timestamp-startTime) / 1000000000
-		frame := Frame{
+		frame := frame{
 			Time:      time,
 			EventType: eventTypeOutput,
 			Data:      string(payload.Data),

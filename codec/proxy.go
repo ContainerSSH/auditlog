@@ -6,6 +6,7 @@ import (
 	"github.com/containerssh/auditlog/storage"
 )
 
+// NewStorageWriterProxy Creates a storage writer that proxies to a traditional writer and drops the metadata.
 func NewStorageWriterProxy(backend io.WriteCloser) storage.Writer {
 	return &storageWriterProxy{backend: backend}
 }

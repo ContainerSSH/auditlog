@@ -12,6 +12,7 @@ import (
 	"github.com/mitchellh/mapstructure"
 )
 
+// NewDecoder Creates a decoder for the CBOR+GZIP audit log format.
 func NewDecoder() codec.Decoder {
 	return &decoder{}
 }

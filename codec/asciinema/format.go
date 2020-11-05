@@ -14,18 +14,18 @@ type header struct {
 
 type eventType string
 
-//goland:noinspection GoUnusedConst
 const (
 	eventTypeOutput eventType = "o"
-	eventTypeInput  eventType = "i"
+
+//	eventTypeInput  eventType = "i"
 )
 
-type Frame struct {
+type frame struct {
 	Time      float64
 	EventType eventType
 	Data      string
 }
 
-func (f *Frame) MarshalJSON() ([]byte, error) {
+func (f *frame) MarshalJSON() ([]byte, error) {
 	return json.Marshal([]interface{}{f.Time, f.EventType, f.Data})
 }
