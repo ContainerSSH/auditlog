@@ -14,15 +14,9 @@ jobs:
         with:
           go-version: 1.14
 
-      - name: Run go fmt
-        run: go fmt -l ./...
-      - name: Run go vet
-        run: go vet ./...
-      - name: Run go cyclo
-        run: gocyclo -over 15 .
-      - name: Run go lint
-        run: golint
-      - name: Run ineffassign
-        run: ineffassign ./*
+      - name: golangci-lint
+          uses: golangci/golangci-lint-action@v2
+          with:
+            version: v1.29
       - name: Run go tests
         run: go test ./...
