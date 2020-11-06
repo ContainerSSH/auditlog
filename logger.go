@@ -48,7 +48,7 @@ type Connection interface {
 	OnNewChannelFailed(channelType string, reason string)
 	// OnNewChannelSuccess creates an audit log message for successfully requesting a new channel and returns a
 	//                     channel-specific audit logger.
-	OnNewChannelSuccess(channelType string, channelID message.ChannelID) Channel
+	OnNewChannelSuccess(channelType string) Channel
 }
 
 // Channel is an audit logger for one specific hannel

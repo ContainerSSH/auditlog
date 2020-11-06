@@ -4,6 +4,7 @@ import (
 	"encoding/hex"
 	"io"
 	"net"
+	"sync"
 	"time"
 
 	"github.com/containerssh/auditlog/codec"
@@ -26,6 +27,8 @@ type loggerConnection struct {
 	ip             net.TCPAddr
 	messageChannel chan message.Message
 	connectionID   message.ConnectionID
+	nextChannelID  message.ChannelID
+	lock           *sync.Mutex
 }
 
 type loggerChannel struct {
@@ -46,6 +49,8 @@ func (l *loggerImplementation) OnConnect(connectionID message.ConnectionID, ip n
 		ip:             ip,
 		connectionID:   connectionID,
 		messageChannel: make(chan message.Message),
+		lock:           &sync.Mutex{},
+		nextChannelID:  0,
 	}
 	go func() {
 		err := l.encoder.Encode(conn.messageChannel, writer)
@@ -219,7 +224,11 @@ func (c *loggerConnection) OnNewChannelFailed(channelType string, reason string)
 	}
 }
 
-func (c *loggerConnection) OnNewChannelSuccess(channelType string, channelID message.ChannelID) Channel {
+func (c *loggerConnection) OnNewChannelSuccess(channelType string) Channel {
+	c.lock.Lock()
+	channelID := c.nextChannelID
+	c.nextChannelID++
+	c.lock.Unlock()
 	c.messageChannel <- message.Message{
 		ConnectionID: c.connectionID,
 		Timestamp:    time.Now().UnixNano(),
