@@ -18,7 +18,7 @@ import (
 // New Creates a new audit logging pipeline based on the provided configuration.
 //goland:noinspection GoUnusedExportedFunction
 func New(config Config, logger log.Logger) (Logger, error) {
-	encoder, err := NewEncoder(config.Format)
+	encoder, err := NewEncoder(config.Format, logger)
 	if err != nil {
 		return nil, err
 	}
@@ -52,12 +52,12 @@ func NewLogger(
 }
 
 // NewEncoder creates a new audit log encoder of the specified format.
-func NewEncoder(encoder Format) (codec.Encoder, error) {
+func NewEncoder(encoder Format, logger log.Logger) (codec.Encoder, error) {
 	switch encoder {
 	case FormatNone:
 		return noneCodec.NewEncoder(), nil
 	case FormatAsciinema:
-		return asciinema.NewEncoder(), nil
+		return asciinema.NewEncoder(logger), nil
 	case FormatBinary:
 		return binary.NewEncoder(), nil
 	default:

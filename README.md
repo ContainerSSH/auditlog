@@ -184,9 +184,9 @@ for {
 If you need to encode messages by hand without a logger pipeline you can do so with an encoder implementation. This is normally not needed. We have two encoder implementations: the binary and the Asciinema encoders. You can use them like this:
 
 ```go
-encoder := binary.NewEncoder()
+encoder := binary.NewEncoder(logger)
 // Alternatively:
-// encoder := asciinema.NewEncoder()
+// encoder := asciinema.NewEncoder(logger)
 
 // Initialize message channel
 messageChannel := make(chan message.Message)

@@ -14,9 +14,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/session"
 	awsS3 "github.com/aws/aws-sdk-go/service/s3"
-	"github.com/containerssh/log"
-	"github.com/containerssh/log/formatter/ljson"
-	"github.com/containerssh/log/pipeline"
+	"github.com/containerssh/log/standard"
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/client"
@@ -69,7 +67,7 @@ func (m *minio) Start(
 		return nil, err
 	}
 
-	logger := pipeline.NewLoggerPipeline(log.LevelDebug, ljson.NewLJsonLogFormatter(), os.Stdout)
+	logger := standard.New()
 	m.storage, err = s3.NewStorage(
 		s3.Config{
 			Local:           m.dir,

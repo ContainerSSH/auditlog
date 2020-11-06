@@ -5,11 +5,14 @@ import (
 	"fmt"
 	"io"
 
+	"github.com/containerssh/log"
+
 	"github.com/containerssh/auditlog/message"
 	"github.com/containerssh/auditlog/storage"
 )
 
 type encoder struct {
+	logger log.Logger
 }
 
 func (e *encoder) GetMimeType() string {
@@ -20,7 +23,7 @@ func (e *encoder) GetFileExtension() string {
 	return ".cast"
 }
 
-func (e *encoder) sendHeader(header header, storage io.Writer) error {
+func (e *encoder) sendHeader(header Header, storage io.Writer) error {
 	data, err := json.Marshal(header)
 	if err != nil {
 		return err
@@ -32,7 +35,7 @@ func (e *encoder) sendHeader(header header, storage io.Writer) error {
 	return nil
 }
 
-func (e *encoder) sendFrame(frame frame, storage io.Writer) error {
+func (e *encoder) sendFrame(frame Frame, storage io.Writer) error {
 	data, err := frame.MarshalJSON()
 	if err != nil {
 		return fmt.Errorf("failed to marshal Asciicast frame (%w)", err)
@@ -44,7 +47,7 @@ func (e *encoder) sendFrame(frame frame, storage io.Writer) error {
 }
 
 func (e *encoder) Encode(messages <-chan message.Message, storage storage.Writer) error {
-	asciicastHeader := header{
+	asciicastHeader := Header{
 		Version:   2,
 		Width:     80,
 		Height:    25,
@@ -66,40 +69,54 @@ func (e *encoder) Encode(messages <-chan message.Message, storage storage.Writer
 		var err error
 		startTime, headerWritten, err = e.encodeMessage(startTime, msg, &asciicastHeader, ip, storage, username, headerWritten, shell)
 		if err != nil {
+			if err := storage.Close(); err != nil {
+				e.logger.Errorf("failed to close audit log storage writer (%w)", err)
+			}
 			return err
 		}
+	}
+	if !headerWritten {
+		if err := e.sendHeader(asciicastHeader, storage); err != nil {
+			if err := storage.Close(); err != nil {
+				e.logger.Errorf("failed to close audit log storage writer (%w)", err)
+			}
+			return err
+		}
+	}
+	if err := storage.Close(); err != nil {
+		return fmt.Errorf("failed to close audit log storage writer (%w)", err)
 	}
 	return nil
 }
 
-func (e *encoder) encodeMessage(startTime int64, msg message.Message, asciicastHeader *header, ip string, storage storage.Writer, username *string, headerWritten bool, shell string) (int64, bool, error) {
-	if startTime == 0 {
+func (e *encoder) encodeMessage(startTime int64, msg message.Message, asciicastHeader *Header, ip string, storage storage.Writer, username *string, headerWritten bool, shell string) (int64, bool, error) {
+	if msg.MessageType == message.TypeConnect {
 		startTime = msg.Timestamp
 		asciicastHeader.Timestamp = int(startTime / 1000000000)
 	}
 	var err error
 	switch msg.MessageType {
 	case message.TypeConnect:
-		payload := msg.Payload.(*message.PayloadConnect)
+		payload := msg.Payload.(message.PayloadConnect)
 		ip = payload.RemoteAddr
 		storage.SetMetadata(startTime/1000000000, ip, username)
 	case message.TypeAuthPasswordSuccessful:
-		payload := msg.Payload.(*message.PayloadAuthPassword)
+		payload := msg.Payload.(message.PayloadAuthPassword)
 		username = &payload.Username
 		storage.SetMetadata(startTime/1000000000, ip, username)
 	case message.TypeAuthPubKeySuccessful:
-		payload := msg.Payload.(*message.PayloadAuthPubKey)
+		payload := msg.Payload.(message.PayloadAuthPubKey)
 		username = &payload.Username
 		storage.SetMetadata(startTime/1000000000, ip, username)
 	case message.TypeChannelRequestSetEnv:
-		payload := msg.Payload.(*message.PayloadChannelRequestSetEnv)
+		payload := msg.Payload.(message.PayloadChannelRequestSetEnv)
 		asciicastHeader.Env[payload.Name] = payload.Value
 	case message.TypeChannelRequestPty:
-		payload := msg.Payload.(*message.PayloadChannelRequestPty)
+		payload := msg.Payload.(message.PayloadChannelRequestPty)
 		asciicastHeader.Width = payload.Columns
 		asciicastHeader.Height = payload.Rows
 	case message.TypeChannelRequestExec:
-		payload := msg.Payload.(*message.PayloadChannelRequestExec)
+		payload := msg.Payload.(message.PayloadChannelRequestExec)
 		startTime, headerWritten, err = e.handleRun(startTime, headerWritten, asciicastHeader, payload.Program, storage)
 	case message.TypeChannelRequestShell:
 		startTime, headerWritten, err = e.handleRun(startTime, headerWritten, asciicastHeader, shell, storage)
@@ -114,7 +131,7 @@ func (e *encoder) encodeMessage(startTime int64, msg message.Message, asciicastH
 	return startTime, headerWritten, nil
 }
 
-func (e *encoder) handleRun(startTime int64, headerWritten bool, asciicastHeader *header, program string, storage storage.Writer) (int64, bool, error) {
+func (e *encoder) handleRun(startTime int64, headerWritten bool, asciicastHeader *Header, program string, storage storage.Writer) (int64, bool, error) {
 	if !headerWritten {
 		asciicastHeader.Command = program
 		if err := e.sendHeader(*asciicastHeader, storage); err != nil {
@@ -125,7 +142,7 @@ func (e *encoder) handleRun(startTime int64, headerWritten bool, asciicastHeader
 	return startTime, headerWritten, nil
 }
 
-func (e *encoder) handleIO(startTime int64, msg message.Message, asciicastHeader *header, headerWritten bool, shell string, storage storage.Writer) (int64, bool, error) {
+func (e *encoder) handleIO(startTime int64, msg message.Message, asciicastHeader *Header, headerWritten bool, shell string, storage storage.Writer) (int64, bool, error) {
 	if !headerWritten {
 		asciicastHeader.Command = shell
 		if err := e.sendHeader(*asciicastHeader, storage); err != nil {
@@ -133,13 +150,13 @@ func (e *encoder) handleIO(startTime int64, msg message.Message, asciicastHeader
 		}
 		headerWritten = true
 	}
-	payload := msg.Payload.(*message.PayloadIO)
+	payload := msg.Payload.(message.PayloadIO)
 	if payload.Stream == message.StreamStdout ||
 		payload.Stream == message.StreamStderr {
 		time := float64(msg.Timestamp-startTime) / 1000000000
-		frame := frame{
+		frame := Frame{
 			Time:      time,
-			EventType: eventTypeOutput,
+			EventType: EventTypeOutput,
 			Data:      string(payload.Data),
 		}
 		if err := e.sendFrame(frame, storage); err != nil {
