@@ -33,7 +33,7 @@ type minio struct {
 
 func (m *minio) getClient() (*client.Client, error) {
 	var dockerURL string
-	_, err := os.Stat("")
+	_, err := os.Stat("/var/run/docker.sock")
 	if err != nil {
 		dockerURL = "tcp://127.0.0.1:2375"
 	} else {
