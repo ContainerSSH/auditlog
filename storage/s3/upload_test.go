@@ -32,10 +32,12 @@ type minio struct {
 }
 
 func (m *minio) getClient() (*client.Client, error) {
-	dockerURL := "/var/run/docker.sock"
-	_, err := os.Stat(dockerURL)
+	var dockerURL string
+	_, err := os.Stat("")
 	if err != nil {
 		dockerURL = "tcp://127.0.0.1:2375"
+	} else {
+		dockerURL = "unix:///var/run/docker.sock"
 	}
 
 	return client.NewClient(dockerURL, "", nil, make(map[string]string))
