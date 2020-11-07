@@ -109,15 +109,24 @@ func (q *uploadQueue) processShouldAbort(s3Connection *s3.S3, name string, failu
 		}
 		q.queue.Delete(name)
 	}
+	if q.shutdownContext != nil {
+		select {
+		case <-q.shutdownContext.Done():
+			q.logger.Warningf("shutdown context expired, aborting upload of audit log %s", name)
+			abort()
+			return true
+		default:
+		}
+	}
 	if failures > 20 {
-		q.logger.Warningf("failed to upload audit log %s for 20 times in a row, giving up", failures)
+		q.logger.Warningf("failed to upload audit log %s for 20 times in a row, giving up", name)
 		abort()
 		return true
 	}
 	if failures > 3 {
 		select {
 		case <-q.ctx.Done():
-			q.logger.Warningf("failed to upload audit log %s 3 times and shutdown is requested, giving up", failures)
+			q.logger.Warningf("failed to upload audit log %s 3 times and shutdown is requested, giving up", name)
 			abort()
 			return true
 		default:

@@ -1,6 +1,7 @@
 package file
 
 import (
+	"context"
 	"io"
 	"os"
 	"path"
@@ -16,7 +17,7 @@ type fileStorage struct {
 	wg        *sync.WaitGroup
 }
 
-func (s *fileStorage) Shutdown() {
+func (s *fileStorage) Shutdown(_ context.Context) {
 	s.wg.Wait()
 }
 

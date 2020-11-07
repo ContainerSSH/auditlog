@@ -1,6 +1,7 @@
 package auditlog_test
 
 import (
+	"context"
 	"fmt"
 	"io/ioutil"
 	"net"
@@ -192,7 +193,7 @@ func TestConnect(t *testing.T) {
 	}
 	connection.OnDisconnect()
 
-	testCase.auditLogger.Shutdown()
+	testCase.auditLogger.Shutdown(context.Background())
 
 	messages, err := testCase.getRecentAuditLogMessages(t)
 	if err != nil {
@@ -245,7 +246,7 @@ func TestAuth(t *testing.T) {
 	connection.OnAuthPubKeySuccess("foo", []byte("baz"))
 	connection.OnDisconnect()
 
-	testCase.auditLogger.Shutdown()
+	testCase.auditLogger.Shutdown(context.Background())
 
 	messages, err := testCase.getRecentAuditLogMessages(t)
 	if err != nil {

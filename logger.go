@@ -1,6 +1,7 @@
 package auditlog
 
 import (
+	"context"
 	"io"
 	"net"
 
@@ -13,7 +14,8 @@ type Logger interface {
 	//           connection-specific messages
 	OnConnect(connectionID message.ConnectionID, ip net.TCPAddr) (Connection, error)
 	// Shutdown triggers all failing uploads to cancel, waits for all currently running uploads to finish, then returns.
-	Shutdown()
+	// When the shutdownContext expires it will do its best to immediately upload any running background processes.
+	Shutdown(shutdownContext context.Context)
 }
 
 // Connection is an audit logger for a specific connection

@@ -1,6 +1,7 @@
 package auditlog
 
 import (
+	"context"
 	"encoding/hex"
 	"io"
 	"net"
@@ -38,9 +39,9 @@ type loggerChannel struct {
 	channelID message.ChannelID
 }
 
-func (l *loggerImplementation) Shutdown() {
+func (l *loggerImplementation) Shutdown(shutdownContext context.Context) {
 	l.wg.Wait()
-	l.storage.Shutdown()
+	l.storage.Shutdown(shutdownContext)
 }
 
 //region Connection

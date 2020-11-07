@@ -1,6 +1,9 @@
 package storage
 
-import "io"
+import (
+	"context"
+	"io"
+)
 
 // Entry is a storage entry returned from readers
 type Entry struct {
@@ -18,8 +21,9 @@ type ReadWriteStorage interface {
 type WritableStorage interface {
 	// OpenWriter opens a writer for a specific audit log/
 	OpenWriter(name string) (Writer, error)
-	// Shutdown waits until all uploads are complete and then shuts down the storage.
-	Shutdown()
+	// Shutdown waits until all uploads are complete and then shuts down the storage. If the shutdownContext expires it
+	// will wait for all running audit logs to finish, then abort all uploads and exit immediately.
+	Shutdown(shutdownContext context.Context)
 }
 
 // ReadableStorage is an audit log storage type that can be read from

@@ -105,9 +105,11 @@ type uploadQueue struct {
 	wg               *sync.WaitGroup
 	ctx              context.Context
 	cancelFunc       context.CancelFunc
+	shutdownContext  context.Context
 }
 
-func (q *uploadQueue) Shutdown() {
+func (q *uploadQueue) Shutdown(shutdownContext context.Context) {
+	q.shutdownContext = shutdownContext
 	q.cancelFunc()
 	q.wg.Wait()
 }

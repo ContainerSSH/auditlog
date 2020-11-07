@@ -301,7 +301,7 @@ func TestSmallUpload(t *testing.T) {
 		return
 	}
 
-	storage.Shutdown()
+	storage.Shutdown(context.Background())
 
 	objects := waitForS3Objects(t, storage, 1)
 	assert.Equal(t, 1, len(objects))
