@@ -79,8 +79,11 @@ func (e *queueEntry) remove() error {
 	if err := os.Remove(e.file); err != nil {
 		return fmt.Errorf("failed to remove audit log file %s (%w)", e.name, err)
 	}
-	if err := os.Remove(fmt.Sprintf("%s.metadata.json", e.file)); err != nil {
-		e.logger.Warningf("failed to remove audit log metadata file %s (%w)", e.name, err)
+	metadataFile := fmt.Sprintf("%s.metadata.json", e.file)
+	if _, err := os.Stat(metadataFile); err == nil {
+		if err := os.Remove(metadataFile); err != nil {
+			e.logger.Warningf("failed to remove audit log metadata file %s (%w)", e.name, err)
+		}
 	}
 	return nil
 }
@@ -98,6 +101,11 @@ type uploadQueue struct {
 	queue            sync.Map
 	metadataIP       bool
 	metadataUsername bool
+	wg               *sync.WaitGroup
+}
+
+func (q *uploadQueue) Shutdown() {
+	q.wg.Wait()
 }
 
 func newUploadQueue(
@@ -136,6 +144,7 @@ func newUploadQueue(
 		acl:              realACL,
 		metadataIP:       metadataIP,
 		metadataUsername: metadataUsername,
+		wg:               &sync.WaitGroup{},
 	}
 }
 

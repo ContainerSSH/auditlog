@@ -106,7 +106,9 @@ func (q *uploadQueue) upload(name string) error {
 		return fmt.Errorf("no such queue entry: %s", name)
 	}
 	s3Connection := s3.New(q.awsSession)
+	q.wg.Add(1)
 	go func() {
+		defer q.wg.Done()
 		var uploadID *string = nil
 		uploadedBytes := int64(0)
 		var errorHappened bool
@@ -122,11 +124,8 @@ func (q *uploadQueue) upload(name string) error {
 			q.workerSem <- 42
 			errorHappened = false
 
-			remainingBytes := int64(-1)
 			stat, err := entry.readHandle.Stat()
-			if err == nil {
-				remainingBytes = stat.Size() - uploadedBytes
-			} else {
+			if err != nil {
 				q.logger.Warningf("failed to stat audit queue file %s before upload (%w)", name, err)
 				errorHappened = true
 			}
@@ -138,7 +137,7 @@ func (q *uploadQueue) upload(name string) error {
 					uploadedBytes,
 					s3Connection,
 					name,
-					remainingBytes,
+					stat.Size()-uploadedBytes,
 					uploadID,
 					stat,
 					completedParts,

@@ -6,12 +6,18 @@ import (
 	"path"
 	"path/filepath"
 	"strings"
+	"sync"
 
 	"github.com/containerssh/auditlog/storage"
 )
 
 type fileStorage struct {
 	directory string
+	wg        *sync.WaitGroup
+}
+
+func (s *fileStorage) Shutdown() {
+	panic("implement me")
 }
 
 // OpenReader opens a reader for a specific audit log
@@ -23,7 +29,9 @@ func (s *fileStorage) OpenReader(name string) (io.ReadCloser, error) {
 func (s *fileStorage) List() (<-chan storage.Entry, <-chan error) {
 	result := make(chan storage.Entry)
 	errorChannel := make(chan error)
+	s.wg.Add(1)
 	go func() {
+		defer s.wg.Done()
 		if err := filepath.Walk(s.directory, func(path string, info os.FileInfo, err error) error {
 			if !info.IsDir() && info.Size() > 0 && !strings.Contains(info.Name(), ".") {
 				result <- storage.Entry{

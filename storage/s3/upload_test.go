@@ -6,6 +6,7 @@ import (
 	"io"
 	"io/ioutil"
 	goLog "log"
+	"net"
 	"os"
 	"testing"
 	"time"
@@ -32,15 +33,14 @@ type minio struct {
 }
 
 func (m *minio) getClient() (*client.Client, error) {
-	var dockerURL string
-	_, err := os.Stat("/var/run/docker.sock")
+	cli, err := client.NewClient("unix:///var/run/docker.sock", "", nil, make(map[string]string))
 	if err != nil {
-		dockerURL = "tcp://127.0.0.1:2375"
-	} else {
-		dockerURL = "unix:///var/run/docker.sock"
+		return client.NewClient("tcp://127.0.0.1:2375", "", nil, make(map[string]string))
 	}
-
-	return client.NewClient(dockerURL, "", nil, make(map[string]string))
+	if _, err := cli.ServerVersion(context.Background()); err != nil {
+		return client.NewClient("tcp://127.0.0.1:2375", "", nil, make(map[string]string))
+	}
+	return cli, nil
 }
 
 func (m *minio) Start(
@@ -52,9 +52,8 @@ func (m *minio) Start(
 	endpoint string,
 ) (auditLogStorage.ReadWriteStorage, error) {
 	if m.containerID == "" {
-		storage, err2 := m.startMinio(t, accessKey, secretKey)
-		if err2 != nil {
-			return storage, err2
+		if err := m.startMinio(t, accessKey, secretKey); err != nil {
+			return nil, err
 		}
 	}
 
@@ -91,23 +90,23 @@ func (m *minio) Start(
 	return m.storage, nil
 }
 
-func (m *minio) startMinio(t *testing.T, accessKey string, secretKey string) (auditLogStorage.ReadWriteStorage, error) {
+func (m *minio) startMinio(t *testing.T, accessKey string, secretKey string) error {
 	ctx := context.Background()
 
 	cli, err := m.getClient()
 	if err != nil {
 		t.Skipf("failed to create Docker client (%v)", err)
-		return nil, err
+		return err
 	}
 
 	reader, err := cli.ImagePull(ctx, "docker.io/minio/minio", types.ImagePullOptions{})
 	if err != nil {
 		t.Skipf("failed to pull Minio image (%v)", err)
-		return nil, err
+		return err
 	}
 	if _, err := io.Copy(os.Stdout, reader); err != nil {
 		t.Skipf("failed to stream logs from Minio image pull (%v)", err)
-		return nil, err
+		return err
 	}
 
 	env := []string{
@@ -137,16 +136,41 @@ func (m *minio) startMinio(t *testing.T, accessKey string, secretKey string) (au
 	)
 	if err != nil {
 		t.Skipf("failed to create Minio container (%v)", err)
-		return nil, err
+		return err
 	}
 
 	m.containerID = resp.ID
 
 	if err := cli.ContainerStart(ctx, resp.ID, types.ContainerStartOptions{}); err != nil {
 		t.Skipf("failed to start minio container (%v)", err)
-		return nil, err
+		return err
 	}
-	return nil, nil
+
+	if err := m.waitForMinio(t); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (m *minio) waitForMinio(t *testing.T) error {
+	tries := 0
+	for {
+		if tries > 30 {
+			m.Stop(t)
+			t.Skipf("minio failed to come up within 30 seconds")
+			return fmt.Errorf("minio failed to come up")
+		}
+		sock, err := net.Dial("tcp", "127.0.0.1:9000")
+		if err != nil {
+			tries++
+			time.Sleep(time.Second)
+		} else {
+			_ = sock.Close()
+			break
+		}
+	}
+	return nil
 }
 
 func (m *minio) Stop(t *testing.T) {
@@ -276,6 +300,8 @@ func TestSmallUpload(t *testing.T) {
 		assert.Fail(t, "failed to close storage writer (%v)", err)
 		return
 	}
+
+	storage.Shutdown()
 
 	objects := waitForS3Objects(t, storage, 1)
 	assert.Equal(t, 1, len(objects))

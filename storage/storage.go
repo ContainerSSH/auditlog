@@ -16,7 +16,10 @@ type ReadWriteStorage interface {
 
 // WritableStorage is an audit log storage type that can be written to
 type WritableStorage interface {
+	// OpenWriter opens a writer for a specific audit log/
 	OpenWriter(name string) (Writer, error)
+	// Shutdown waits until all uploads are complete and then shuts down the storage.
+	Shutdown()
 }
 
 // ReadableStorage is an audit log storage type that can be read from

@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path"
+	"sync"
 
 	"github.com/containerssh/auditlog/storage"
 
@@ -29,5 +30,6 @@ func NewStorage(cfg Config, _ log.Logger) (storage.ReadWriteStorage, error) {
 	}
 	return &fileStorage{
 		directory: cfg.Directory,
+		wg:        &sync.WaitGroup{},
 	}, nil
 }
