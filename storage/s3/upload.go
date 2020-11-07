@@ -100,6 +100,32 @@ func (q *uploadQueue) finalizeUpload(s3Connection *s3.S3, name string, uploadID 
 	return err
 }
 
+func (q *uploadQueue) processShouldAbort(s3Connection *s3.S3, name string, failures int, uploadID *string) bool {
+	abort := func() {
+		if uploadID != nil {
+			if err := q.abortSpecificMultipartUpload(name, s3Connection, &name, uploadID); err != nil {
+				q.logger.Warningf("failed to abort multipart upload for %s (%v)", err)
+			}
+		}
+		q.queue.Delete(name)
+	}
+	if failures > 20 {
+		q.logger.Warningf("failed to upload audit log %s for 20 times in a row, giving up", failures)
+		abort()
+		return true
+	}
+	if failures > 3 {
+		select {
+		case <-q.ctx.Done():
+			q.logger.Warningf("failed to upload audit log %s 3 times and shutdown is requested, giving up", failures)
+			abort()
+			return true
+		default:
+		}
+	}
+	return false
+}
+
 func (q *uploadQueue) uploadLoop(s3Connection *s3.S3, name string, entry *queueEntry) {
 	defer q.wg.Done()
 	var uploadID *string = nil
@@ -108,9 +134,7 @@ func (q *uploadQueue) uploadLoop(s3Connection *s3.S3, name string, entry *queueE
 	var completedParts []*s3.CompletedPart
 	failures := 0
 	for {
-		if failures > 20 {
-			q.logger.Warningf("failed to upload audit log %s for 20 times in a row, giving up", failures)
-			q.queue.Delete(name)
+		if q.processShouldAbort(s3Connection, name, failures, uploadID) {
 			break
 		}
 
@@ -259,18 +283,21 @@ func (q *uploadQueue) abortMultiPartUpload(name string) error {
 	for _, upload := range multiPartUpload.Uploads {
 		if *upload.Key == name {
 			q.logger.Debugf("aborting previous multipart upload ID %s for audit log %s...", *(upload.UploadId), name)
-			_, err = s3Connection.AbortMultipartUpload(&s3.AbortMultipartUploadInput{
-				Bucket:   aws.String(q.bucket),
-				Key:      upload.Key,
-				UploadId: upload.UploadId,
-
-				ExpectedBucketOwner: nil,
-				RequestPayer:        nil,
-			})
-			if err != nil {
-				return fmt.Errorf("failed to abort  %s (%w)", name, err)
+			if err := q.abortSpecificMultipartUpload(name, s3Connection, upload.Key, upload.UploadId); err != nil {
+				return err
 			}
 		}
+	}
+	return nil
+}
+
+func (q *uploadQueue) abortSpecificMultipartUpload(name string, s3Connection *s3.S3, key *string, uploadID *string) error {
+	if _, err := s3Connection.AbortMultipartUpload(&s3.AbortMultipartUploadInput{
+		Bucket:   aws.String(q.bucket),
+		Key:      key,
+		UploadId: uploadID,
+	}); err != nil {
+		return fmt.Errorf("failed to abort  %s (%w)", name, err)
 	}
 	return nil
 }

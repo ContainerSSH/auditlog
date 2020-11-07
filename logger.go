@@ -12,7 +12,7 @@ type Logger interface {
 	// OnConnect creates an audit log message for a new connection and simultaneously returns a connection object for
 	//           connection-specific messages
 	OnConnect(connectionID message.ConnectionID, ip net.TCPAddr) (Connection, error)
-	// Shutdown waits for all currently running audit log processes to finish, logs to be properly stored, then returns.
+	// Shutdown triggers all failing uploads to cancel, waits for all currently running uploads to finish, then returns.
 	Shutdown()
 }
 

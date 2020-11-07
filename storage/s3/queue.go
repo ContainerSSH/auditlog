@@ -1,6 +1,7 @@
 package s3
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -102,9 +103,12 @@ type uploadQueue struct {
 	metadataIP       bool
 	metadataUsername bool
 	wg               *sync.WaitGroup
+	ctx              context.Context
+	cancelFunc       context.CancelFunc
 }
 
 func (q *uploadQueue) Shutdown() {
+	q.cancelFunc()
 	q.wg.Wait()
 }
 
@@ -132,6 +136,7 @@ func newUploadQueue(
 	if acl != "" {
 		realACL = &acl
 	}
+	ctx, cancelFunc := context.WithCancel(context.Background())
 	return &uploadQueue{
 		directory:        directory,
 		parallelUploads:  parallelUploads,
@@ -145,6 +150,8 @@ func newUploadQueue(
 		metadataIP:       metadataIP,
 		metadataUsername: metadataUsername,
 		wg:               &sync.WaitGroup{},
+		ctx:              ctx,
+		cancelFunc:       cancelFunc,
 	}
 }
 

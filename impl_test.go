@@ -177,9 +177,8 @@ func TestConnect(t *testing.T) {
 		return
 	}
 	defer testCase.tearDown()
-	auditLogger := testCase.auditLogger
 
-	connection, err := auditLogger.OnConnect(
+	connection, err := testCase.auditLogger.OnConnect(
 		[]byte("asdf"),
 		net.TCPAddr{
 			IP:   net.ParseIP("127.0.0.1"),
@@ -193,7 +192,7 @@ func TestConnect(t *testing.T) {
 	}
 	connection.OnDisconnect()
 
-	auditLogger.Shutdown()
+	testCase.auditLogger.Shutdown()
 
 	messages, err := testCase.getRecentAuditLogMessages(t)
 	if err != nil {
@@ -245,6 +244,8 @@ func TestAuth(t *testing.T) {
 	connection.OnAuthPubKey("foo", []byte("baz"))
 	connection.OnAuthPubKeySuccess("foo", []byte("baz"))
 	connection.OnDisconnect()
+
+	testCase.auditLogger.Shutdown()
 
 	messages, err := testCase.getRecentAuditLogMessages(t)
 	if err != nil {
