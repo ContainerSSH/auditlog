@@ -17,7 +17,7 @@ type fileStorage struct {
 }
 
 func (s *fileStorage) Shutdown() {
-	panic("implement me")
+	s.wg.Wait()
 }
 
 // OpenReader opens a reader for a specific audit log

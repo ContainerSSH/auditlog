@@ -100,65 +100,72 @@ func (q *uploadQueue) finalizeUpload(s3Connection *s3.S3, name string, uploadID 
 	return err
 }
 
+func (q *uploadQueue) uploadLoop(s3Connection *s3.S3, name string, entry *queueEntry) {
+	defer q.wg.Done()
+	var uploadID *string = nil
+	uploadedBytes := int64(0)
+	var errorHappened bool
+	var completedParts []*s3.CompletedPart
+	failures := 0
+	for {
+		if failures > 20 {
+			q.logger.Warningf("failed to upload audit log %s for 20 times in a row, giving up", failures)
+			q.queue.Delete(name)
+			break
+		}
+
+		entry.waitPartAvailable()
+		q.workerSem <- 42
+		errorHappened = false
+
+		stat, err := entry.readHandle.Stat()
+		if err != nil {
+			q.logger.Warningf("failed to stat audit queue file %s before upload (%w)", name, err)
+			errorHappened = true
+		}
+
+		if !errorHappened {
+			var finished bool
+			errorHappened, finished, uploadedBytes, completedParts, uploadID = q.processUpload(
+				entry,
+				uploadedBytes,
+				s3Connection,
+				name,
+				stat.Size()-uploadedBytes,
+				uploadID,
+				stat,
+				completedParts,
+			)
+			if finished {
+				<-q.workerSem
+				break
+			}
+		}
+
+		<-q.workerSem
+		if errorHappened || entry.finished {
+			// If an error happened, retry immediately.
+			// Also go back if the entry is finished to finish uploading the parts.
+			entry.markPartAvailable()
+		}
+		if errorHappened {
+			failures++
+			time.Sleep(10 * time.Second)
+		} else {
+			failures = 0
+		}
+	}
+}
+
 func (q *uploadQueue) upload(name string) error {
-	_, ok := q.queue.Load(name)
+	rawEntry, ok := q.queue.Load(name)
 	if !ok {
 		return fmt.Errorf("no such queue entry: %s", name)
 	}
 	s3Connection := s3.New(q.awsSession)
+	entry := rawEntry.(*queueEntry)
 	q.wg.Add(1)
-	go func() {
-		defer q.wg.Done()
-		var uploadID *string = nil
-		uploadedBytes := int64(0)
-		var errorHappened bool
-		var completedParts []*s3.CompletedPart
-		for {
-			rawEntry, ok := q.queue.Load(name)
-			if !ok {
-				q.logger.Warningf("no such queue entry: %s", name)
-				continue
-			}
-			entry := rawEntry.(*queueEntry)
-			entry.waitPartAvailable()
-			q.workerSem <- 42
-			errorHappened = false
-
-			stat, err := entry.readHandle.Stat()
-			if err != nil {
-				q.logger.Warningf("failed to stat audit queue file %s before upload (%w)", name, err)
-				errorHappened = true
-			}
-
-			if !errorHappened {
-				var finished bool
-				errorHappened, finished, uploadedBytes, completedParts, uploadID = q.processUpload(
-					entry,
-					uploadedBytes,
-					s3Connection,
-					name,
-					stat.Size()-uploadedBytes,
-					uploadID,
-					stat,
-					completedParts,
-				)
-				if finished {
-					<-q.workerSem
-					break
-				}
-			}
-
-			<-q.workerSem
-			if errorHappened || entry.finished {
-				// If an error happened, retry immediately.
-				// Also go back if the entry is finished to finish uploading the parts.
-				entry.markPartAvailable()
-			}
-			if errorHappened {
-				time.Sleep(10 * time.Second)
-			}
-		}
-	}()
+	go q.uploadLoop(s3Connection, name, entry)
 	return nil
 }
 
