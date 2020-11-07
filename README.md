@@ -40,11 +40,7 @@ config := auditlog.Config{
 The `logger` variable must be an instance of `github.com/containerssh/log/logger`. The easiest way to create the logger is as follows:
 
 ```go
-logger := logPipeline.NewLoggerPipeline(
-    log.LevelDebug,
-    ljson.NewLJsonLogFormatter(),
-    os.Stdout,
-)
+logger := standard.New()
 ```
 
 Alternatively, you can also create the audit logger using the following factory method:
@@ -59,6 +55,19 @@ logger := auditlog.NewLogger(
 ```
 
 In this case `intercept` is of the type `InterceptConfig`, `encoder` is an instance of `codec.Encoder`, `storage` is an instance of `storage.WritableStorage`, and `logger` is the same logger as explained above. This allows you to create a custom pipeline.
+
+You can also trigger a shutdown of the audit logger with the `Shutdown()` method. This method takes a context as an argument, allowing you to specify a grace time to let the audit logger finish background processes:
+
+```go
+logger.Shutdown(
+    context.WithTimeout(
+        context.Background(),
+        30 * time.Second,
+    ),
+)
+```
+
+**Note:** the logger is not guaranteed to shut down when the shutdown context expires. If there are still active connections being logged it will wait for those to finish and be written to a persistent storage before exiting. It may, however, cancel uploads to a remote storage.
 
 ### Writing to the pipeline
 
