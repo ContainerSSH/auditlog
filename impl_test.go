@@ -193,6 +193,8 @@ func TestConnect(t *testing.T) {
 	}
 	connection.OnDisconnect()
 
+	auditLogger.Shutdown()
+
 	messages, err := testCase.getRecentAuditLogMessages(t)
 	if err != nil {
 		return

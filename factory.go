@@ -2,6 +2,7 @@ package auditlog
 
 import (
 	"fmt"
+	"sync"
 
 	"github.com/containerssh/auditlog/codec"
 	"github.com/containerssh/auditlog/codec/asciinema"
@@ -48,6 +49,7 @@ func NewLogger(
 		encoder:   encoder,
 		storage:   storage,
 		logger:    logger,
+		wg:        &sync.WaitGroup{},
 	}, nil
 }
 

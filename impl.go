@@ -19,6 +19,7 @@ type loggerImplementation struct {
 	encoder   codec.Encoder
 	storage   storage.WritableStorage
 	logger    log.Logger
+	wg        *sync.WaitGroup
 }
 
 type loggerConnection struct {
@@ -37,6 +38,11 @@ type loggerChannel struct {
 	channelID message.ChannelID
 }
 
+func (l *loggerImplementation) Shutdown() {
+	l.wg.Wait()
+	l.storage.Shutdown()
+}
+
 //region Connection
 func (l *loggerImplementation) OnConnect(connectionID message.ConnectionID, ip net.TCPAddr) (Connection, error) {
 	name := hex.EncodeToString(connectionID)
@@ -52,7 +58,9 @@ func (l *loggerImplementation) OnConnect(connectionID message.ConnectionID, ip n
 		lock:           &sync.Mutex{},
 		nextChannelID:  0,
 	}
+	l.wg.Add(1)
 	go func() {
+		defer l.wg.Done()
 		err := l.encoder.Encode(conn.messageChannel, writer)
 		if err != nil {
 			l.logger.Emergencye(err)
