@@ -1,7 +1,7 @@
 github.com/Microsoft/go-winio v0.4.15 h1:qkLXKzb1QoVatRyd/YlXZ/Kg0m5K3SPuoD82jjSOaBc=
 github.com/Microsoft/go-winio v0.4.15/go.mod h1:tTuCMEN+UleMWgg9dVx4Hu52b1bJo+59jBh3ajtinzw=
-github.com/aws/aws-sdk-go v1.35.21 h1:6cMeHzcca+0uweOpUonDYv4DsPp9Qa9PTMYxH+VqDkY=
-github.com/aws/aws-sdk-go v1.35.21/go.mod h1:tlPOdRjfxPBpNIwqDj61rmsnA85v9jc0Ps9+muhnW+k=
+github.com/aws/aws-sdk-go v1.35.27 h1:F0dUW+kouzchjt4X6kYfYMw1YtQPkA4pihpCDqQMrq8=
+github.com/aws/aws-sdk-go v1.35.27/go.mod h1:tlPOdRjfxPBpNIwqDj61rmsnA85v9jc0Ps9+muhnW+k=
 github.com/containerssh/log v0.9.0 h1:sDqrMXirZLeqp4yS3C77zFfIZNd/+PwuMjBxXeTorLg=
 github.com/containerssh/log v0.9.0/go.mod h1:05pgNm7IgFKt+qbZiUhtuJw2B4j3ynn2vSv5j2JA7hA=
 github.com/davecgh/go-spew v1.1.0 h1:ZDRjVQ15GmhC3fiQ8ni8+OwkZQO4DARzQgrnXU1Liz8=
