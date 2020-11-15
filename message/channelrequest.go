@@ -145,13 +145,10 @@ func (p PayloadChannelRequestSubsystem) Equals(other Payload) bool {
 // PayloadChannelRequestWindow is a payload requesting the change in the terminal window size.
 type PayloadChannelRequestWindow struct {
 	RequestID uint64 `json:"requestId" yaml:"requestId"`
-
-	Term     string `json:"term" yaml:"term"`
-	Columns  uint32 `json:"columns" yaml:"columns"`
-	Rows     uint32 `json:"rows" yaml:"rows"`
-	Width    uint32 `json:"width" yaml:"width"`
-	Height   uint32 `json:"height" yaml:"height"`
-	ModeList []byte `json:"modelist" yaml:"modelist"`
+	Columns   uint32 `json:"columns" yaml:"columns"`
+	Rows      uint32 `json:"rows" yaml:"rows"`
+	Width     uint32 `json:"width" yaml:"width"`
+	Height    uint32 `json:"height" yaml:"height"`
 }
 
 // Equals compares two PayloadChannelRequestWindow payloads.
@@ -160,7 +157,8 @@ func (p PayloadChannelRequestWindow) Equals(other Payload) bool {
 	if !ok {
 		return false
 	}
-	return p.RequestID == p2.RequestID && p.Columns == p2.Columns && p.Rows == p2.Rows
+	return p.RequestID == p2.RequestID && p.Columns == p2.Columns && p.Rows == p2.Rows && p.Width == p2.Width &&
+		p.Height == p2.Height
 }
 
 // PayloadExit is the payload for a message that is sent when a program exits.
