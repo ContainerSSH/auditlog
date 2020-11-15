@@ -6,7 +6,11 @@ import "bytes"
 type ConnectionID []byte
 
 // ChannelID is the ID of an SSH channel
-type ChannelID int64
+type ChannelID *uint64
+
+func MakeChannelID(n uint64) ChannelID {
+	return &n
+}
 
 // Message is a basic element of audit logging. It contains the basic records of an interaction.
 type Message struct {
@@ -40,7 +44,13 @@ func (m Message) Equals(other Message) bool {
 		return false
 	}
 	if m.ChannelID != other.ChannelID {
-		return false
+		if m.ChannelID != nil && other.ChannelID != nil {
+			if !(*m.ChannelID == *other.ChannelID) {
+				return false
+			}
+		} else {
+			return false
+		}
 	}
 
 	if m.Payload == nil && other.Payload != nil {

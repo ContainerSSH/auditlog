@@ -113,8 +113,9 @@ func (e *encoder) encodeMessage(startTime int64, msg message.Message, asciicastH
 		asciicastHeader.Env[payload.Name] = payload.Value
 	case message.TypeChannelRequestPty:
 		payload := msg.Payload.(message.PayloadChannelRequestPty)
-		asciicastHeader.Width = payload.Columns
-		asciicastHeader.Height = payload.Rows
+		asciicastHeader.Env["TERM"] = payload.Term
+		asciicastHeader.Width = uint(payload.Columns)
+		asciicastHeader.Height = uint(payload.Rows)
 	case message.TypeChannelRequestExec:
 		payload := msg.Payload.(message.PayloadChannelRequestExec)
 		startTime, headerWritten, err = e.handleRun(startTime, headerWritten, asciicastHeader, payload.Program, storage)

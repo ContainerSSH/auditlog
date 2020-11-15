@@ -47,37 +47,39 @@ type Connection interface {
 	OnGlobalRequestUnknown(requestType string)
 
 	// OnNewChannel creates an audit log message for a new channel request.
-	OnNewChannel(channelType string)
+	OnNewChannel(channelID message.ChannelID, channelType string)
 	// OnNewChannelFailed creates an audit log message for a failure in requesting a new channel.
-	OnNewChannelFailed(channelType string, reason string)
+	OnNewChannelFailed(channelID message.ChannelID, channelType string, reason string)
 	// OnNewChannelSuccess creates an audit log message for successfully requesting a new channel and returns a
 	//                     channel-specific audit logger.
-	OnNewChannelSuccess(channelType string) Channel
+	OnNewChannelSuccess(channelID message.ChannelID, channelType string) Channel
 }
 
 // Channel is an audit logger for one specific hannel
 type Channel interface {
 	// OnRequestUnknown creates an audit log message for a channel request that is not supported.
-	OnRequestUnknown(requestType string)
+	OnRequestUnknown(requestID uint64, requestType string, payload []byte)
 	// OnRequestDecodeFailed creates an audit log message for a channel request that is supported but could not be
 	//                       decoded.
-	OnRequestDecodeFailed(requestType string, reason string)
+	OnRequestDecodeFailed(requestID uint64, requestType string, payload []byte, reason string)
+	// OnRequestFailed is called when a backend failed to respond to a request.
+	OnRequestFailed(requestID uint64, reason error)
 
 	// OnRequestSetEnv creates an audit log message for a channel request to set an environment variable.
-	OnRequestSetEnv(name string, value string)
+	OnRequestSetEnv(requestID uint64, name string, value string)
 	// OnRequestExec creates an audit log message for a channel request to execute a program.
-	OnRequestExec(program string)
+	OnRequestExec(requestID uint64, program string)
 	// OnRequestPty creates an audit log message for a channel request to create an interactive terminal.
-	OnRequestPty(columns uint, rows uint)
+	OnRequestPty(requestID uint64, term string, columns uint32, rows uint32, width uint32, height uint32, modeList []byte)
 	// OnRequestExec creates an audit log message for a channel request to execute a shell.
-	OnRequestShell()
+	OnRequestShell(requestID uint64)
 	// OnRequestExec creates an audit log message for a channel request to send a signal to the currently running
 	//               program.
-	OnRequestSignal(signal string)
+	OnRequestSignal(requestID uint64, signal string)
 	// OnRequestExec creates an audit log message for a channel request to execute a well-known subsystem (e.g. SFTP)
-	OnRequestSubsystem(subsystem string)
+	OnRequestSubsystem(requestID uint64, subsystem string)
 	// OnRequestWindow creates an audit log message for a channel request to resize the current window.
-	OnRequestWindow(columns uint, rows uint)
+	OnRequestWindow(requestID uint64, columns uint32, rows uint32, width uint32, height uint32)
 
 	// GetStdinProxy creates an intercepting audit log reader proxy for the standard input.
 	GetStdinProxy(stdin io.Reader) io.Reader
@@ -85,4 +87,8 @@ type Channel interface {
 	GetStdoutProxy(stdout io.Writer) io.Writer
 	// GetStdinProxy creates an intercepting audit log writer proxy for the standard error.
 	GetStderrProxy(stderr io.Writer) io.Writer
+
+	// OnExit is called when the executed program quits. The exitStatus parameter contains the exit code of the
+	// application.
+	OnExit(exitStatus uint32)
 }

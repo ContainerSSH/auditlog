@@ -53,8 +53,12 @@ const (
 	TypeChannelRequestSubsystem Type = 407
 	// TypeChannelRequestWindow describes an in-channel request to resize the current interactive terminal
 	TypeChannelRequestWindow Type = 408
+	// TypeExit describes a message that is sent when the program exited. The payload contains the exit status.
+	TypeExit Type = 499
 	// TypeIO describes the data transferred to and from the currently running program on the terminal.
 	TypeIO Type = 500
+	// TypeRequestFailed describes that a request has failed.
+	TypeRequestFailed Type = 501
 )
 
 var typeToName = map[Type]string{
@@ -85,8 +89,10 @@ var typeToName = map[Type]string{
 	TypeChannelRequestSignal:       "signal",
 	TypeChannelRequestSubsystem:    "subsystem",
 	TypeChannelRequestWindow:       "window",
+	TypeExit:                       "exit",
 
-	TypeIO: "io",
+	TypeIO:            "io",
+	TypeRequestFailed: "request_failed",
 }
 
 // ToName converts the numeric message type to a string representation for human consumption.

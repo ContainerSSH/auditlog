@@ -66,7 +66,7 @@ func TestTypeConnect(t *testing.T) {
 		Payload: message.PayloadConnect{
 			RemoteAddr: "127.0.0.1",
 		},
-		ChannelID: -1,
+		ChannelID: nil,
 	}
 
 	testPipeline(t, msg)
@@ -78,7 +78,7 @@ func TestTypeDisconnect(t *testing.T) {
 		Timestamp:    1234,
 		MessageType:  message.TypeDisconnect,
 		Payload:      nil,
-		ChannelID:    -1,
+		ChannelID:    nil,
 	}
 
 	testPipeline(t, msg)
@@ -93,7 +93,7 @@ func TestTypeAuthPassword(t *testing.T) {
 			Username: "foo",
 			Password: []byte("bar"),
 		},
-		ChannelID: -1,
+		ChannelID: nil,
 	}
 
 	testPipeline(t, msg)
@@ -108,7 +108,7 @@ func TestTypeAuthPasswordSuccessful(t *testing.T) {
 			Username: "foo",
 			Password: []byte("bar"),
 		},
-		ChannelID: -1,
+		ChannelID: nil,
 	}
 
 	testPipeline(t, msg)
@@ -123,7 +123,7 @@ func TestTypeAuthPasswordFailed(t *testing.T) {
 			Username: "foo",
 			Password: []byte("bar"),
 		},
-		ChannelID: -1,
+		ChannelID: nil,
 	}
 
 	testPipeline(t, msg)
@@ -139,7 +139,7 @@ func TestTypeAuthPasswordBackendError(t *testing.T) {
 			Password: []byte("bar"),
 			Reason:   "test",
 		},
-		ChannelID: -1,
+		ChannelID: nil,
 	}
 
 	testPipeline(t, msg)
@@ -154,7 +154,7 @@ func TestTypeAuthPubKey(t *testing.T) {
 			Username: "foo",
 			Key:      []byte("bar"),
 		},
-		ChannelID: -1,
+		ChannelID: nil,
 	}
 
 	testPipeline(t, msg)
@@ -169,7 +169,7 @@ func TestTypeAuthPubKeySuccessful(t *testing.T) {
 			Username: "foo",
 			Key:      []byte("bar"),
 		},
-		ChannelID: -1,
+		ChannelID: nil,
 	}
 
 	testPipeline(t, msg)
@@ -184,7 +184,7 @@ func TestTypeAuthPubKeyFailed(t *testing.T) {
 			Username: "foo",
 			Key:      []byte("bar"),
 		},
-		ChannelID: -1,
+		ChannelID: nil,
 	}
 
 	testPipeline(t, msg)
@@ -200,7 +200,7 @@ func TestTypeAuthPubKeyBackendError(t *testing.T) {
 			Key:      []byte("bar"),
 			Reason:   "test",
 		},
-		ChannelID: -1,
+		ChannelID: nil,
 	}
 
 	testPipeline(t, msg)
@@ -214,7 +214,7 @@ func TestTypeGlobalRequestUnknown(t *testing.T) {
 		Payload: message.PayloadGlobalRequestUnknown{
 			RequestType: "channel",
 		},
-		ChannelID: -1,
+		ChannelID: nil,
 	}
 
 	testPipeline(t, msg)
@@ -228,7 +228,7 @@ func TestTypeNewChannel(t *testing.T) {
 		Payload: message.PayloadNewChannel{
 			ChannelType: "session",
 		},
-		ChannelID: -1,
+		ChannelID: nil,
 	}
 
 	testPipeline(t, msg)
@@ -243,7 +243,7 @@ func TestTypeNewChannelFailed(t *testing.T) {
 			ChannelType: "session",
 			Reason:      "test",
 		},
-		ChannelID: -1,
+		ChannelID: nil,
 	}
 
 	testPipeline(t, msg)
@@ -257,7 +257,7 @@ func TestTypeNewChannelSuccessful(t *testing.T) {
 		Payload: message.PayloadNewChannelSuccessful{
 			ChannelType: "session",
 		},
-		ChannelID: 0,
+		ChannelID: message.MakeChannelID(0),
 	}
 
 	testPipeline(t, msg)
@@ -271,7 +271,7 @@ func TestTypeChannelRequestUnknownType(t *testing.T) {
 		Payload: message.PayloadChannelRequestUnknownType{
 			RequestType: "test",
 		},
-		ChannelID: 0,
+		ChannelID: message.MakeChannelID(0),
 	}
 
 	testPipeline(t, msg)
@@ -286,7 +286,7 @@ func TestTypeChannelRequestDecodeFailed(t *testing.T) {
 			RequestType: "test",
 			Reason:      "test",
 		},
-		ChannelID: 0,
+		ChannelID: message.MakeChannelID(0),
 	}
 
 	testPipeline(t, msg)
@@ -301,7 +301,7 @@ func TestTypeChannelRequestSetEnv(t *testing.T) {
 			Name:  "foo",
 			Value: "bar",
 		},
-		ChannelID: 0,
+		ChannelID: message.MakeChannelID(0),
 	}
 
 	testPipeline(t, msg)
@@ -315,7 +315,7 @@ func TestTypeChannelRequestExec(t *testing.T) {
 		Payload: message.PayloadChannelRequestExec{
 			Program: "bash",
 		},
-		ChannelID: 0,
+		ChannelID: message.MakeChannelID(0),
 	}
 
 	testPipeline(t, msg)
@@ -330,7 +330,7 @@ func TestTypeChannelRequestPty(t *testing.T) {
 			Columns: 80,
 			Rows:    25,
 		},
-		ChannelID: 0,
+		ChannelID: message.MakeChannelID(0),
 	}
 
 	testPipeline(t, msg)
@@ -342,7 +342,7 @@ func TestTypeChannelRequestShell(t *testing.T) {
 		Timestamp:    1234,
 		MessageType:  message.TypeChannelRequestShell,
 		Payload:      message.PayloadChannelRequestShell{},
-		ChannelID:    0,
+		ChannelID:    message.MakeChannelID(0),
 	}
 
 	testPipeline(t, msg)
@@ -356,7 +356,7 @@ func TestTypeChannelRequestSignal(t *testing.T) {
 		Payload: message.PayloadChannelRequestSignal{
 			Signal: "TERM",
 		},
-		ChannelID: 0,
+		ChannelID: message.MakeChannelID(0),
 	}
 
 	testPipeline(t, msg)
@@ -370,7 +370,7 @@ func TestTypeChannelRequestSubsystem(t *testing.T) {
 		Payload: message.PayloadChannelRequestSubsystem{
 			Subsystem: "sftp",
 		},
-		ChannelID: 0,
+		ChannelID: message.MakeChannelID(0),
 	}
 
 	testPipeline(t, msg)
@@ -385,7 +385,7 @@ func TestTypeChannelRequestWindow(t *testing.T) {
 			Columns: 80,
 			Rows:    25,
 		},
-		ChannelID: 0,
+		ChannelID: message.MakeChannelID(0),
 	}
 
 	testPipeline(t, msg)

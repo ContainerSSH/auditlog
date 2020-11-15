@@ -99,14 +99,14 @@ func TestHeader(t *testing.T) {
 			Payload: message.PayloadConnect{
 				RemoteAddr: "127.0.0.1",
 			},
-			ChannelID: -1,
+			ChannelID: nil,
 		},
 		{
 			ConnectionID: []byte("asdf"),
 			Timestamp:    0,
 			MessageType:  message.TypeDisconnect,
 			Payload:      nil,
-			ChannelID:    -1,
+			ChannelID:    nil,
 		},
 	})
 	if err != nil {
@@ -130,7 +130,7 @@ var fullOutputTestMessages = []message.Message{
 		Payload: message.PayloadConnect{
 			RemoteAddr: "127.0.0.1",
 		},
-		ChannelID: -1,
+		ChannelID: nil,
 	},
 	{
 		ConnectionID: []byte("asdf"),
@@ -139,7 +139,7 @@ var fullOutputTestMessages = []message.Message{
 		Payload: message.PayloadNewChannel{
 			ChannelType: "session",
 		},
-		ChannelID: -1,
+		ChannelID: nil,
 	},
 	{
 		ConnectionID: []byte("asdf"),
@@ -148,14 +148,14 @@ var fullOutputTestMessages = []message.Message{
 		Payload: message.PayloadNewChannelSuccessful{
 			ChannelType: "session",
 		},
-		ChannelID: 0,
+		ChannelID: message.MakeChannelID(0),
 	},
 	{
 		ConnectionID: []byte("asdf"),
 		Timestamp:    int64(3 * time.Second),
 		MessageType:  message.TypeChannelRequestShell,
 		Payload:      message.PayloadChannelRequestShell{},
-		ChannelID:    0,
+		ChannelID:    message.MakeChannelID(0),
 	},
 	{
 		ConnectionID: []byte("asdf"),
@@ -165,14 +165,14 @@ var fullOutputTestMessages = []message.Message{
 			Stream: message.StreamStdout,
 			Data:   []byte("Hello world!"),
 		},
-		ChannelID: 0,
+		ChannelID: message.MakeChannelID(0),
 	},
 	{
 		ConnectionID: []byte("asdf"),
 		Timestamp:    int64(5 * time.Second),
 		MessageType:  message.TypeDisconnect,
 		Payload:      nil,
-		ChannelID:    -1,
+		ChannelID:    nil,
 	},
 }
 

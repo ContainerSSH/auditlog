@@ -1,8 +1,15 @@
 package message
 
+import (
+	"bytes"
+)
+
 // PayloadChannelRequestUnknownType is a payload signaling that a channel request was not supported.
 type PayloadChannelRequestUnknownType struct {
+	RequestID uint64 `json:"requestId" yaml:"requestId"`
+
 	RequestType string `json:"requestType" yaml:"requestType"`
+	Payload     []byte `json:"payload" yaml:"payload"`
 }
 
 // Equals compares two PayloadChannelRequestUnknownType payloads.
@@ -11,12 +18,15 @@ func (p PayloadChannelRequestUnknownType) Equals(other Payload) bool {
 	if !ok {
 		return false
 	}
-	return p.RequestType == p2.RequestType
+	return p.RequestID == p2.RequestID && p.RequestType == p2.RequestType
 }
 
 // PayloadChannelRequestDecodeFailed is a payload that signals a supported request that the server was unable to decode.
 type PayloadChannelRequestDecodeFailed struct {
+	RequestID uint64 `json:"requestId" yaml:"requestId"`
+
 	RequestType string `json:"requestType" yaml:"requestType"`
+	Payload     []byte `json:"payload" yaml:"payload"`
 	Reason      string `json:"reason" yaml:"reason"`
 }
 
@@ -26,11 +36,13 @@ func (p PayloadChannelRequestDecodeFailed) Equals(other Payload) bool {
 	if !ok {
 		return false
 	}
-	return p.RequestType == p2.RequestType && p.Reason == p2.Reason
+	return p.RequestID == p2.RequestID && p.RequestType == p2.RequestType && p.Reason == p2.Reason
 }
 
 // PayloadChannelRequestSetEnv is a payload signaling the request for an environment variable.
 type PayloadChannelRequestSetEnv struct {
+	RequestID uint64 `json:"requestId" yaml:"requestId"`
+
 	Name  string `json:"name" yaml:"name"`
 	Value string `json:"value" yaml:"value"`
 }
@@ -41,11 +53,13 @@ func (p PayloadChannelRequestSetEnv) Equals(other Payload) bool {
 	if !ok {
 		return false
 	}
-	return p.Name == p2.Name && p.Value == p2.Value
+	return p.RequestID == p2.RequestID && p.Name == p2.Name && p.Value == p2.Value
 }
 
 // PayloadChannelRequestExec is a payload signaling the request to execute a program.
 type PayloadChannelRequestExec struct {
+	RequestID uint64 `json:"requestId" yaml:"requestId"`
+
 	Program string `json:"program" yaml:"program"`
 }
 
@@ -55,13 +69,19 @@ func (p PayloadChannelRequestExec) Equals(other Payload) bool {
 	if !ok {
 		return false
 	}
-	return p.Program == p2.Program
+	return p.RequestID == p2.RequestID && p.Program == p2.Program
 }
 
 // PayloadChannelRequestPty is a payload signaling the request for an interactive terminal.
 type PayloadChannelRequestPty struct {
-	Columns uint `json:"columns" yaml:"columns"`
-	Rows    uint `json:"rows" yaml:"rows"`
+	RequestID uint64 `json:"requestId" yaml:"requestId"`
+
+	Term     string `json:"term" yaml:"term"`
+	Columns  uint32 `json:"columns" yaml:"columns"`
+	Rows     uint32 `json:"rows" yaml:"rows"`
+	Width    uint32 `json:"width" yaml:"width"`
+	Height   uint32 `json:"height" yaml:"height"`
+	ModeList []byte `json:"modelist" yaml:"modelist"`
 }
 
 // Equals compares two PayloadChannelRequestPty payloads.
@@ -70,21 +90,30 @@ func (p PayloadChannelRequestPty) Equals(other Payload) bool {
 	if !ok {
 		return false
 	}
-	return p.Columns == p2.Columns && p.Rows == p2.Rows
+	return p.RequestID == p2.RequestID &&
+		p.Term == p2.Term &&
+		p.Columns == p2.Columns &&
+		p.Rows == p2.Rows &&
+		p.Width == p2.Width &&
+		p.Height == p2.Height &&
+		bytes.Equal(p.ModeList, p2.ModeList)
 }
 
 // PayloadChannelRequestShell is a payload signaling a request for a shell.
 type PayloadChannelRequestShell struct {
+	RequestID uint64 `json:"requestId" yaml:"requestId"`
 }
 
 // Equals compares two PayloadChannelRequestShell payloads.
 func (p PayloadChannelRequestShell) Equals(other Payload) bool {
-	_, ok := other.(PayloadChannelRequestShell)
-	return ok
+	p2, ok := other.(PayloadChannelRequestShell)
+	return ok && p.RequestID == p2.RequestID
 }
 
 // PayloadChannelRequestSignal is a payload signaling a signal request to be sent to the currently running program.
 type PayloadChannelRequestSignal struct {
+	RequestID uint64 `json:"requestId" yaml:"requestId"`
+
 	Signal string `json:"signal" yaml:"signal"`
 }
 
@@ -94,11 +123,13 @@ func (p PayloadChannelRequestSignal) Equals(other Payload) bool {
 	if !ok {
 		return false
 	}
-	return p.Signal == p2.Signal
+	return p.RequestID == p2.RequestID && p.Signal == p2.Signal
 }
 
 // PayloadChannelRequestSubsystem is a payload requesting a well-known subsystem (e.g. sftp)
 type PayloadChannelRequestSubsystem struct {
+	RequestID uint64 `json:"requestId" yaml:"requestId"`
+
 	Subsystem string `json:"subsystem" yaml:"subsystem"`
 }
 
@@ -108,13 +139,19 @@ func (p PayloadChannelRequestSubsystem) Equals(other Payload) bool {
 	if !ok {
 		return false
 	}
-	return p.Subsystem == p2.Subsystem
+	return p.RequestID == p2.RequestID && p.Subsystem == p2.Subsystem
 }
 
 // PayloadChannelRequestWindow is a payload requesting the change in the terminal window size.
 type PayloadChannelRequestWindow struct {
-	Columns uint `json:"columns" yaml:"columns"`
-	Rows    uint `json:"rows" yaml:"rows"`
+	RequestID uint64 `json:"requestId" yaml:"requestId"`
+
+	Term     string `json:"term" yaml:"term"`
+	Columns  uint32 `json:"columns" yaml:"columns"`
+	Rows     uint32 `json:"rows" yaml:"rows"`
+	Width    uint32 `json:"width" yaml:"width"`
+	Height   uint32 `json:"height" yaml:"height"`
+	ModeList []byte `json:"modelist" yaml:"modelist"`
 }
 
 // Equals compares two PayloadChannelRequestWindow payloads.
@@ -123,5 +160,19 @@ func (p PayloadChannelRequestWindow) Equals(other Payload) bool {
 	if !ok {
 		return false
 	}
-	return p.Columns == p2.Columns && p.Rows == p2.Rows
+	return p.RequestID == p2.RequestID && p.Columns == p2.Columns && p.Rows == p2.Rows
+}
+
+// PayloadExit is the payload for a message that is sent when a program exits.
+type PayloadExit struct {
+	ExitStatus uint32 `json:"exitStatus" yaml:"exitStatus"`
+}
+
+// Equals compares two PayloadExit payloads.
+func (p PayloadExit) Equals(other Payload) bool {
+	p2, ok := other.(PayloadExit)
+	if !ok {
+		return false
+	}
+	return p.ExitStatus == p2.ExitStatus
 }
