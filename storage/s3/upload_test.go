@@ -319,3 +319,58 @@ func TestSmallUpload(t *testing.T) {
 
 	assert.Equal(t, data, d)
 }
+
+func TestLargeUpload(t *testing.T) {
+	accessKey := "asdfasdfasdf"
+	secretKey := "asdfasdfasdf"
+
+	region := "us-east-1"
+	bucket := "auditlog"
+	endpoint := "http://127.0.0.1:9000"
+
+	m := &minio{}
+
+	storage, err := m.Start(t, accessKey, secretKey, region, bucket, endpoint)
+	if err != nil {
+		return
+	}
+	defer func() {
+		m.Stop(t)
+	}()
+
+	writer, err := storage.OpenWriter("test")
+	if err != nil {
+		assert.Fail(t, "failed to open storage writer (%v)", err)
+		return
+	}
+	size := 25 * 1000 * 1000
+	var data = []byte("0123456789")
+	for i := 0; i < size/len(data); i++ {
+		if _, err := writer.Write(data); err != nil {
+			assert.Fail(t, "failed to write to storage writer (%v)", err)
+			return
+		}
+	}
+	if err := writer.Close(); err != nil {
+		assert.Fail(t, "failed to close storage writer (%v)", err)
+		return
+	}
+
+	storage.Shutdown(context.Background())
+
+	objects := waitForS3Objects(t, storage, 1)
+	assert.Equal(t, 1, len(objects))
+
+	r, err := storage.OpenReader(objects[0].Name)
+	if err != nil {
+		assert.Fail(t, "failed to open reader for recently stored object", err)
+		return
+	}
+	d, err := ioutil.ReadAll(r)
+	if err != nil {
+		assert.Fail(t, "failed to open read from S3", err)
+		return
+	}
+
+	assert.Equal(t, size, len(d))
+}

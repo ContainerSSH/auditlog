@@ -44,6 +44,7 @@ func (l *loggerImplementation) Shutdown(shutdownContext context.Context) {
 }
 
 //region Connection
+
 func (l *loggerImplementation) OnConnect(connectionID message.ConnectionID, ip net.TCPAddr) (Connection, error) {
 	name := hex.EncodeToString(connectionID)
 	writer, err := l.storage.OpenWriter(name)
@@ -250,6 +251,7 @@ func (c *loggerConnection) OnNewChannelSuccess(channelID message.ChannelID, chan
 //endregion
 
 //region Channel
+
 func (l *loggerChannel) OnRequestUnknown(requestID uint64, requestType string, payload []byte) {
 	l.c.messageChannel <- message.Message{
 		ConnectionID: l.c.connectionID,
