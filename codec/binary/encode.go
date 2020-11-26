@@ -56,25 +56,7 @@ func (e *encoder) Encode(messages <-chan message.Message, storage storage.Writer
 		if startTime == 0 {
 			startTime = msg.Timestamp
 		}
-		switch msg.MessageType {
-		case message.TypeConnect:
-			payload := msg.Payload.(message.PayloadConnect)
-			ip = payload.RemoteAddr
-			country = e.geoIPProvider.Lookup(net.ParseIP(ip))
-			storage.SetMetadata(startTime/1000000000, ip, country, username)
-		case message.TypeAuthPasswordSuccessful:
-			payload := msg.Payload.(message.PayloadAuthPassword)
-			username = &payload.Username
-			storage.SetMetadata(startTime/1000000000, ip, country, username)
-		case message.TypeAuthPubKeySuccessful:
-			payload := msg.Payload.(message.PayloadAuthPubKey)
-			username = &payload.Username
-			storage.SetMetadata(startTime/1000000000, ip, country, username)
-		case message.TypeHandshakeSuccessful:
-			payload := msg.Payload.(message.PayloadHandshakeSuccessful)
-			username = &payload.Username
-			storage.SetMetadata(startTime/1000000000, ip, country, username)
-		}
+		e.storeMetadata(msg, storage, &ip, &country, &startTime, username)
 		if err := encoder.Encode(&msg); err != nil {
 			return fmt.Errorf("failed to encode audit log message (%w)", err)
 		}
@@ -92,4 +74,34 @@ func (e *encoder) Encode(messages <-chan message.Message, storage storage.Writer
 		return fmt.Errorf("failed to close audit log gzip stream (%w)", err)
 	}
 	return nil
+}
+
+func (e *encoder) storeMetadata(
+	msg message.Message,
+	storage storage.Writer,
+	ip *string,
+	country *string,
+	startTime *int64,
+	username *string,
+) {
+	switch msg.MessageType {
+	case message.TypeConnect:
+		remoteAddr := msg.Payload.(message.PayloadConnect).RemoteAddr
+		ip = &remoteAddr
+		isoCountry := e.geoIPProvider.Lookup(net.ParseIP(*ip))
+		country = &isoCountry
+		storage.SetMetadata(*startTime/1000000000, *ip, *country, username)
+	case message.TypeAuthPasswordSuccessful:
+		u := msg.Payload.(message.PayloadAuthPassword).Username
+		username = &u
+		storage.SetMetadata(*startTime/1000000000, *ip, *country, username)
+	case message.TypeAuthPubKeySuccessful:
+		payload := msg.Payload.(message.PayloadAuthPubKey)
+		username = &payload.Username
+		storage.SetMetadata(*startTime/1000000000, *ip, *country, username)
+	case message.TypeHandshakeSuccessful:
+		payload := msg.Payload.(message.PayloadHandshakeSuccessful)
+		username = &payload.Username
+		storage.SetMetadata(*startTime/1000000000, *ip, *country, username)
+	}
 }
