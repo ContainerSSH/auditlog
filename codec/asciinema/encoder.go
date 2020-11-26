@@ -101,13 +101,13 @@ func (e *encoder) encodeMessage(startTime int64, msg message.Message, asciicastH
 	country := e.geoIPProvider.Lookup(net.ParseIP(ip))
 	switch msg.MessageType {
 	case message.TypeConnect:
-		e.handleConnect(storage, msg, startTime, &ip, &country, username)
+		ip, country, username = e.handleConnect(storage, msg, startTime, ip, country, username)
 	case message.TypeAuthPasswordSuccessful:
-		e.handleAuthPasswordSuccessful(storage, msg, startTime, &ip, &country, username)
+		ip, country, username = e.handleAuthPasswordSuccessful(storage, msg, startTime, ip, country, username)
 	case message.TypeAuthPubKeySuccessful:
-		e.handleAuthPubkeySuccessful(storage, msg, startTime, &ip, &country, username)
+		ip, country, username = e.handleAuthPubkeySuccessful(storage, msg, startTime, ip, country, username)
 	case message.TypeHandshakeSuccessful:
-		e.handleHandshakeSuccessful(storage, msg, startTime, &ip, &country, username)
+		ip, country, username = e.handleHandshakeSuccessful(storage, msg, startTime, ip, country, username)
 	case message.TypeChannelRequestSetEnv:
 		payload := msg.Payload.(message.PayloadChannelRequestSetEnv)
 		asciicastHeader.Env[payload.Name] = payload.Value
@@ -133,52 +133,56 @@ func (e *encoder) handleConnect(
 	storage storage.Writer,
 	msg message.Message,
 	startTime int64,
-	ip *string,
-	country *string,
+	ip string,
+	country string,
 	username *string,
-) {
+) (string, string, *string) {
 	payload := msg.Payload.(message.PayloadConnect)
-	ip = &payload.RemoteAddr
-	storage.SetMetadata(startTime/1000000000, *ip, *country, username)
+	ip = payload.RemoteAddr
+	storage.SetMetadata(startTime/1000000000, ip, country, username)
+	return ip, country, username
 }
 
 func (e *encoder) handleAuthPasswordSuccessful(
 	storage storage.Writer,
 	msg message.Message,
 	startTime int64,
-	ip *string,
-	country *string,
+	ip string,
+	country string,
 	username *string,
-) {
+) (string, string, *string) {
 	payload := msg.Payload.(message.PayloadAuthPassword)
 	username = &payload.Username
-	storage.SetMetadata(startTime/1000000000, *ip, *country, username)
+	storage.SetMetadata(startTime/1000000000, ip, country, username)
+	return ip, country, username
 }
 
 func (e *encoder) handleAuthPubkeySuccessful(
 	storage storage.Writer,
 	msg message.Message,
 	startTime int64,
-	ip *string,
-	country *string,
+	ip string,
+	country string,
 	username *string,
-) {
+) (string, string, *string) {
 	payload := msg.Payload.(message.PayloadAuthPubKey)
 	username = &payload.Username
-	storage.SetMetadata(startTime/1000000000, *ip, *country, username)
+	storage.SetMetadata(startTime/1000000000, ip, country, username)
+	return ip, country, username
 }
 
 func (e *encoder) handleHandshakeSuccessful(
 	storage storage.Writer,
 	msg message.Message,
 	startTime int64,
-	ip *string,
-	country *string,
+	ip string,
+	country string,
 	username *string,
-) {
+) (string, string, *string) {
 	payload := msg.Payload.(message.PayloadHandshakeSuccessful)
 	username = &payload.Username
-	storage.SetMetadata(startTime/1000000000, *ip, *country, username)
+	storage.SetMetadata(startTime/1000000000, ip, country, username)
+	return ip, country, username
 }
 
 func (e *encoder) handleChannelRequestPty(msg message.Message, asciicastHeader *Header) {
