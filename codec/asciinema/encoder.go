@@ -70,7 +70,16 @@ func (e *encoder) Encode(messages <-chan message.Message, storage storage.Writer
 			break
 		}
 		var err error
-		startTime, headerWritten, err = e.encodeMessage(startTime, msg, &asciicastHeader, ip, storage, username, headerWritten, shell)
+		startTime, headerWritten, ip, username, err = e.encodeMessage(
+			startTime,
+			msg,
+			&asciicastHeader,
+			ip,
+			storage,
+			username,
+			headerWritten,
+			shell,
+		)
 		if err != nil {
 			if err := storage.Close(); err != nil {
 				e.logger.Errorf("failed to close audit log storage writer (%w)", err)
@@ -92,7 +101,16 @@ func (e *encoder) Encode(messages <-chan message.Message, storage storage.Writer
 	return nil
 }
 
-func (e *encoder) encodeMessage(startTime int64, msg message.Message, asciicastHeader *Header, ip string, storage storage.Writer, username *string, headerWritten bool, shell string) (int64, bool, error) {
+func (e *encoder) encodeMessage(
+	startTime int64,
+	msg message.Message,
+	asciicastHeader *Header,
+	ip string,
+	storage storage.Writer,
+	username *string,
+	headerWritten bool,
+	shell string,
+) (int64, bool, string, *string, error) {
 	if msg.MessageType == message.TypeConnect {
 		startTime = msg.Timestamp
 		asciicastHeader.Timestamp = int(startTime / 1000000000)
@@ -124,9 +142,9 @@ func (e *encoder) encodeMessage(startTime int64, msg message.Message, asciicastH
 		startTime, headerWritten, err = e.handleIO(startTime, msg, asciicastHeader, headerWritten, shell, storage)
 	}
 	if err != nil {
-		return startTime, headerWritten, err
+		return startTime, headerWritten, ip, username, err
 	}
-	return startTime, headerWritten, nil
+	return startTime, headerWritten, ip, username, nil
 }
 
 func (e *encoder) handleConnect(
