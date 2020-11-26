@@ -3,6 +3,9 @@ package binary
 import (
 	"compress/gzip"
 	"fmt"
+	"net"
+
+	"github.com/containerssh/geoip"
 
 	"github.com/containerssh/auditlog/storage"
 
@@ -14,11 +17,14 @@ import (
 
 // NewEncoder creates an encoder that encodes messages in CBOR+GZIP format as documented
 //            on https://containerssh.github.io/advanced/audit/format/
-func NewEncoder() codec.Encoder {
-	return &encoder{}
+func NewEncoder(geoIPProvider geoip.LookupProvider) codec.Encoder {
+	return &encoder{
+		geoIPProvider: geoIPProvider,
+	}
 }
 
 type encoder struct {
+	geoIPProvider geoip.LookupProvider
 }
 
 func (e *encoder) GetMimeType() string {
@@ -40,6 +46,7 @@ func (e *encoder) Encode(messages <-chan message.Message, storage storage.Writer
 
 	startTime := int64(0)
 	var ip = ""
+	var country = "XX"
 	var username *string
 	for {
 		msg, ok := <-messages
@@ -53,15 +60,20 @@ func (e *encoder) Encode(messages <-chan message.Message, storage storage.Writer
 		case message.TypeConnect:
 			payload := msg.Payload.(message.PayloadConnect)
 			ip = payload.RemoteAddr
-			storage.SetMetadata(startTime/1000000000, ip, username)
+			country = e.geoIPProvider.Lookup(net.ParseIP(ip))
+			storage.SetMetadata(startTime/1000000000, ip, country, username)
 		case message.TypeAuthPasswordSuccessful:
 			payload := msg.Payload.(message.PayloadAuthPassword)
 			username = &payload.Username
-			storage.SetMetadata(startTime/1000000000, ip, username)
+			storage.SetMetadata(startTime/1000000000, ip, country, username)
 		case message.TypeAuthPubKeySuccessful:
 			payload := msg.Payload.(message.PayloadAuthPubKey)
 			username = &payload.Username
-			storage.SetMetadata(startTime/1000000000, ip, username)
+			storage.SetMetadata(startTime/1000000000, ip, country, username)
+		case message.TypeHandshakeSuccessful:
+			payload := msg.Payload.(message.PayloadHandshakeSuccessful)
+			username = &payload.Username
+			storage.SetMetadata(startTime/1000000000, ip, country, username)
 		}
 		if err := encoder.Encode(&msg); err != nil {
 			return fmt.Errorf("failed to encode audit log message (%w)", err)

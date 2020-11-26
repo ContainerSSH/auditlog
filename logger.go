@@ -43,6 +43,11 @@ type Connection interface {
 	//                          during public key authentication.
 	OnAuthPubKeyBackendError(username string, pubKey []byte, reason string)
 
+	// OnHandshakeFailed creates an entry that indicates a handshake failure.
+	OnHandshakeFailed(reason string)
+	// OnHandshakeSuccessful creates an entry that indicates a successful SSH handshake.
+	OnHandshakeSuccessful(username string)
+
 	// OnGlobalRequestUnknown creates an audit log message for a global request that is not supported.
 	OnGlobalRequestUnknown(requestType string)
 

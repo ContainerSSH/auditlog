@@ -74,6 +74,6 @@ func (w *writer) Close() error {
 	return w.file.Close()
 }
 
-func (w *writer) SetMetadata(_ int64, _ string, _ *string) {
+func (w *writer) SetMetadata(_ int64, _ string, _ string, _ *string) {
 
 }

@@ -12,15 +12,17 @@ import (
 	"github.com/containerssh/auditlog/message"
 	"github.com/containerssh/auditlog/storage"
 
+	"github.com/containerssh/geoip"
 	"github.com/containerssh/log"
 )
 
 type loggerImplementation struct {
-	intercept InterceptConfig
-	encoder   codec.Encoder
-	storage   storage.WritableStorage
-	logger    log.Logger
-	wg        *sync.WaitGroup
+	intercept   InterceptConfig
+	encoder     codec.Encoder
+	storage     storage.WritableStorage
+	logger      log.Logger
+	wg          *sync.WaitGroup
+	geoIPLookup geoip.LookupProvider
 }
 
 type loggerConnection struct {
@@ -72,6 +74,7 @@ func (l *loggerImplementation) OnConnect(connectionID message.ConnectionID, ip n
 		MessageType:  message.TypeConnect,
 		Payload: message.PayloadConnect{
 			RemoteAddr: ip.IP.String(),
+			Country:    l.geoIPLookup.Lookup(ip.IP),
 		},
 		ChannelID: nil,
 	}
@@ -190,6 +193,30 @@ func (c *loggerConnection) OnAuthPubKeyBackendError(username string, pubKey []by
 			Username: username,
 			Key:      pubKey,
 			Reason:   reason,
+		},
+		ChannelID: nil,
+	}
+}
+
+func (c *loggerConnection) OnHandshakeFailed(reason string) {
+	c.messageChannel <- message.Message{
+		ConnectionID: c.connectionID,
+		Timestamp:    time.Now().UnixNano(),
+		MessageType:  message.TypeHandshakeFailed,
+		Payload: message.PayloadHandshakeFailed{
+			Reason: reason,
+		},
+		ChannelID: nil,
+	}
+}
+
+func (c *loggerConnection) OnHandshakeSuccessful(username string) {
+	c.messageChannel <- message.Message{
+		ConnectionID: c.connectionID,
+		Timestamp:    time.Now().UnixNano(),
+		MessageType:  message.TypeHandshakeSuccessful,
+		Payload: message.PayloadHandshakeSuccessful{
+			Username: username,
 		},
 		ChannelID: nil,
 	}

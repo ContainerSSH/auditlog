@@ -65,3 +65,31 @@ func (p PayloadAuthPubKeyBackendError) Equals(other Payload) bool {
 	}
 	return p.Username == p2.Username && bytes.Equal(p.Key, p2.Key) && p.Reason == p2.Reason
 }
+
+// PayloadHandshakeFailed is a payload for a failed handshake
+type PayloadHandshakeFailed struct {
+	Reason string `json:"reason" yaml:"reason"`
+}
+
+// Equals compares two PayloadHandshakeFailed payloads
+func (p PayloadHandshakeFailed) Equals(other Payload) bool {
+	p2, ok := other.(PayloadHandshakeFailed)
+	if !ok {
+		return false
+	}
+	return p.Reason == p2.Reason
+}
+
+// PayloadAuthPubKey is a payload for a successful handshake
+type PayloadHandshakeSuccessful struct {
+	Username string `json:"username" yaml:"username"`
+}
+
+// Equals compares two PayloadHandshakeSuccessful payloads
+func (p PayloadHandshakeSuccessful) Equals(other Payload) bool {
+	p2, ok := other.(PayloadHandshakeSuccessful)
+	if !ok {
+		return false
+	}
+	return p.Username == p2.Username
+}

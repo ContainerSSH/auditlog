@@ -81,6 +81,8 @@ var messageTypeMap = map[message.Type]message.Payload{
 	message.TypeAuthPasswordSuccessful:   message.PayloadAuthPassword{},
 	message.TypeAuthPasswordFailed:       message.PayloadAuthPassword{},
 	message.TypeAuthPasswordBackendError: message.PayloadAuthPasswordBackendError{},
+	message.TypeHandshakeFailed:          message.PayloadHandshakeFailed{},
+	message.TypeHandshakeSuccessful:      message.PayloadHandshakeSuccessful{},
 
 	message.TypeAuthPubKey:             message.PayloadAuthPubKey{},
 	message.TypeAuthPubKeySuccessful:   message.PayloadAuthPubKey{},
@@ -102,6 +104,8 @@ var messageTypeMap = map[message.Type]message.Payload{
 	message.TypeChannelRequestSubsystem:    message.PayloadChannelRequestSubsystem{},
 	message.TypeChannelRequestWindow:       message.PayloadChannelRequestWindow{},
 	message.TypeIO:                         message.PayloadIO{},
+	message.TypeRequestFailed:              message.PayloadRequestFailed{},
+	message.TypeExit:                       message.PayloadExit{},
 }
 
 func decodeMessage(v decodedMessage) (*message.Message, error) {

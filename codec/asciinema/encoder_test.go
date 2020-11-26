@@ -8,6 +8,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/containerssh/geoip/dummy"
 	"github.com/containerssh/log/standard"
 	"github.com/stretchr/testify/assert"
 
@@ -21,6 +22,7 @@ type writer struct {
 	sourceIP  string
 	username  *string
 	wait      chan bool
+	country   string
 }
 
 func newWriter() *writer {
@@ -42,10 +44,11 @@ func (w *writer) waitForClose() {
 	<-w.wait
 }
 
-func (w *writer) SetMetadata(startTime int64, sourceIP string, username *string) {
+func (w *writer) SetMetadata(startTime int64, sourceIP string, country string, username *string) {
 	w.startTime = startTime
 	w.sourceIP = sourceIP
 	w.username = username
+	w.country = country
 }
 
 func sendMessagesAndReturnWrittenData(
@@ -53,7 +56,8 @@ func sendMessagesAndReturnWrittenData(
 	messages []message.Message,
 ) (asciinema.Header, []asciinema.Frame, error) {
 	logger := standard.New()
-	encoder := asciinema.NewEncoder(logger)
+	geoIPProvider, _ := dummy.New()
+	encoder := asciinema.NewEncoder(logger, geoIPProvider)
 	msgChannel := make(chan message.Message)
 	writer := newWriter()
 	go func() {

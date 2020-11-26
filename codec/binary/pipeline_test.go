@@ -5,6 +5,8 @@ import (
 	"sync"
 	"testing"
 
+	"github.com/containerssh/geoip/dummy"
+
 	"github.com/containerssh/auditlog/codec"
 	"github.com/containerssh/auditlog/codec/binary"
 	"github.com/containerssh/auditlog/message"
@@ -13,7 +15,8 @@ import (
 )
 
 func createPipeline() (codec.Encoder, codec.Decoder) {
-	return binary.NewEncoder(), binary.NewDecoder()
+	geoip, _ := dummy.New()
+	return binary.NewEncoder(geoip), binary.NewDecoder()
 }
 
 func testPipeline(t *testing.T, msg message.Message) {

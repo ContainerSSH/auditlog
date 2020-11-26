@@ -4,7 +4,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"net"
 
+	"github.com/containerssh/geoip"
 	"github.com/containerssh/log"
 
 	"github.com/containerssh/auditlog/message"
@@ -12,7 +14,8 @@ import (
 )
 
 type encoder struct {
-	logger log.Logger
+	logger        log.Logger
+	geoIPProvider geoip.LookupProvider
 }
 
 func (e *encoder) GetMimeType() string {
@@ -95,19 +98,24 @@ func (e *encoder) encodeMessage(startTime int64, msg message.Message, asciicastH
 		asciicastHeader.Timestamp = int(startTime / 1000000000)
 	}
 	var err error
+	country := e.geoIPProvider.Lookup(net.ParseIP(ip))
 	switch msg.MessageType {
 	case message.TypeConnect:
 		payload := msg.Payload.(message.PayloadConnect)
 		ip = payload.RemoteAddr
-		storage.SetMetadata(startTime/1000000000, ip, username)
+		storage.SetMetadata(startTime/1000000000, ip, country, username)
 	case message.TypeAuthPasswordSuccessful:
 		payload := msg.Payload.(message.PayloadAuthPassword)
 		username = &payload.Username
-		storage.SetMetadata(startTime/1000000000, ip, username)
+		storage.SetMetadata(startTime/1000000000, ip, country, username)
 	case message.TypeAuthPubKeySuccessful:
 		payload := msg.Payload.(message.PayloadAuthPubKey)
 		username = &payload.Username
-		storage.SetMetadata(startTime/1000000000, ip, username)
+		storage.SetMetadata(startTime/1000000000, ip, country, username)
+	case message.TypeHandshakeSuccessful:
+		payload := msg.Payload.(message.PayloadHandshakeSuccessful)
+		username = &payload.Username
+		storage.SetMetadata(startTime/1000000000, ip, country, username)
 	case message.TypeChannelRequestSetEnv:
 		payload := msg.Payload.(message.PayloadChannelRequestSetEnv)
 		asciicastHeader.Env[payload.Name] = payload.Value

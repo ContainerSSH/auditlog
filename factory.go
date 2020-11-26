@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"sync"
 
+	"github.com/containerssh/geoip"
+
 	"github.com/containerssh/auditlog/codec"
 	"github.com/containerssh/auditlog/codec/asciinema"
 	"github.com/containerssh/auditlog/codec/binary"
@@ -18,8 +20,8 @@ import (
 
 // New Creates a new audit logging pipeline based on the provided configuration.
 //goland:noinspection GoUnusedExportedFunction
-func New(config Config, logger log.Logger) (Logger, error) {
-	encoder, err := NewEncoder(config.Format, logger)
+func New(config Config, geoIPLookupProvider geoip.LookupProvider, logger log.Logger) (Logger, error) {
+	encoder, err := NewEncoder(config.Format, logger, geoIPLookupProvider)
 	if err != nil {
 		return nil, err
 	}
@@ -34,6 +36,7 @@ func New(config Config, logger log.Logger) (Logger, error) {
 		encoder,
 		st,
 		logger,
+		geoIPLookupProvider,
 	)
 }
 
@@ -43,25 +46,27 @@ func NewLogger(
 	encoder codec.Encoder,
 	storage storage.WritableStorage,
 	logger log.Logger,
+	geoIPLookup geoip.LookupProvider,
 ) (Logger, error) {
 	return &loggerImplementation{
-		intercept: intercept,
-		encoder:   encoder,
-		storage:   storage,
-		logger:    logger,
-		wg:        &sync.WaitGroup{},
+		intercept:   intercept,
+		encoder:     encoder,
+		storage:     storage,
+		logger:      logger,
+		wg:          &sync.WaitGroup{},
+		geoIPLookup: geoIPLookup,
 	}, nil
 }
 
 // NewEncoder creates a new audit log encoder of the specified format.
-func NewEncoder(encoder Format, logger log.Logger) (codec.Encoder, error) {
+func NewEncoder(encoder Format, logger log.Logger, geoIPLookupProvider geoip.LookupProvider) (codec.Encoder, error) {
 	switch encoder {
 	case FormatNone:
 		return noneCodec.NewEncoder(), nil
 	case FormatAsciinema:
-		return asciinema.NewEncoder(logger), nil
+		return asciinema.NewEncoder(logger, geoIPLookupProvider), nil
 	case FormatBinary:
-		return binary.NewEncoder(), nil
+		return binary.NewEncoder(geoIPLookupProvider), nil
 	default:
 		return nil, fmt.Errorf("invalid audit log encoder: %s", encoder)
 	}

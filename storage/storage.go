@@ -39,9 +39,10 @@ type Writer interface {
 	// SetMetadata Set metadata for the audit log. Will be called multiple times, once when user connects and once when the user
 	// authenticates.
 	//
-	// startTime is the time when the connection started in unix timestamp
-	// sourceIp  is the IP address the user connected from
+	// startTime is the time when the connection started in unix timestamp.
+	// sourceIp  is the IP address the user connected from.
+	// country   is the ISO country code or "XX" if the lookup failed.
 	// username  is the username the user entered. The first time this method is called the username will be nil,
 	//           may be called subsequently is the user authenticated.
-	SetMetadata(startTime int64, sourceIP string, username *string)
+	SetMetadata(startTime int64, sourceIP string, country string, username *string)
 }

@@ -26,6 +26,10 @@ const (
 	// TypeAuthPubKeyBackendError describes a message that is sent when the auth server failed to respond with username
 	//                            and password.
 	TypeAuthPubKeyBackendError Type = 107
+	// TypeHandshakeFailed indicates that the handshake has failed.
+	TypeHandshakeFailed Type = 198
+	// TypeHandshakeSuccessful indicates that the handshake and authentication was successful.
+	TypeHandshakeSuccessful Type = 199
 	// TypeGlobalRequestUnknown describes a message when a global (non-channel) request was sent that was not recognized.
 	TypeGlobalRequestUnknown Type = 200
 	// TypeNewChannel describes a message that indicates a new channel request

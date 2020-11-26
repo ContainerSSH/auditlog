@@ -1,4 +1,10 @@
-# 0.9.1: Channel ID, Request ID, and better data formating (November 15, 2020)
+# 0.9.2: Message for handshake success / failure
+
+There are now two additional message types: `TypeHandshakeFailed` (opcode 198) and `TypeHandshakeSuccessful` (opcode 199).
+
+The `NewEncoder()` method for the `asciinema` and `binary` and the `New()` method for the `auditlog` package now have an added dependency to the [GeoIP library](https://github.com/containerssh/geoip).
+
+# 0.9.1: Channel ID, Request ID, and better data formatting (November 15, 2020)
 
 This release changes the audit log format to better fit with the [sshserver library 0.9.2 release](https://github.com/ContainerSSH/sshserver/releases/tag/v0.9.2).
 

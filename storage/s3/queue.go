@@ -24,6 +24,7 @@ type queueEntryMetadata struct {
 	RemoteAddr    string `json:"remoteAddr" yaml:"remoteAddr"`
 	Authenticated bool   `json:"authenticated" yaml:"authenticated"`
 	Username      string `json:"username" yaml:"username"`
+	Country       string `json:"country" yaml:"country"`
 }
 
 func (meta queueEntryMetadata) ToMap(showUsername bool, showIP bool) map[string]*string {
@@ -34,6 +35,7 @@ func (meta queueEntryMetadata) ToMap(showUsername bool, showIP bool) map[string]
 	metadata := map[string]*string{
 		"timestamp":     aws.String(fmt.Sprintf("%d", meta.StartTime)),
 		"authenticated": aws.String(fmt.Sprintf("%t", meta.Authenticated)),
+		"country":       aws.String(meta.Country),
 	}
 	if showUsername {
 		metadata["username"] = username
@@ -196,9 +198,10 @@ func (q *uploadQueue) getMonitoringWriter(name string, writeHandle *os.File, ent
 	return newMonitoringWriter(
 		writeHandle,
 		q.partSize,
-		func(startTime int64, remoteAddr string, username *string) {
+		func(startTime int64, remoteAddr string, country string, username *string) {
 			entry.metadata.StartTime = startTime
 			entry.metadata.RemoteAddr = remoteAddr
+			entry.metadata.Country = country
 			if username == nil {
 				entry.metadata.Authenticated = false
 				entry.metadata.Username = ""

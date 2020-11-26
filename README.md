@@ -13,10 +13,10 @@ This is an audit logging library for [ContainerSSH](https://containerssh.github.
 
 ## Setting up a logging pipeline
 
-This section will explain how to set up and use a logging pipeline. As a first step, you must create the logger. The easiest way to do that is to pass a config object:
+This section will explain how to set up and use a logging pipeline. As a first step, you must create the logger. The easiest way to do that is to pass a config object. The `geoIPLookupProvider` is provided by the [GeoIP library](https://github.com/containerssh/geoip), while `logger` is a logger implementation from the [Log library](https://github.com/containerssh/log).
 
 ```go
-auditLogger, err := auditlog.New(cfg, logger)
+auditLogger, err := auditlog.New(cfg, geoIPLookupProvider, logger)
 ```
 
 The `cfg` variable must be of the type `auditlog.Config`. Here's an example configuration:
@@ -188,12 +188,16 @@ for {
 
 ## Development
 
-## Manually encoding messages
+In order to successfully run the tests for this library you will need a working [Docker](https://www.docker.com/) or [Podman](https://podman.io/) setup to run `minio/minio` for the S3 upload.
+
+### Manually encoding messages
 
 If you need to encode messages by hand without a logger pipeline you can do so with an encoder implementation. This is normally not needed. We have two encoder implementations: the binary and the Asciinema encoders. You can use them like this:
 
 ```go
-encoder := binary.NewEncoder(logger)
+geoIPLookup, err := geoip.New(...)
+// Handle error 
+encoder := binary.NewEncoder(logger, geoIPLookup)
 // Alternatively:
 // encoder := asciinema.NewEncoder(logger)
 

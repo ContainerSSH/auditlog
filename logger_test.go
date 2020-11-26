@@ -9,6 +9,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/containerssh/geoip/dummy"
 	"github.com/containerssh/log"
 	"github.com/containerssh/log/formatter/ljson"
 	logPipeline "github.com/containerssh/log/pipeline"
@@ -25,7 +26,7 @@ func newTestCase(t *testing.T) (*testCase, error) {
 	var err error
 	dir, err := ioutil.TempDir(os.TempDir(), "containerssh-auditlog-test")
 	if err != nil {
-		t.Skipf("failed to create temporary directory (%v)", err)
+		assert.Fail(t, "failed to create temporary directory (%v)", err)
 		return nil, err
 	}
 	tc := &testCase{
@@ -62,7 +63,8 @@ type testCase struct {
 
 func (c *testCase) setUpLogger() error {
 	c.logger = logPipeline.NewLoggerPipeline(log.LevelDebug, ljson.NewLJsonLogFormatter(), os.Stdout)
-	auditLogger, err := auditlog.New(c.config, c.logger)
+	geoIPLookupProvider, _ := dummy.New()
+	auditLogger, err := auditlog.New(c.config, geoIPLookupProvider, c.logger)
 	if err != nil {
 		assert.Fail(c.t, "failed to create audit logger", err)
 		return err
@@ -228,10 +230,7 @@ func TestAuth(t *testing.T) {
 			Zone: "",
 		},
 	)
-	if err != nil {
-		assert.Fail(t, "failed to send connect message to logger", err)
-		return
-	}
+	assert.Nil(t, err)
 	connection.OnAuthPassword("foo", []byte("bar"))
 	connection.OnAuthPasswordBackendError("foo", []byte("bar"), "no particular reason")
 	connection.OnAuthPassword("foo", []byte("bar"))
@@ -244,16 +243,15 @@ func TestAuth(t *testing.T) {
 	connection.OnAuthPubKeyFailed("foo", []byte("bar"))
 	connection.OnAuthPubKey("foo", []byte("baz"))
 	connection.OnAuthPubKeySuccess("foo", []byte("baz"))
+	connection.OnHandshakeSuccessful("foo")
 	connection.OnDisconnect()
 
 	testCase.auditLogger.Shutdown(context.Background())
 
 	messages, err := testCase.getRecentAuditLogMessages(t)
-	if err != nil {
-		return
-	}
+	assert.Nil(t, err)
 
-	assert.Equal(t, 14, len(messages))
+	assert.Equal(t, 15, len(messages))
 
 	for _, msg := range messages {
 		assert.Equal(t, []byte("asdf"), []byte(msg.ConnectionID))

@@ -64,7 +64,7 @@ func (m *minio) Start(
 
 	m.dir, err = ioutil.TempDir(os.TempDir(), "containerssh-s3-upload-test")
 	if err != nil {
-		t.Skipf("failed to create temporary directory (%v)", err)
+		assert.Fail(t, "failed to create temporary directory (%v)", err)
 		return nil, err
 	}
 
@@ -90,22 +90,34 @@ func (m *minio) Start(
 	return m.storage, nil
 }
 
+var hostConfig = &container.HostConfig{
+	AutoRemove: true,
+	PortBindings: map[nat.Port][]nat.PortBinding{
+		"9000/tcp": {
+			{
+				HostIP:   "127.0.0.1",
+				HostPort: "9000",
+			},
+		},
+	},
+}
+
 func (m *minio) startMinio(t *testing.T, accessKey string, secretKey string) error {
 	ctx := context.Background()
 
 	cli, err := m.getClient()
 	if err != nil {
-		t.Skipf("failed to create Docker client (%v)", err)
+		assert.Fail(t, "failed to create Docker client (%v)", err)
 		return err
 	}
 
 	reader, err := cli.ImagePull(ctx, "docker.io/minio/minio", types.ImagePullOptions{})
 	if err != nil {
-		t.Skipf("failed to pull Minio image (%v)", err)
+		assert.Fail(t, "failed to pull Minio image (%v)", err)
 		return err
 	}
 	if _, err := io.Copy(os.Stdout, reader); err != nil {
-		t.Skipf("failed to stream logs from Minio image pull (%v)", err)
+		assert.Fail(t, "failed to stream logs from Minio image pull (%v)", err)
 		return err
 	}
 
@@ -121,28 +133,19 @@ func (m *minio) startMinio(t *testing.T, accessKey string, secretKey string) err
 			Cmd:   []string{"server", "/data"},
 			Env:   env,
 		},
-		&container.HostConfig{
-			PortBindings: map[nat.Port][]nat.PortBinding{
-				"9000/tcp": {
-					{
-						HostIP:   "127.0.0.1",
-						HostPort: "9000",
-					},
-				},
-			},
-		},
+		hostConfig,
 		nil,
 		"",
 	)
 	if err != nil {
-		t.Skipf("failed to create Minio container (%v)", err)
+		assert.Fail(t, "failed to create Minio container (%v)", err)
 		return err
 	}
 
 	m.containerID = resp.ID
 
 	if err := cli.ContainerStart(ctx, resp.ID, types.ContainerStartOptions{}); err != nil {
-		t.Skipf("failed to start minio container (%v)", err)
+		assert.Fail(t, "failed to start minio container (%v)", err)
 		return err
 	}
 
@@ -158,7 +161,7 @@ func (m *minio) waitForMinio(t *testing.T) error {
 	for {
 		if tries > 30 {
 			m.Stop(t)
-			t.Skipf("minio failed to come up within 30 seconds")
+			assert.Fail(t, "minio failed to come up within 30 seconds")
 			return fmt.Errorf("minio failed to come up")
 		}
 		sock, err := net.Dial("tcp", "127.0.0.1:9000")
@@ -179,16 +182,18 @@ func (m *minio) Stop(t *testing.T) {
 
 		cli, err := m.getClient()
 		if err != nil {
-			t.Skipf("failed to create Docker client (%v)", err)
+			assert.Fail(t, "failed to create Docker client (%v)", err)
 		}
 
-		if err = cli.ContainerRemove(ctx, m.containerID, types.ContainerRemoveOptions{
+		if err := cli.ContainerRemove(ctx, m.containerID, types.ContainerRemoveOptions{
 			RemoveVolumes: false,
 			RemoveLinks:   false,
 			Force:         true,
 		}); err != nil {
-			goLog.Println("failed to remove Minio container")
+			goLog.Println("failed to stop Minio container", err)
 		}
+
+		_, _ = cli.ContainerWait(ctx, m.containerID)
 		m.containerID = ""
 	}
 
@@ -218,7 +223,7 @@ func setupS3(t *testing.T, accessKey string, secretKey string, endpoint string, 
 	if _, err := s3Connection.CreateBucket(&awsS3.CreateBucketInput{
 		Bucket: aws.String(bucket),
 	}); err != nil {
-		t.Skipf("failed to create bucket (%v)", err)
+		assert.Fail(t, "failed to create bucket (%v)", err)
 		return err
 	}
 	return nil
