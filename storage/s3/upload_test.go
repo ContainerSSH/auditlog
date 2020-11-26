@@ -58,7 +58,15 @@ func (m *minio) Start(
 	}
 
 	var err error
-	if err := setupS3(t, accessKey, secretKey, endpoint, region, bucket); err != nil {
+	for i := 0; i < 6; i++ {
+		if err = setupS3(accessKey, secretKey, endpoint, region, bucket); err != nil {
+			time.Sleep(5 * time.Second)
+			continue
+		}
+		break
+	}
+
+	if err != nil {
 		return nil, err
 	}
 
@@ -160,7 +168,7 @@ func (m *minio) waitForMinio(t *testing.T) error {
 	tries := 0
 	for {
 		if tries > 30 {
-			m.Stop(t)
+			m.Stop()
 			assert.Fail(t, "minio failed to come up within 30 seconds")
 			return fmt.Errorf("minio failed to come up")
 		}
@@ -170,19 +178,20 @@ func (m *minio) waitForMinio(t *testing.T) error {
 			time.Sleep(time.Second)
 		} else {
 			_ = sock.Close()
+
 			break
 		}
 	}
 	return nil
 }
 
-func (m *minio) Stop(t *testing.T) {
+func (m *minio) Stop() {
 	if m.containerID != "" {
 		ctx := context.Background()
 
 		cli, err := m.getClient()
 		if err != nil {
-			assert.Fail(t, "failed to create Docker client (%v)", err)
+			goLog.Printf("failed to create Docker client (%v)\n", err)
 		}
 
 		if err := cli.ContainerRemove(ctx, m.containerID, types.ContainerRemoveOptions{
@@ -205,7 +214,7 @@ func (m *minio) Stop(t *testing.T) {
 	}
 }
 
-func setupS3(t *testing.T, accessKey string, secretKey string, endpoint string, region string, bucket string) error {
+func setupS3(accessKey string, secretKey string, endpoint string, region string, bucket string) error {
 	awsConfig := &aws.Config{
 		CredentialsChainVerboseErrors: nil,
 		Credentials: credentials.NewCredentials(&credentials.StaticProvider{
@@ -223,7 +232,6 @@ func setupS3(t *testing.T, accessKey string, secretKey string, endpoint string, 
 	if _, err := s3Connection.CreateBucket(&awsS3.CreateBucketInput{
 		Bucket: aws.String(bucket),
 	}); err != nil {
-		assert.Fail(t, "failed to create bucket (%v)", err)
 		return err
 	}
 	return nil
@@ -284,12 +292,10 @@ func TestSmallUpload(t *testing.T) {
 	m := &minio{}
 
 	storage, err := m.Start(t, accessKey, secretKey, region, bucket, endpoint)
+	defer m.Stop()
 	if err != nil {
 		return
 	}
-	defer func() {
-		m.Stop(t)
-	}()
 
 	writer, err := storage.OpenWriter("test")
 	if err != nil {
@@ -336,12 +342,10 @@ func TestLargeUpload(t *testing.T) {
 	m := &minio{}
 
 	storage, err := m.Start(t, accessKey, secretKey, region, bucket, endpoint)
+	defer m.Stop()
 	if err != nil {
 		return
 	}
-	defer func() {
-		m.Stop(t)
-	}()
 
 	writer, err := storage.OpenWriter("test")
 	if err != nil {
