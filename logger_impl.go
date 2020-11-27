@@ -12,7 +12,7 @@ import (
 	"github.com/containerssh/auditlog/message"
 	"github.com/containerssh/auditlog/storage"
 
-	"github.com/containerssh/geoip"
+	"github.com/containerssh/geoip/geoipprovider"
 	"github.com/containerssh/log"
 )
 
@@ -22,7 +22,7 @@ type loggerImplementation struct {
 	storage     storage.WritableStorage
 	logger      log.Logger
 	wg          *sync.WaitGroup
-	geoIPLookup geoip.LookupProvider
+	geoIPLookup geoipprovider.LookupProvider
 }
 
 type loggerConnection struct {

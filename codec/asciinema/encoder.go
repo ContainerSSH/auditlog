@@ -6,7 +6,7 @@ import (
 	"io"
 	"net"
 
-	"github.com/containerssh/geoip"
+	"github.com/containerssh/geoip/geoipprovider"
 	"github.com/containerssh/log"
 
 	"github.com/containerssh/auditlog/message"
@@ -15,7 +15,7 @@ import (
 
 type encoder struct {
 	logger        log.Logger
-	geoIPProvider geoip.LookupProvider
+	geoIPProvider geoipprovider.LookupProvider
 }
 
 func (e *encoder) GetMimeType() string {

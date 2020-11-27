@@ -5,26 +5,24 @@ import (
 	"fmt"
 	"net"
 
-	"github.com/containerssh/geoip"
-
-	"github.com/containerssh/auditlog/storage"
-
 	"github.com/containerssh/auditlog/codec"
 	"github.com/containerssh/auditlog/message"
+	"github.com/containerssh/auditlog/storage"
 
+	"github.com/containerssh/geoip/geoipprovider"
 	"github.com/fxamacker/cbor"
 )
 
 // NewEncoder creates an encoder that encodes messages in CBOR+GZIP format as documented
 //            on https://containerssh.github.io/advanced/audit/format/
-func NewEncoder(geoIPProvider geoip.LookupProvider) codec.Encoder {
+func NewEncoder(geoIPProvider geoipprovider.LookupProvider) codec.Encoder {
 	return &encoder{
 		geoIPProvider: geoIPProvider,
 	}
 }
 
 type encoder struct {
-	geoIPProvider geoip.LookupProvider
+	geoIPProvider geoipprovider.LookupProvider
 }
 
 func (e *encoder) GetMimeType() string {

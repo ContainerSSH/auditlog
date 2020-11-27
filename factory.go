@@ -4,8 +4,6 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/containerssh/geoip"
-
 	"github.com/containerssh/auditlog/codec"
 	"github.com/containerssh/auditlog/codec/asciinema"
 	"github.com/containerssh/auditlog/codec/binary"
@@ -15,11 +13,12 @@ import (
 	noneStorage "github.com/containerssh/auditlog/storage/none"
 	"github.com/containerssh/auditlog/storage/s3"
 
+	"github.com/containerssh/geoip/geoipprovider"
 	"github.com/containerssh/log"
 )
 
 // New Creates a new audit logging pipeline based on the provided configuration.
-func New(config Config, geoIPLookupProvider geoip.LookupProvider, logger log.Logger) (Logger, error) {
+func New(config Config, geoIPLookupProvider geoipprovider.LookupProvider, logger log.Logger) (Logger, error) {
 	if !config.Enable {
 		return &empty{}, nil
 	}
@@ -49,7 +48,7 @@ func NewLogger(
 	encoder codec.Encoder,
 	storage storage.WritableStorage,
 	logger log.Logger,
-	geoIPLookup geoip.LookupProvider,
+	geoIPLookup geoipprovider.LookupProvider,
 ) (Logger, error) {
 	return &loggerImplementation{
 		intercept:   intercept,
@@ -62,7 +61,7 @@ func NewLogger(
 }
 
 // NewEncoder creates a new audit log encoder of the specified format.
-func NewEncoder(encoder Format, logger log.Logger, geoIPLookupProvider geoip.LookupProvider) (codec.Encoder, error) {
+func NewEncoder(encoder Format, logger log.Logger, geoIPLookupProvider geoipprovider.LookupProvider) (codec.Encoder, error) {
 	switch encoder {
 	case FormatNone:
 		return noneCodec.NewEncoder(), nil
