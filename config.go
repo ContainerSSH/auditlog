@@ -33,6 +33,8 @@ const (
 
 // Config is the configuration structure for audit logging.
 type Config struct {
+	// Enable turns on audit logging.
+	Enable bool `json:"enable" yaml:"enable" default:"false"`
 	// Format audit format
 	Format Format `json:"format" yaml:"format" default:"none"`
 	// Storage audit storage type

@@ -33,6 +33,7 @@ func newTestCase(t *testing.T) (*testCase, error) {
 		dir: dir,
 		t:   t,
 		config: auditlog.Config{
+			Enable:  true,
 			Format:  "binary",
 			Storage: "file",
 			File: file.Config{

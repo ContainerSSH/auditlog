@@ -23,6 +23,7 @@ The `cfg` variable must be of the type `auditlog.Config`. Here's an example conf
 
 ```go
 config := auditlog.Config{
+    Enable: true,
     Format:  "binary",
     Storage: "file",
     File: file.Config{
@@ -36,7 +37,7 @@ config := auditlog.Config{
     },
 }
 ```
- 
+
 The `logger` variable must be an instance of `github.com/containerssh/log/logger`. The easiest way to create the logger is as follows:
 
 ```go
@@ -46,7 +47,7 @@ logger := standard.New()
 Alternatively, you can also create the audit logger using the following factory method:
 
 ```go
-logger := auditlog.NewLogger(
+auditLogger := auditlog.NewLogger(
     intercept,
     encoder,
     storage,
@@ -59,7 +60,7 @@ In this case `intercept` is of the type `InterceptConfig`, `encoder` is an insta
 You can also trigger a shutdown of the audit logger with the `Shutdown()` method. This method takes a context as an argument, allowing you to specify a grace time to let the audit logger finish background processes:
 
 ```go
-logger.Shutdown(
+auditLogger.Shutdown(
     context.WithTimeout(
         context.Background(),
         30 * time.Second,

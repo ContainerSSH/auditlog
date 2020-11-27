@@ -1,4 +1,8 @@
-# 0.9.2: Message for handshake success / failure
+# 0.9.3: Audit log configuration now has an `Enable` flag (November 27, 2020)
+
+We have added a new `Enable` flag to the [configuration](config.go). If the flag is set to `false` (default) the `New()` function creates an empty logger to save CPU cycles. Callers are encouraged to use this flag to completely disable audit logging.
+
+# 0.9.2: Message for handshake success / failure (November 26, 2020)
 
 There are now two additional message types: `TypeHandshakeFailed` (opcode 198) and `TypeHandshakeSuccessful` (opcode 199).
 

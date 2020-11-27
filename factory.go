@@ -19,8 +19,11 @@ import (
 )
 
 // New Creates a new audit logging pipeline based on the provided configuration.
-//goland:noinspection GoUnusedExportedFunction
 func New(config Config, geoIPLookupProvider geoip.LookupProvider, logger log.Logger) (Logger, error) {
+	if !config.Enable {
+		return &empty{}, nil
+	}
+
 	encoder, err := NewEncoder(config.Format, logger, geoIPLookupProvider)
 	if err != nil {
 		return nil, err
