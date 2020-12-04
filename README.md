@@ -1,4 +1,5 @@
 [![ContainerSSH - Launch Containers on Demand](https://containerssh.github.io/images/logo-for-embedding.svg)](https://containerssh.github.io/)
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FContainerSSH%2Fauditlog.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2FContainerSSH%2Fauditlog?ref=badge_shield)
 
 <!--suppress HtmlDeprecatedAttribute -->
 <h1 align="center">ContainerSSH Audit Logging Library</h1>
@@ -245,3 +246,7 @@ SetMetadata(startTime int64, sourceIp string, username *string)
 ### Implementing a readable storage
 
 In order to implement a readable storage you must implement the `ReadableStorage` interface in [storage/storage.go](storage/storage.go). You will need to implement the `OpenReader()` method to open a specific audit log and the `List()` method to list all available audit logs.
+
+
+## License
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FContainerSSH%2Fauditlog.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2FContainerSSH%2Fauditlog?ref=badge_large)
