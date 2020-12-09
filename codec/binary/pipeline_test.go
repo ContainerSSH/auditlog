@@ -63,7 +63,7 @@ func testPipeline(t *testing.T, msg message.Message) {
 
 func TestTypeConnect(t *testing.T) {
 	msg := message.Message{
-		ConnectionID: []byte("1234"),
+		ConnectionID: "0123456789ABCDEF",
 		Timestamp:    1234,
 		MessageType:  message.TypeConnect,
 		Payload: message.PayloadConnect{
@@ -77,7 +77,7 @@ func TestTypeConnect(t *testing.T) {
 
 func TestTypeDisconnect(t *testing.T) {
 	msg := message.Message{
-		ConnectionID: []byte("1234"),
+		ConnectionID: "0123456789ABCDEF",
 		Timestamp:    1234,
 		MessageType:  message.TypeDisconnect,
 		Payload:      nil,
@@ -89,7 +89,7 @@ func TestTypeDisconnect(t *testing.T) {
 
 func TestTypeAuthPassword(t *testing.T) {
 	msg := message.Message{
-		ConnectionID: []byte("1234"),
+		ConnectionID: "0123456789ABCDEF",
 		Timestamp:    1234,
 		MessageType:  message.TypeAuthPassword,
 		Payload: message.PayloadAuthPassword{
@@ -104,7 +104,7 @@ func TestTypeAuthPassword(t *testing.T) {
 
 func TestTypeAuthPasswordSuccessful(t *testing.T) {
 	msg := message.Message{
-		ConnectionID: []byte("1234"),
+		ConnectionID: "0123456789ABCDEF",
 		Timestamp:    1234,
 		MessageType:  message.TypeAuthPasswordSuccessful,
 		Payload: message.PayloadAuthPassword{
@@ -119,7 +119,7 @@ func TestTypeAuthPasswordSuccessful(t *testing.T) {
 
 func TestTypeAuthPasswordFailed(t *testing.T) {
 	msg := message.Message{
-		ConnectionID: []byte("1234"),
+		ConnectionID: "0123456789ABCDEF",
 		Timestamp:    1234,
 		MessageType:  message.TypeAuthPasswordFailed,
 		Payload: message.PayloadAuthPassword{
@@ -134,7 +134,7 @@ func TestTypeAuthPasswordFailed(t *testing.T) {
 
 func TestTypeAuthPasswordBackendError(t *testing.T) {
 	msg := message.Message{
-		ConnectionID: []byte("1234"),
+		ConnectionID: "0123456789ABCDEF",
 		Timestamp:    1234,
 		MessageType:  message.TypeAuthPasswordBackendError,
 		Payload: message.PayloadAuthPasswordBackendError{
@@ -150,7 +150,7 @@ func TestTypeAuthPasswordBackendError(t *testing.T) {
 
 func TestTypeAuthPubKey(t *testing.T) {
 	msg := message.Message{
-		ConnectionID: []byte("1234"),
+		ConnectionID: "0123456789ABCDEF",
 		Timestamp:    1234,
 		MessageType:  message.TypeAuthPubKey,
 		Payload: message.PayloadAuthPubKey{
@@ -165,7 +165,7 @@ func TestTypeAuthPubKey(t *testing.T) {
 
 func TestTypeAuthPubKeySuccessful(t *testing.T) {
 	msg := message.Message{
-		ConnectionID: []byte("1234"),
+		ConnectionID: "0123456789ABCDEF",
 		Timestamp:    1234,
 		MessageType:  message.TypeAuthPubKeySuccessful,
 		Payload: message.PayloadAuthPubKey{
@@ -180,7 +180,7 @@ func TestTypeAuthPubKeySuccessful(t *testing.T) {
 
 func TestTypeAuthPubKeyFailed(t *testing.T) {
 	msg := message.Message{
-		ConnectionID: []byte("1234"),
+		ConnectionID: "0123456789ABCDEF",
 		Timestamp:    1234,
 		MessageType:  message.TypeAuthPubKeyFailed,
 		Payload: message.PayloadAuthPubKey{
@@ -195,7 +195,7 @@ func TestTypeAuthPubKeyFailed(t *testing.T) {
 
 func TestTypeAuthPubKeyBackendError(t *testing.T) {
 	msg := message.Message{
-		ConnectionID: []byte("1234"),
+		ConnectionID: "0123456789ABCDEF",
 		Timestamp:    1234,
 		MessageType:  message.TypeAuthPubKeyBackendError,
 		Payload: message.PayloadAuthPubKeyBackendError{
@@ -211,7 +211,7 @@ func TestTypeAuthPubKeyBackendError(t *testing.T) {
 
 func TestTypeGlobalRequestUnknown(t *testing.T) {
 	msg := message.Message{
-		ConnectionID: []byte("1234"),
+		ConnectionID: "0123456789ABCDEF",
 		Timestamp:    1234,
 		MessageType:  message.TypeGlobalRequestUnknown,
 		Payload: message.PayloadGlobalRequestUnknown{
@@ -225,7 +225,7 @@ func TestTypeGlobalRequestUnknown(t *testing.T) {
 
 func TestTypeNewChannel(t *testing.T) {
 	msg := message.Message{
-		ConnectionID: []byte("1234"),
+		ConnectionID: "0123456789ABCDEF",
 		Timestamp:    1234,
 		MessageType:  message.TypeNewChannel,
 		Payload: message.PayloadNewChannel{
@@ -239,7 +239,7 @@ func TestTypeNewChannel(t *testing.T) {
 
 func TestTypeNewChannelFailed(t *testing.T) {
 	msg := message.Message{
-		ConnectionID: []byte("1234"),
+		ConnectionID: "0123456789ABCDEF",
 		Timestamp:    1234,
 		MessageType:  message.TypeNewChannelFailed,
 		Payload: message.PayloadNewChannelFailed{
@@ -254,7 +254,7 @@ func TestTypeNewChannelFailed(t *testing.T) {
 
 func TestTypeNewChannelSuccessful(t *testing.T) {
 	msg := message.Message{
-		ConnectionID: []byte("1234"),
+		ConnectionID: "0123456789ABCDEF",
 		Timestamp:    1234,
 		MessageType:  message.TypeNewChannelSuccessful,
 		Payload: message.PayloadNewChannelSuccessful{
@@ -268,7 +268,7 @@ func TestTypeNewChannelSuccessful(t *testing.T) {
 
 func TestTypeChannelRequestUnknownType(t *testing.T) {
 	msg := message.Message{
-		ConnectionID: []byte("1234"),
+		ConnectionID: "0123456789ABCDEF",
 		Timestamp:    1234,
 		MessageType:  message.TypeChannelRequestUnknownType,
 		Payload: message.PayloadChannelRequestUnknownType{
@@ -282,7 +282,7 @@ func TestTypeChannelRequestUnknownType(t *testing.T) {
 
 func TestTypeChannelRequestDecodeFailed(t *testing.T) {
 	msg := message.Message{
-		ConnectionID: []byte("1234"),
+		ConnectionID: "0123456789ABCDEF",
 		Timestamp:    1234,
 		MessageType:  message.TypeChannelRequestDecodeFailed,
 		Payload: message.PayloadChannelRequestDecodeFailed{
@@ -297,7 +297,7 @@ func TestTypeChannelRequestDecodeFailed(t *testing.T) {
 
 func TestTypeChannelRequestSetEnv(t *testing.T) {
 	msg := message.Message{
-		ConnectionID: []byte("1234"),
+		ConnectionID: "0123456789ABCDEF",
 		Timestamp:    1234,
 		MessageType:  message.TypeChannelRequestSetEnv,
 		Payload: message.PayloadChannelRequestSetEnv{
@@ -312,7 +312,7 @@ func TestTypeChannelRequestSetEnv(t *testing.T) {
 
 func TestTypeChannelRequestExec(t *testing.T) {
 	msg := message.Message{
-		ConnectionID: []byte("1234"),
+		ConnectionID: "0123456789ABCDEF",
 		Timestamp:    1234,
 		MessageType:  message.TypeChannelRequestExec,
 		Payload: message.PayloadChannelRequestExec{
@@ -326,7 +326,7 @@ func TestTypeChannelRequestExec(t *testing.T) {
 
 func TestTypeChannelRequestPty(t *testing.T) {
 	msg := message.Message{
-		ConnectionID: []byte("1234"),
+		ConnectionID: "0123456789ABCDEF",
 		Timestamp:    1234,
 		MessageType:  message.TypeChannelRequestPty,
 		Payload: message.PayloadChannelRequestPty{
@@ -341,7 +341,7 @@ func TestTypeChannelRequestPty(t *testing.T) {
 
 func TestTypeChannelRequestShell(t *testing.T) {
 	msg := message.Message{
-		ConnectionID: []byte("1234"),
+		ConnectionID: "0123456789ABCDEF",
 		Timestamp:    1234,
 		MessageType:  message.TypeChannelRequestShell,
 		Payload:      message.PayloadChannelRequestShell{},
@@ -353,7 +353,7 @@ func TestTypeChannelRequestShell(t *testing.T) {
 
 func TestTypeChannelRequestSignal(t *testing.T) {
 	msg := message.Message{
-		ConnectionID: []byte("1234"),
+		ConnectionID: "0123456789ABCDEF",
 		Timestamp:    1234,
 		MessageType:  message.TypeChannelRequestSignal,
 		Payload: message.PayloadChannelRequestSignal{
@@ -367,7 +367,7 @@ func TestTypeChannelRequestSignal(t *testing.T) {
 
 func TestTypeChannelRequestSubsystem(t *testing.T) {
 	msg := message.Message{
-		ConnectionID: []byte("1234"),
+		ConnectionID: "0123456789ABCDEF",
 		Timestamp:    1234,
 		MessageType:  message.TypeChannelRequestSubsystem,
 		Payload: message.PayloadChannelRequestSubsystem{
@@ -381,7 +381,7 @@ func TestTypeChannelRequestSubsystem(t *testing.T) {
 
 func TestTypeChannelRequestWindow(t *testing.T) {
 	msg := message.Message{
-		ConnectionID: []byte("1234"),
+		ConnectionID: "0123456789ABCDEF",
 		Timestamp:    1234,
 		MessageType:  message.TypeChannelRequestWindow,
 		Payload: message.PayloadChannelRequestWindow{

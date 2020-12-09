@@ -75,6 +75,7 @@ auditLogger.Shutdown(
 Once the audit logging pipeline is created you can then create your first entry for a new connection:
 
 ```go
+connectionID := "0123456789ABCDEF"
 connection, err := auditLogger.OnConnect(
     []byte("asdf"),
     net.TCPAddr{

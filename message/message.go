@@ -1,9 +1,7 @@
 package message
 
-import "bytes"
-
 // ConnectionID is an opaque, globally unique identifier for a connection made to the SSH server
-type ConnectionID []byte
+type ConnectionID string
 
 // ChannelID is the ID of an SSH channel
 type ChannelID *uint64
@@ -34,7 +32,7 @@ type Payload interface {
 
 // Equals is a method to compare two messages with each other
 func (m Message) Equals(other Message) bool {
-	if !bytes.Equal(m.ConnectionID, other.ConnectionID) {
+	if m.ConnectionID != other.ConnectionID {
 		return false
 	}
 	if m.Timestamp != other.Timestamp {
