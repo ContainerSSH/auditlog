@@ -62,7 +62,7 @@ func (d *decoder) Decode(reader io.Reader) (<-chan message.Message, <-chan error
 
 type decodedMessage struct {
 	// ConnectionID is an opaque ID of the connection
-	ConnectionID []byte `json:"connectionId" yaml:"connectionId"`
+	ConnectionID message.ConnectionID `json:"connectionId" yaml:"connectionId"`
 	// Timestamp is a nanosecond timestamp when the message was created
 	Timestamp int64 `json:"timestamp" yaml:"timestamp"`
 	// Type of the Payload object

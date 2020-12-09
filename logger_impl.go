@@ -2,7 +2,6 @@ package auditlog
 
 import (
 	"context"
-	"encoding/hex"
 	"io"
 	"net"
 	"sync"
@@ -48,7 +47,7 @@ func (l *loggerImplementation) Shutdown(shutdownContext context.Context) {
 //region Connection
 
 func (l *loggerImplementation) OnConnect(connectionID message.ConnectionID, ip net.TCPAddr) (Connection, error) {
-	name := hex.EncodeToString(connectionID)
+	name := string(connectionID)
 	writer, err := l.storage.OpenWriter(name)
 	if err != nil {
 		return nil, err

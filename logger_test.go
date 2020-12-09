@@ -2,8 +2,10 @@ package auditlog_test
 
 import (
 	"context"
+	"encoding/hex"
 	"fmt"
 	"io/ioutil"
+	"math/rand"
 	"net"
 	"os"
 	"testing"
@@ -21,6 +23,14 @@ import (
 	"github.com/containerssh/auditlog/storage"
 	"github.com/containerssh/auditlog/storage/file"
 )
+
+func newConnectionID() message.ConnectionID {
+	token := make([]byte, 16)
+	rand.Read(token)
+	return message.ConnectionID(hex.EncodeToString(
+		token,
+	))
+}
 
 func newTestCase(t *testing.T) (*testCase, error) {
 	var err error
@@ -182,8 +192,10 @@ func TestConnect(t *testing.T) {
 	}
 	defer testCase.tearDown()
 
+	connectionID := newConnectionID()
+
 	connection, err := testCase.auditLogger.OnConnect(
-		[]byte("asdf"),
+		connectionID,
 		net.TCPAddr{
 			IP:   net.ParseIP("127.0.0.1"),
 			Port: 2222,
@@ -206,12 +218,12 @@ func TestConnect(t *testing.T) {
 	assert.Equal(t, 2, len(messages))
 
 	assert.Equal(t, message.TypeConnect, messages[0].MessageType)
-	assert.Equal(t, []byte("asdf"), []byte(messages[0].ConnectionID))
+	assert.Equal(t, connectionID, messages[0].ConnectionID)
 	payload1 := messages[0].Payload.(message.PayloadConnect)
 	assert.Equal(t, "127.0.0.1", payload1.RemoteAddr)
 
 	assert.Equal(t, message.TypeDisconnect, messages[1].MessageType)
-	assert.Equal(t, []byte("asdf"), []byte(messages[1].ConnectionID))
+	assert.Equal(t, connectionID, messages[1].ConnectionID)
 	assert.Equal(t, nil, messages[1].Payload)
 }
 
@@ -223,8 +235,10 @@ func TestAuth(t *testing.T) {
 	}
 	defer testCase.tearDown()
 
+	connectionID := newConnectionID()
+
 	connection, err := testCase.auditLogger.OnConnect(
-		[]byte("asdf"),
+		connectionID,
 		net.TCPAddr{
 			IP:   net.ParseIP("127.0.0.1"),
 			Port: 2222,
@@ -255,7 +269,7 @@ func TestAuth(t *testing.T) {
 	assert.Equal(t, 15, len(messages))
 
 	for _, msg := range messages {
-		assert.Equal(t, []byte("asdf"), []byte(msg.ConnectionID))
+		assert.Equal(t, connectionID, msg.ConnectionID)
 	}
 	assert.Equal(t, message.TypeAuthPassword, messages[1].MessageType)
 	assert.Equal(t, message.TypeAuthPasswordBackendError, messages[2].MessageType)

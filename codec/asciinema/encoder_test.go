@@ -97,7 +97,7 @@ func sendMessagesAndReturnWrittenData(
 func TestHeader(t *testing.T) {
 	header, frames, err := sendMessagesAndReturnWrittenData(t, []message.Message{
 		{
-			ConnectionID: []byte("asdf"),
+			ConnectionID: "0123456789ABCDEF",
 			Timestamp:    0,
 			MessageType:  message.TypeConnect,
 			Payload: message.PayloadConnect{
@@ -106,7 +106,7 @@ func TestHeader(t *testing.T) {
 			ChannelID: nil,
 		},
 		{
-			ConnectionID: []byte("asdf"),
+			ConnectionID: "0123456789ABCDEF",
 			Timestamp:    0,
 			MessageType:  message.TypeDisconnect,
 			Payload:      nil,
@@ -128,7 +128,7 @@ func TestHeader(t *testing.T) {
 
 var fullOutputTestMessages = []message.Message{
 	{
-		ConnectionID: []byte("asdf"),
+		ConnectionID: "0123456789ABCDEF",
 		Timestamp:    0,
 		MessageType:  message.TypeConnect,
 		Payload: message.PayloadConnect{
@@ -137,7 +137,7 @@ var fullOutputTestMessages = []message.Message{
 		ChannelID: nil,
 	},
 	{
-		ConnectionID: []byte("asdf"),
+		ConnectionID: "0123456789ABCDEF",
 		Timestamp:    int64(time.Second),
 		MessageType:  message.TypeNewChannel,
 		Payload: message.PayloadNewChannel{
@@ -146,7 +146,7 @@ var fullOutputTestMessages = []message.Message{
 		ChannelID: nil,
 	},
 	{
-		ConnectionID: []byte("asdf"),
+		ConnectionID: "0123456789ABCDEF",
 		Timestamp:    int64(2 * time.Second),
 		MessageType:  message.TypeNewChannelSuccessful,
 		Payload: message.PayloadNewChannelSuccessful{
@@ -155,14 +155,14 @@ var fullOutputTestMessages = []message.Message{
 		ChannelID: message.MakeChannelID(0),
 	},
 	{
-		ConnectionID: []byte("asdf"),
+		ConnectionID: "0123456789ABCDEF",
 		Timestamp:    int64(3 * time.Second),
 		MessageType:  message.TypeChannelRequestShell,
 		Payload:      message.PayloadChannelRequestShell{},
 		ChannelID:    message.MakeChannelID(0),
 	},
 	{
-		ConnectionID: []byte("asdf"),
+		ConnectionID: "0123456789ABCDEF",
 		Timestamp:    int64(4 * time.Second),
 		MessageType:  message.TypeIO,
 		Payload: message.PayloadIO{
@@ -172,7 +172,7 @@ var fullOutputTestMessages = []message.Message{
 		ChannelID: message.MakeChannelID(0),
 	},
 	{
-		ConnectionID: []byte("asdf"),
+		ConnectionID: "0123456789ABCDEF",
 		Timestamp:    int64(5 * time.Second),
 		MessageType:  message.TypeDisconnect,
 		Payload:      nil,
