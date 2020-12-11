@@ -34,6 +34,11 @@ func (e *encoder) GetFileExtension() string {
 }
 
 func (e *encoder) Encode(messages <-chan message.Message, storage storage.Writer) error {
+	header := newHeader(currentVersion).getBytes()
+	if _, err := storage.Write(header); err != nil {
+		return err
+	}
+
 	var gzipHandle *gzip.Writer
 	var encoder *cbor.Encoder
 	gzipHandle = gzip.NewWriter(storage)
