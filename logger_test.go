@@ -13,8 +13,6 @@ import (
 
 	"github.com/containerssh/geoip/dummy"
 	"github.com/containerssh/log"
-	"github.com/containerssh/log/formatter/ljson"
-	logPipeline "github.com/containerssh/log/pipeline"
 	"github.com/stretchr/testify/assert"
 
 	"github.com/containerssh/auditlog"
@@ -68,12 +66,23 @@ type testCase struct {
 	dir         string
 	t           *testing.T
 	auditLogger auditlog.Logger
-	logger      *logPipeline.LoggerPipeline
+	logger      log.Logger
 	config      auditlog.Config
 }
 
 func (c *testCase) setUpLogger() error {
-	c.logger = logPipeline.NewLoggerPipeline(log.LevelDebug, ljson.NewLJsonLogFormatter(), os.Stdout)
+	var err error
+	c.logger, err = log.New(
+		log.Config{
+			Level:  log.LevelDebug,
+			Format: log.FormatText,
+		},
+		"audit",
+		os.Stdout,
+	)
+	if err != nil {
+		return err
+	}
 	geoIPLookupProvider, _ := dummy.New()
 	auditLogger, err := auditlog.New(c.config, geoIPLookupProvider, c.logger)
 	if err != nil {

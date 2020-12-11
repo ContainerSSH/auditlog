@@ -15,7 +15,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/session"
 	awsS3 "github.com/aws/aws-sdk-go/service/s3"
-	"github.com/containerssh/log/standard"
+	"github.com/containerssh/log"
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/client"
@@ -76,7 +76,34 @@ func (m *minio) Start(
 		return nil, err
 	}
 
-	logger := standard.New()
+	err = m.setupStorage(t, accessKey, secretKey, region, bucket, endpoint)
+	if err != nil {
+		return nil, err
+	}
+
+	return m.storage, nil
+}
+
+func (m *minio) setupStorage(
+	t *testing.T,
+	accessKey string,
+	secretKey string,
+	region string,
+	bucket string,
+	endpoint string,
+) error {
+	logger, err := log.New(
+		log.Config{
+			Level:  log.LevelDebug,
+			Format: log.FormatText,
+		},
+		"audit",
+		os.Stdout,
+	)
+	if err != nil {
+		assert.Fail(t, "failed to create logger (%v)", err)
+		return err
+	}
 	m.storage, err = s3.NewStorage(
 		s3.Config{
 			Local:           m.dir,
@@ -92,10 +119,9 @@ func (m *minio) Start(
 	)
 	if err != nil {
 		assert.Fail(t, "failed to create storage (%v)", err)
-		return nil, err
+		return err
 	}
-
-	return m.storage, nil
+	return nil
 }
 
 var hostConfig = &container.HostConfig{

@@ -4,12 +4,13 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"os"
 	"strings"
 	"testing"
 	"time"
 
 	"github.com/containerssh/geoip/dummy"
-	"github.com/containerssh/log/standard"
+	"github.com/containerssh/log"
 	"github.com/stretchr/testify/assert"
 
 	"github.com/containerssh/auditlog/codec/asciinema"
@@ -55,7 +56,17 @@ func sendMessagesAndReturnWrittenData(
 	t *testing.T,
 	messages []message.Message,
 ) (asciinema.Header, []asciinema.Frame, error) {
-	logger := standard.New()
+	logger, err := log.New(
+		log.Config{
+			Level:  log.LevelDebug,
+			Format: log.FormatText,
+		},
+		"audit",
+		os.Stdout,
+	)
+	if err != nil {
+		return asciinema.Header{}, nil, err
+	}
 	geoIPProvider, _ := dummy.New()
 	encoder := asciinema.NewEncoder(logger, geoIPProvider)
 	msgChannel := make(chan message.Message)
