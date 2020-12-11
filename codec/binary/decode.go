@@ -24,6 +24,15 @@ func (d *decoder) Decode(reader io.Reader) (<-chan message.Message, <-chan error
 	result := make(chan message.Message)
 	errors := make(chan error)
 
+	if err := readHeader(reader, currentVersion); err != nil {
+		go func() {
+			errors <- err
+			close(result)
+			close(errors)
+		}()
+		return result, errors
+	}
+
 	gzipReader, err := gzip.NewReader(reader)
 	if err != nil {
 		go func() {
