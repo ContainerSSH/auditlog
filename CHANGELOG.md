@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.9.5: pubKey parameter is now a string
+
+To match the changes in [sshserver](https://github.com/containerssh/sshserver) this library now accepts the public key as a `string` instead of a `[]byte`.
+
 ## 0.9.4: Added version header to CBOR+GZIP format
 
 The binary format now contains a 40 bytes header. The first 32 bytes must contain the bytes "ContainerSSH-Auditlog", padded with zero bytes at the end. The last 8 bytes are an unsigned integer in little-endian encoding that indicate the version number of the file format.

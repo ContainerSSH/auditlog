@@ -155,7 +155,7 @@ func TestTypeAuthPubKey(t *testing.T) {
 		MessageType:  message.TypeAuthPubKey,
 		Payload: message.PayloadAuthPubKey{
 			Username: "foo",
-			Key:      []byte("bar"),
+			Key:      "ssh-rsa ABCDEF",
 		},
 		ChannelID: nil,
 	}
@@ -170,7 +170,7 @@ func TestTypeAuthPubKeySuccessful(t *testing.T) {
 		MessageType:  message.TypeAuthPubKeySuccessful,
 		Payload: message.PayloadAuthPubKey{
 			Username: "foo",
-			Key:      []byte("bar"),
+			Key:      "ssh-rsa ABCDEF",
 		},
 		ChannelID: nil,
 	}
@@ -185,7 +185,7 @@ func TestTypeAuthPubKeyFailed(t *testing.T) {
 		MessageType:  message.TypeAuthPubKeyFailed,
 		Payload: message.PayloadAuthPubKey{
 			Username: "foo",
-			Key:      []byte("bar"),
+			Key:      "ssh-rsa ABCDEF",
 		},
 		ChannelID: nil,
 	}
@@ -200,7 +200,7 @@ func TestTypeAuthPubKeyBackendError(t *testing.T) {
 		MessageType:  message.TypeAuthPubKeyBackendError,
 		Payload: message.PayloadAuthPubKeyBackendError{
 			Username: "foo",
-			Key:      []byte("bar"),
+			Key:      "ssh-rsa ABCDEF",
 			Reason:   "test",
 		},
 		ChannelID: nil,

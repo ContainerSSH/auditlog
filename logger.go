@@ -34,14 +34,14 @@ type Connection interface {
 	OnAuthPasswordBackendError(username string, password []byte, reason string)
 
 	// OnAuthPubKey creates an audit log message for an authentication attempt with public key.
-	OnAuthPubKey(username string, pubKey []byte)
+	OnAuthPubKey(username string, pubKey string)
 	// OnAuthPubKeySuccess creates an audit log message for a successful public key authentication.
-	OnAuthPubKeySuccess(username string, pubKey []byte)
+	OnAuthPubKeySuccess(username string, pubKey string)
 	// OnAuthPubKeyFailed creates an audit log message for a failed public key authentication.
-	OnAuthPubKeyFailed(username string, pubKey []byte)
+	OnAuthPubKeyFailed(username string, pubKey string)
 	// OnAuthPubKeyBackendError creates an audit log message for a failure while talking to the auth server (backend)
 	//                          during public key authentication.
-	OnAuthPubKeyBackendError(username string, pubKey []byte, reason string)
+	OnAuthPubKeyBackendError(username string, pubKey string, reason string)
 
 	// OnHandshakeFailed creates an entry that indicates a handshake failure.
 	OnHandshakeFailed(reason string)

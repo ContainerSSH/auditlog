@@ -54,13 +54,13 @@ func (e *empty) OnAuthPasswordFailed(_ string, _ []byte) {}
 
 func (e *empty) OnAuthPasswordBackendError(_ string, _ []byte, _ string) {}
 
-func (e *empty) OnAuthPubKey(_ string, _ []byte) {}
+func (e *empty) OnAuthPubKey(_ string, _ string) {}
 
-func (e *empty) OnAuthPubKeySuccess(_ string, _ []byte) {}
+func (e *empty) OnAuthPubKeySuccess(_ string, _ string) {}
 
-func (e *empty) OnAuthPubKeyFailed(_ string, _ []byte) {}
+func (e *empty) OnAuthPubKeyFailed(_ string, _ string) {}
 
-func (e *empty) OnAuthPubKeyBackendError(_ string, _ []byte, _ string) {}
+func (e *empty) OnAuthPubKeyBackendError(_ string, _ string, _ string) {}
 
 func (e *empty) OnHandshakeFailed(_ string) {}
 

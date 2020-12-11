@@ -144,7 +144,7 @@ func (c *loggerConnection) OnAuthPasswordBackendError(username string, password 
 	}
 }
 
-func (c *loggerConnection) OnAuthPubKey(username string, pubKey []byte) {
+func (c *loggerConnection) OnAuthPubKey(username string, pubKey string) {
 	c.messageChannel <- message.Message{
 		ConnectionID: c.connectionID,
 		Timestamp:    time.Now().UnixNano(),
@@ -157,7 +157,7 @@ func (c *loggerConnection) OnAuthPubKey(username string, pubKey []byte) {
 	}
 }
 
-func (c *loggerConnection) OnAuthPubKeySuccess(username string, pubKey []byte) {
+func (c *loggerConnection) OnAuthPubKeySuccess(username string, pubKey string) {
 	c.messageChannel <- message.Message{
 		ConnectionID: c.connectionID,
 		Timestamp:    time.Now().UnixNano(),
@@ -170,7 +170,7 @@ func (c *loggerConnection) OnAuthPubKeySuccess(username string, pubKey []byte) {
 	}
 }
 
-func (c *loggerConnection) OnAuthPubKeyFailed(username string, pubKey []byte) {
+func (c *loggerConnection) OnAuthPubKeyFailed(username string, pubKey string) {
 	c.messageChannel <- message.Message{
 		ConnectionID: c.connectionID,
 		Timestamp:    time.Now().UnixNano(),
@@ -183,7 +183,7 @@ func (c *loggerConnection) OnAuthPubKeyFailed(username string, pubKey []byte) {
 	}
 }
 
-func (c *loggerConnection) OnAuthPubKeyBackendError(username string, pubKey []byte, reason string) {
+func (c *loggerConnection) OnAuthPubKeyBackendError(username string, pubKey string, reason string) {
 	c.messageChannel <- message.Message{
 		ConnectionID: c.connectionID,
 		Timestamp:    time.Now().UnixNano(),

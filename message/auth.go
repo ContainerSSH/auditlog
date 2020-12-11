@@ -37,7 +37,7 @@ func (p PayloadAuthPasswordBackendError) Equals(other Payload) bool {
 // PayloadAuthPubKey is a payload for a public key based authentication
 type PayloadAuthPubKey struct {
 	Username string `json:"username" yaml:"username"`
-	Key      []byte `json:"key" yaml:"key"`
+	Key      string `json:"key" yaml:"key"`
 }
 
 // Equals compares two PayloadAuthPubKey payloads
@@ -46,14 +46,14 @@ func (p PayloadAuthPubKey) Equals(other Payload) bool {
 	if !ok {
 		return false
 	}
-	return p.Username == p2.Username && bytes.Equal(p.Key, p2.Key)
+	return p.Username == p2.Username && p.Key == p2.Key
 }
 
 // PayloadAuthPubKeyBackendError is a payload for a message indicating that there was a backend error while
 //                               authenticating with public key.
 type PayloadAuthPubKeyBackendError struct {
 	Username string `json:"username" yaml:"username"`
-	Key      []byte `json:"key" yaml:"key"`
+	Key      string `json:"key" yaml:"key"`
 	Reason   string `json:"reason" yaml:"reason"`
 }
 
@@ -63,7 +63,7 @@ func (p PayloadAuthPubKeyBackendError) Equals(other Payload) bool {
 	if !ok {
 		return false
 	}
-	return p.Username == p2.Username && bytes.Equal(p.Key, p2.Key) && p.Reason == p2.Reason
+	return p.Username == p2.Username && p.Key == p2.Key && p.Reason == p2.Reason
 }
 
 // PayloadHandshakeFailed is a payload for a failed handshake
