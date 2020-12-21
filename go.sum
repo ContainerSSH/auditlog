@@ -1,7 +1,7 @@
 github.com/Microsoft/go-winio v0.4.16 h1:FtSW/jqD+l4ba5iPBj9CODVtgfYAD8w2wS923g/cFDk=
 github.com/Microsoft/go-winio v0.4.16/go.mod h1:XB6nPKklQyQ7GC9LdcBEcBl8PF76WugXOPRXwdLnMv0=
-github.com/aws/aws-sdk-go v1.36.11 h1:6lVRjsmRpQwq58+YHBbBe7BZuY3l6onDBLN4twOXT7U=
-github.com/aws/aws-sdk-go v1.36.11/go.mod h1:hcU610XS61/+aQV88ixoOzUoG7v3b31pl2zKMmprdro=
+github.com/aws/aws-sdk-go v1.36.12 h1:YJpKFEMbqEoo+incs5qMe61n1JH3o4O1IMkMexLzJG8=
+github.com/aws/aws-sdk-go v1.36.12/go.mod h1:hcU610XS61/+aQV88ixoOzUoG7v3b31pl2zKMmprdro=
 github.com/containerssh/geoip v0.9.3 h1:RDj46uxB3Ew7qoTHCUClBDkqULRZJOLxYf/VqPgEuK8=
 github.com/containerssh/geoip v0.9.3/go.mod h1:8fyg4eUrKKY0FDyS7GofI6OO7UXDoG1icRtVAHb510k=
 github.com/containerssh/log v0.9.7 h1:T1FxnEtGMbyJJ7C66dDr6k2RwTnSpVGE5U5apr5pB78=
