@@ -19,22 +19,29 @@ import (
 
 // NewStorage Creates a storage driver for an S3-compatible object storage.
 func NewStorage(cfg Config, logger log.Logger) (storage.ReadWriteStorage, error) {
+	if err := cfg.Validate(); err != nil {
+		return nil, err
+	}
+
 	httpClient, err := getHTTPClient(cfg)
 	if err != nil {
 		return nil, err
 	}
 
-	awsConfig, partSize, parallelUploads, err2 := getAWSConfig(cfg, logger, httpClient)
-	if err2 != nil {
-		return nil, err2
+	awsConfig, err := getAWSConfig(cfg, logger, httpClient)
+	if err != nil {
+		return nil, err
 	}
 
-	sess := session.Must(session.NewSession(awsConfig))
+	sess, err := session.NewSession(awsConfig)
+	if err != nil {
+		return nil, err
+	}
 
 	queue := newUploadQueue(
 		cfg.Local,
-		partSize,
-		parallelUploads,
+		cfg.UploadPartSize,
+		cfg.ParallelUploads,
 		cfg.Bucket,
 		cfg.ACL,
 		cfg.Metadata.Username,
@@ -64,18 +71,11 @@ func NewStorage(cfg Config, logger log.Logger) (storage.ReadWriteStorage, error)
 func getAWSConfig(
 	cfg Config, logger log.Logger, httpClient *http.Client,
 ) (
-	*aws.Config, uint, uint, error,
+	*aws.Config, error,
 ) {
 	var endpoint *string
 	if cfg.Endpoint != "" {
 		endpoint = &cfg.Endpoint
-	}
-
-	if cfg.Bucket == "" {
-		return nil, 0, 0, fmt.Errorf("no bucket name specified")
-	}
-	if cfg.Region == "" {
-		return nil, 0, 0, fmt.Errorf("no region name specified")
 	}
 
 	awsConfig := &aws.Config{
@@ -95,25 +95,17 @@ func getAWSConfig(
 		S3ForcePathStyle: aws.Bool(cfg.PathStyleAccess),
 	}
 
-	partSize := uint(5242880)
-	if cfg.UploadPartSize > 5242880 {
-		partSize = cfg.UploadPartSize
-	}
-	parallelUploads := uint(20)
-	if cfg.ParallelUploads > 1 {
-		parallelUploads = cfg.ParallelUploads
-	}
-	return awsConfig, partSize, parallelUploads, nil
+	return awsConfig, nil
 }
 
 func getHTTPClient(cfg Config) (*http.Client, error) {
 	httpClient := http.DefaultClient
-	if cfg.CaCert != "" {
+	if cfg.CACert != "" {
 		rootCAs, _ := x509.SystemCertPool()
 		if rootCAs == nil {
 			rootCAs = x509.NewCertPool()
 		}
-		if ok := rootCAs.AppendCertsFromPEM([]byte(cfg.CaCert)); !ok {
+		if ok := rootCAs.AppendCertsFromPEM([]byte(cfg.CACert)); !ok {
 			return nil, fmt.Errorf("failed to add certificate from config file")
 		}
 		tlsConfig := &tls.Config{

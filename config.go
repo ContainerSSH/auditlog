@@ -1,6 +1,8 @@
 package auditlog
 
 import (
+	"fmt"
+
 	"github.com/containerssh/auditlog/storage/file"
 	"github.com/containerssh/auditlog/storage/s3"
 )
@@ -19,6 +21,18 @@ const (
 	FormatAsciinema Format = "asciinema"
 )
 
+// Validate checks the format.
+func (f Format) Validate() error {
+	switch f {
+	case FormatBinary:
+	case FormatAsciinema:
+	case FormatNone:
+	default:
+		return fmt.Errorf("invalid audit log format: %s", f)
+	}
+	return nil
+}
+
 // Storage describes the storage backend to use.
 type Storage string
 
@@ -30,6 +44,18 @@ const (
 	// StorageS3 signals that audit logs should be stored in an S3-compatible object storage.
 	StorageS3 Storage = "s3"
 )
+
+// Validate checks the storage.
+func (s Storage) Validate() error {
+	switch s {
+	case StorageNone:
+	case StorageFile:
+	case StorageS3:
+	default:
+		return fmt.Errorf("invalid audit log storage: %s", s)
+	}
+	return nil
+}
 
 // Config is the configuration structure for audit logging.
 type Config struct {
@@ -57,4 +83,24 @@ type InterceptConfig struct {
 	Stderr bool `json:"stderr" yaml:"stderr" default:"false"`
 	// Passwords signals that passwords during authentication should be captured.
 	Passwords bool `json:"passwords" yaml:"passwords" default:"false"`
+}
+
+// Validate checks the configuration to enable global configuration check.
+func (config *Config) Validate() error {
+	if !config.Enable {
+		return nil
+	}
+	if err := config.Format.Validate(); err != nil {
+		return err
+	}
+	if err := config.Storage.Validate(); err != nil {
+		return fmt.Errorf("invalid audit log storage (%w)", err)
+	}
+	switch config.Storage {
+	case StorageFile:
+		return config.File.Validate()
+	case StorageS3:
+		return config.S3.Validate()
+	}
+	return nil
 }

@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.9.6: added a Validate method
+
+This release adds a `Validate()` method to the configuration structure.
+
 ## 0.9.5: pubKey parameter is now a string
 
 To match the changes in [sshserver](https://github.com/containerssh/sshserver) this library now accepts the public key as a `string` instead of a `[]byte`.

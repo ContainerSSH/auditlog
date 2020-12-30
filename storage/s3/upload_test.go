@@ -113,6 +113,8 @@ func (m *minio) setupStorage(
 			Region:          region,
 			Endpoint:        endpoint,
 			PathStyleAccess: true,
+			UploadPartSize:  5 * 1024 * 1024,
+			ParallelUploads: 20,
 			Metadata:        s3.Metadata{},
 		},
 		logger,
