@@ -33,14 +33,7 @@ type minio struct {
 }
 
 func (m *minio) getClient() (*client.Client, error) {
-	cli, err := client.NewClient("unix:///var/run/docker.sock", "", nil, make(map[string]string))
-	if err != nil {
-		return client.NewClient("tcp://127.0.0.1:2375", "", nil, make(map[string]string))
-	}
-	if _, err := cli.ServerVersion(context.Background()); err != nil {
-		return client.NewClient("tcp://127.0.0.1:2375", "", nil, make(map[string]string))
-	}
-	return cli, nil
+	return client.NewClientWithOpts()
 }
 
 func (m *minio) Start(
@@ -171,6 +164,7 @@ func (m *minio) startMinio(t *testing.T, accessKey string, secretKey string) err
 		},
 		hostConfig,
 		nil,
+		nil,
 		"",
 	)
 	if err != nil {
@@ -230,8 +224,12 @@ func (m *minio) Stop() {
 			goLog.Println("failed to stop Minio container", err)
 		}
 
-		_, _ = cli.ContainerWait(ctx, m.containerID)
-		m.containerID = ""
+		ok, errChan := cli.ContainerWait(ctx, m.containerID, container.WaitConditionRemoved)
+		select {
+		case <-ok:
+			m.containerID = ""
+		case <-errChan:
+		}
 	}
 
 	if m.dir != "" {
