@@ -33,7 +33,12 @@ type minio struct {
 }
 
 func (m *minio) getClient() (*client.Client, error) {
-	return client.NewClientWithOpts()
+	cli, err := client.NewClientWithOpts()
+	if err != nil {
+		return cli, err
+	}
+	cli.NegotiateAPIVersion(context.Background())
+	return cli, nil
 }
 
 func (m *minio) Start(
