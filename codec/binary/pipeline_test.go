@@ -209,6 +209,76 @@ func TestTypeAuthPubKeyBackendError(t *testing.T) {
 	testPipeline(t, msg)
 }
 
+func TestTypeAuthKeyboardInteractiveChallenge(t *testing.T) {
+	msg := message.Message{
+		ConnectionID: "0123456789ABCDEF",
+		Timestamp:    1234,
+		MessageType:  message.TypeAuthKeyboardInteractiveChallenge,
+		Payload: message.PayloadAuthKeyboardInteractiveChallenge{
+			Username:    "foo",
+			Instruction: "Test instruction",
+			Questions: []message.KeyboardInteractiveQuestion{
+				{
+					Question: "Password: ",
+					Echo:     true,
+				},
+			},
+		},
+		ChannelID: nil,
+	}
+
+	testPipeline(t, msg)
+}
+
+func TestTypeAuthKeyboardInteractiveAnswer(t *testing.T) {
+	msg := message.Message{
+		ConnectionID: "0123456789ABCDEF",
+		Timestamp:    1234,
+		MessageType:  message.TypeAuthKeyboardInteractiveAnswer,
+		Payload: message.PayloadAuthKeyboardInteractiveAnswer{
+			Username: "foo",
+			Answers: []message.KeyboardInteractiveAnswer{
+				{
+					Question: "Password: ",
+					Answer:   "asdf",
+				},
+			},
+		},
+		ChannelID: nil,
+	}
+
+	testPipeline(t, msg)
+}
+
+func TestTypeAuthKeyboardInteractiveFailed(t *testing.T) {
+	msg := message.Message{
+		ConnectionID: "0123456789ABCDEF",
+		Timestamp:    1234,
+		MessageType:  message.TypeAuthKeyboardInteractiveFailed,
+		Payload: message.PayloadAuthKeyboardInteractiveFailed{
+			Username: "foo",
+		},
+		ChannelID: nil,
+	}
+
+	testPipeline(t, msg)
+}
+
+func TestTypeAuthKeyboardInteractiveBackendFailed(t *testing.T) {
+	msg := message.Message{
+		ConnectionID: "0123456789ABCDEF",
+		Timestamp:    1234,
+		MessageType:  message.TypeAuthKeyboardInteractiveBackendError,
+		Payload: message.PayloadAuthKeyboardInteractiveBackendError{
+			Username: "foo",
+			Reason:   "test",
+		},
+		ChannelID: nil,
+	}
+
+	testPipeline(t, msg)
+}
+
 func TestTypeGlobalRequestUnknown(t *testing.T) {
 	msg := message.Message{
 		ConnectionID: "0123456789ABCDEF",
@@ -389,6 +459,61 @@ func TestTypeChannelRequestWindow(t *testing.T) {
 			Rows:    25,
 		},
 		ChannelID: message.MakeChannelID(0),
+	}
+
+	testPipeline(t, msg)
+}
+
+func TestTypeChannelExitSignal(t *testing.T) {
+	msg := message.Message{
+		ConnectionID: "0123456789ABCDEF",
+		Timestamp:    1234,
+		MessageType:  message.TypeExitSignal,
+		Payload: message.PayloadExitSignal{
+			Signal:       "KILL",
+			CoreDumped:   false,
+			ErrorMessage: "killed",
+			LanguageTag:  "",
+		},
+		ChannelID: message.MakeChannelID(0),
+	}
+
+	testPipeline(t, msg)
+}
+
+func TestTypeChannelExit(t *testing.T) {
+	msg := message.Message{
+		ConnectionID: "0123456789ABCDEF",
+		Timestamp:    1234,
+		MessageType:  message.TypeExit,
+		Payload: message.PayloadExit{
+			ExitStatus: 0,
+		},
+		ChannelID: message.MakeChannelID(0),
+	}
+
+	testPipeline(t, msg)
+}
+
+func TestTypeChannelWriteClose(t *testing.T) {
+	msg := message.Message{
+		ConnectionID: "0123456789ABCDEF",
+		Timestamp:    1234,
+		MessageType:  message.TypeWriteClose,
+		Payload:      nil,
+		ChannelID:    message.MakeChannelID(0),
+	}
+
+	testPipeline(t, msg)
+}
+
+func TestTypeChannelClose(t *testing.T) {
+	msg := message.Message{
+		ConnectionID: "0123456789ABCDEF",
+		Timestamp:    1234,
+		MessageType:  message.TypeClose,
+		Payload:      nil,
+		ChannelID:    message.MakeChannelID(0),
 	}
 
 	testPipeline(t, msg)

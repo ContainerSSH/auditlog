@@ -43,6 +43,23 @@ type Connection interface {
 	//                          during public key authentication.
 	OnAuthPubKeyBackendError(username string, pubKey string, reason string)
 
+	// OnAuthKeyboardInteractiveChallenge is sent when a keyboard-interactive challenge is issued to the user.
+	// Multiple of these challenges can be issued to a user, even after a previous password or pubkey authentication.
+	OnAuthKeyboardInteractiveChallenge(
+		username string,
+		instruction string,
+		questions []message.KeyboardInteractiveQuestion,
+	)
+	// OnAuthKeyboardInteractiveAnswer is recording an answer from a user to a keyboard-interactive authentication.
+	OnAuthKeyboardInteractiveAnswer(
+		username string,
+		answers []message.KeyboardInteractiveAnswer,
+	)
+	// OnAuthKeyboardInteractiveFailed records a failure during the keyboard-interactive authentication.
+	OnAuthKeyboardInteractiveFailed(username string)
+	// OnAuthKeyboardInteractiveBackendError records a backend failure during the keyboard-interactive authentication.
+	OnAuthKeyboardInteractiveBackendError(username string, reason string)
+
 	// OnHandshakeFailed creates an entry that indicates a handshake failure.
 	OnHandshakeFailed(reason string)
 	// OnHandshakeSuccessful creates an entry that indicates a successful SSH handshake.
@@ -96,4 +113,13 @@ type Channel interface {
 	// OnExit is called when the executed program quits. The exitStatus parameter contains the exit code of the
 	// application.
 	OnExit(exitStatus uint32)
+
+	// OnExitSignal is called when the executed program quits due to a signal.
+	OnExitSignal(signal string, coreDumped bool, errorMessage string, languageTag string)
+
+	// OnWriteClose is called when the channel is closed for writing.
+	OnWriteClose()
+
+	// OnClose is called when the channel is closed.
+	OnClose()
 }

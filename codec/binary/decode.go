@@ -86,12 +86,16 @@ var messageTypeMap = map[message.Type]message.Payload{
 	message.TypeConnect:    message.PayloadConnect{},
 	message.TypeDisconnect: nil,
 
-	message.TypeAuthPassword:             message.PayloadAuthPassword{},
-	message.TypeAuthPasswordSuccessful:   message.PayloadAuthPassword{},
-	message.TypeAuthPasswordFailed:       message.PayloadAuthPassword{},
-	message.TypeAuthPasswordBackendError: message.PayloadAuthPasswordBackendError{},
-	message.TypeHandshakeFailed:          message.PayloadHandshakeFailed{},
-	message.TypeHandshakeSuccessful:      message.PayloadHandshakeSuccessful{},
+	message.TypeAuthPassword:                        message.PayloadAuthPassword{},
+	message.TypeAuthPasswordSuccessful:              message.PayloadAuthPassword{},
+	message.TypeAuthPasswordFailed:                  message.PayloadAuthPassword{},
+	message.TypeAuthPasswordBackendError:            message.PayloadAuthPasswordBackendError{},
+	message.TypeAuthKeyboardInteractiveChallenge:    message.PayloadAuthKeyboardInteractiveChallenge{},
+	message.TypeAuthKeyboardInteractiveAnswer:       message.PayloadAuthKeyboardInteractiveAnswer{},
+	message.TypeAuthKeyboardInteractiveFailed:       message.PayloadAuthKeyboardInteractiveFailed{},
+	message.TypeAuthKeyboardInteractiveBackendError: message.PayloadAuthKeyboardInteractiveBackendError{},
+	message.TypeHandshakeFailed:                     message.PayloadHandshakeFailed{},
+	message.TypeHandshakeSuccessful:                 message.PayloadHandshakeSuccessful{},
 
 	message.TypeAuthPubKey:             message.PayloadAuthPubKey{},
 	message.TypeAuthPubKeySuccessful:   message.PayloadAuthPubKey{},
@@ -115,6 +119,10 @@ var messageTypeMap = map[message.Type]message.Payload{
 	message.TypeIO:                         message.PayloadIO{},
 	message.TypeRequestFailed:              message.PayloadRequestFailed{},
 	message.TypeExit:                       message.PayloadExit{},
+	message.TypeExitSignal:                 message.PayloadExitSignal{},
+
+	message.TypeClose:      nil,
+	message.TypeWriteClose: nil,
 }
 
 func decodeMessage(v decodedMessage) (*message.Message, error) {

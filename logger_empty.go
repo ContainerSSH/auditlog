@@ -10,6 +10,19 @@ import (
 
 type empty struct{}
 
+func (e *empty) OnAuthKeyboardInteractiveChallenge(
+	_ string,
+	_ string,
+	_ []message.KeyboardInteractiveQuestion,
+) {
+}
+
+func (e *empty) OnAuthKeyboardInteractiveAnswer(_ string, _ []message.KeyboardInteractiveAnswer) {}
+
+func (e *empty) OnAuthKeyboardInteractiveFailed(_ string) {}
+
+func (e *empty) OnAuthKeyboardInteractiveBackendError(_ string, _ string) {}
+
 func (e *empty) OnRequestUnknown(_ uint64, _ string, _ []byte) {}
 
 func (e *empty) OnRequestDecodeFailed(_ uint64, _ string, _ []byte, _ string) {}
@@ -43,6 +56,12 @@ func (e *empty) GetStderrProxy(writer io.Writer) io.Writer {
 }
 
 func (e *empty) OnExit(_ uint32) {}
+
+func (e *empty) OnExitSignal(_ string, _ bool, _ string, _ string) {}
+
+func (e *empty) OnWriteClose() {}
+
+func (e *empty) OnClose() {}
 
 func (e *empty) OnDisconnect() {}
 

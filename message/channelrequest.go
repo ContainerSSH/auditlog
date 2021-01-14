@@ -174,3 +174,23 @@ func (p PayloadExit) Equals(other Payload) bool {
 	}
 	return p.ExitStatus == p2.ExitStatus
 }
+
+// PayloadExitSignal indicates the signal that caused a program to abort.
+type PayloadExitSignal struct {
+	Signal       string `json:"signal" yaml:"signal"`
+	CoreDumped   bool   `json:"coreDumped" yaml:"coreDumped"`
+	ErrorMessage string `json:"errorMessage" yaml:"errorMessage"`
+	LanguageTag  string `json:"languageTag" yaml:"languageTag"`
+}
+
+// Equals compares two PayloadExitSignal payloads.
+func (p PayloadExitSignal) Equals(other Payload) bool {
+	p2, ok := other.(PayloadExitSignal)
+	if !ok {
+		return false
+	}
+	return p.Signal == p2.Signal &&
+		p.CoreDumped == p2.CoreDumped &&
+		p.ErrorMessage == p2.ErrorMessage &&
+		p.LanguageTag == p2.LanguageTag
+}

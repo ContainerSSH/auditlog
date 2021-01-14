@@ -1,6 +1,10 @@
 # Changelog
 
-## 0.9.6: added a Validate method
+## 0.9.7: Added methods for sshserver 0.9.16
+
+This release adds new methods and messages for the new features implemented in sshserver 0.9.16.
+
+## 0.9.6: Added a Validate method
 
 This release adds a `Validate()` method to the configuration structure.
 

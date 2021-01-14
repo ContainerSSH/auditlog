@@ -26,6 +26,18 @@ const (
 	// TypeAuthPubKeyBackendError describes a message that is sent when the auth server failed to respond with username
 	//                            and password.
 	TypeAuthPubKeyBackendError Type = 107
+
+	// TypeAuthKeyboardInteractiveChallenge is a message that indicates that a keyboard-interactive challenge has been
+	// sent to the user. Multiple challenge-response interactions can take place.
+	TypeAuthKeyboardInteractiveChallenge Type = 108
+	// TypeAuthKeyboardInteractiveAnswer is a message that indicates a response to a keyboard-interactive challenge.
+	TypeAuthKeyboardInteractiveAnswer Type = 109
+	// TypeAuthKeyboardInteractiveFailed indicates that a keyboard-interactive authentication process has failed.
+	TypeAuthKeyboardInteractiveFailed Type = 110
+	// TypeAuthKeyboardInteractiveBackendError indicates an error in the authentication backend during a
+	// keyboard-interactive authentication.
+	TypeAuthKeyboardInteractiveBackendError Type = 111
+
 	// TypeHandshakeFailed indicates that the handshake has failed.
 	TypeHandshakeFailed Type = 198
 	// TypeHandshakeSuccessful indicates that the handshake and authentication was successful.
@@ -57,6 +69,12 @@ const (
 	TypeChannelRequestSubsystem Type = 407
 	// TypeChannelRequestWindow describes an in-channel request to resize the current interactive terminal
 	TypeChannelRequestWindow Type = 408
+	// TypeWriteClose indicates that the channel was closed for writing from the server side.
+	TypeWriteClose Type = 496
+	// TypeClose indicates that the channel was closed.
+	TypeClose Type = 497
+	// TypeExitSignal describes the signal that caused a program to terminate abnormally.
+	TypeExitSignal Type = 498
 	// TypeExit describes a message that is sent when the program exited. The payload contains the exit status.
 	TypeExit Type = 499
 	// TypeIO describes the data transferred to and from the currently running program on the terminal.

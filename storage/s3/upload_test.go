@@ -310,6 +310,9 @@ func waitForS3Objects(t *testing.T, storage auditLogStorage.ReadWriteStorage, co
 }
 
 func TestSmallUpload(t *testing.T) {
+	if testing.Short() {
+		t.Skipf("skipping test in short mode")
+	}
 	accessKey := "asdfasdfasdf"
 	secretKey := "asdfasdfasdf"
 
@@ -360,6 +363,9 @@ func TestSmallUpload(t *testing.T) {
 }
 
 func TestLargeUpload(t *testing.T) {
+	if testing.Short() {
+		t.Skipf("skipping test in short mode")
+	}
 	accessKey := "asdfasdfasdf"
 	secretKey := "asdfasdfasdf"
 

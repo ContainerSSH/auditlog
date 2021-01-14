@@ -66,12 +66,99 @@ func (p PayloadAuthPubKeyBackendError) Equals(other Payload) bool {
 	return p.Username == p2.Username && p.Key == p2.Key && p.Reason == p2.Reason
 }
 
-// PayloadHandshakeFailed is a payload for a failed handshake
+// PayloadAuthKeyboardInteractiveChallenge is a message that indicates that a keyboard-interactive challenge has been
+// sent to the user. Multiple challenge-response interactions can take place.
+type PayloadAuthKeyboardInteractiveChallenge struct {
+	Username    string                        `json:"username" yaml:"username"`
+	Instruction string                        `json:"instruction" yaml:"instruction"`
+	Questions   []KeyboardInteractiveQuestion `json:"questions" yaml:"questions"`
+}
+
+// Equals compares two PayloadAuthKeyboardInteractiveChallenge messages.
+func (p PayloadAuthKeyboardInteractiveChallenge) Equals(other Payload) bool {
+	p2, ok := other.(PayloadAuthKeyboardInteractiveChallenge)
+	if !ok {
+		return false
+	}
+	if p.Username != p2.Username {
+		return false
+	}
+	if p.Instruction != p2.Instruction {
+		return false
+	}
+	if len(p.Questions) != len(p2.Questions) {
+		return false
+	}
+	for i, question := range p.Questions {
+		if !question.Equals(p2.Questions[i]) {
+			return false
+		}
+	}
+	return true
+}
+
+// PayloadAuthKeyboardInteractiveAnswer is a message that indicates a response to a keyboard-interactive challenge.
+type PayloadAuthKeyboardInteractiveAnswer struct {
+	Username string                      `json:"username" yaml:"username"`
+	Answers  []KeyboardInteractiveAnswer `json:"answers" yaml:"answers"`
+}
+
+// Equals compares two PayloadAuthKeyboardInteractiveAnswer messages.
+func (p PayloadAuthKeyboardInteractiveAnswer) Equals(other Payload) bool {
+	p2, ok := other.(PayloadAuthKeyboardInteractiveAnswer)
+	if !ok {
+		return false
+	}
+	if p.Username != p2.Username {
+		return false
+	}
+	if len(p.Answers) != len(p2.Answers) {
+		return false
+	}
+	for i, answer := range p.Answers {
+		if !answer.Equals(p2.Answers[i]) {
+			return false
+		}
+	}
+	return true
+}
+
+// PayloadAuthKeyboardInteractiveFailed indicates that a keyboard-interactive authentication process has failed.
+type PayloadAuthKeyboardInteractiveFailed struct {
+	Username string
+}
+
+// Equals compares two PayloadAuthKeyboardInteractiveFailed payloads.
+func (p PayloadAuthKeyboardInteractiveFailed) Equals(other Payload) bool {
+	p2, ok := other.(PayloadAuthKeyboardInteractiveFailed)
+	if !ok {
+		return false
+	}
+	return p.Username == p2.Username
+}
+
+// PayloadAuthKeyboardInteractiveBackendError indicates an error in the authentication backend during a
+// keyboard-interactive authentication.
+type PayloadAuthKeyboardInteractiveBackendError struct {
+	Username string `json:"username" yaml:"username"`
+	Reason   string `json:"reason" yaml:"reason"`
+}
+
+// Equals compares two PayloadAuthKeyboardInteractiveBackendError payloads.
+func (p PayloadAuthKeyboardInteractiveBackendError) Equals(other Payload) bool {
+	p2, ok := other.(PayloadAuthKeyboardInteractiveBackendError)
+	if !ok {
+		return false
+	}
+	return p.Username == p2.Username && p.Reason == p2.Reason
+}
+
+// PayloadHandshakeFailed is a payload for a failed handshake.
 type PayloadHandshakeFailed struct {
 	Reason string `json:"reason" yaml:"reason"`
 }
 
-// Equals compares two PayloadHandshakeFailed payloads
+// Equals compares two PayloadHandshakeFailed payloads.
 func (p PayloadHandshakeFailed) Equals(other Payload) bool {
 	p2, ok := other.(PayloadHandshakeFailed)
 	if !ok {
@@ -80,7 +167,7 @@ func (p PayloadHandshakeFailed) Equals(other Payload) bool {
 	return p.Reason == p2.Reason
 }
 
-// PayloadAuthPubKey is a payload for a successful handshake
+// PayloadAuthPubKey is a payload for a successful handshake.
 type PayloadHandshakeSuccessful struct {
 	Username string `json:"username" yaml:"username"`
 }
@@ -92,4 +179,30 @@ func (p PayloadHandshakeSuccessful) Equals(other Payload) bool {
 		return false
 	}
 	return p.Username == p2.Username
+}
+
+// KeyboardInteractiveQuestion is a description of a question during a keyboard-interactive authentication.
+type KeyboardInteractiveQuestion struct {
+	// Question is the question text.
+	Question string `json:"question" yaml:"question"`
+	// Echo is true if the Question was printed to the user.
+	Echo bool `json:"echo" yaml:"echo"`
+}
+
+// Equals compares two KeyboardInteractiveQuestion submessages.
+func (q KeyboardInteractiveQuestion) Equals(q2 KeyboardInteractiveQuestion) bool {
+	return q.Question == q2.Question && q.Echo == q2.Echo
+}
+
+// KeyboardInteractiveAnswer is the response from the user to a keyboard-interactive authentication.
+type KeyboardInteractiveAnswer struct {
+	// Question is the question text.
+	Question string `json:"question" yaml:"question"`
+	// Answer is the answer the user provided.
+	Answer string `json:"answer" yaml:"question"`
+}
+
+// Equals compares two KeyboardInteractiveAnswer submessages.
+func (k KeyboardInteractiveAnswer) Equals(k2 KeyboardInteractiveAnswer) bool {
+	return k.Question == k2.Question && k.Answer == k2.Answer
 }
