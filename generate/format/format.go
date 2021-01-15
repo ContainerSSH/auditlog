@@ -39,7 +39,7 @@ func main() {
 		Documentation: message.DocumentMessages(),
 	}
 
-	w := tabwriter.NewWriter(target, 8, 8, 8, ' ', 0)
+	w := tabwriter.NewWriter(target, 2, 2, 2, ' ', 0)
 	if err := tpl.Execute(w, ctx); err != nil {
 		panic(err)
 	}

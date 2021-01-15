@@ -15,16 +15,16 @@ After the first 40 bytes you will have to GZIP-decode the rest of the file and t
 
 ```
 Message {
-        # ConnectionID is an opaque ID of the connection. 
-        ConnectionID        string
-        # Timestamp is a nanosecond timestamp when the message was created. 
-        Timestamp        int64
-        # Type of the Payload object. 
-        MessageType        int32
-        # Payload is always a pointer to a payload object. 
-        Payload        struct
-        # ChannelID is a identifier for an SSH channel, if applicable. -1 otherwise. 
-        ChannelID        *uint64
+  # ConnectionID is an opaque ID of the connection. 
+  ConnectionID  string
+  # Timestamp is a nanosecond timestamp when the message was created. 
+  Timestamp  int64
+  # Type of the Payload object. 
+  MessageType  int32
+  # Payload is always a pointer to a payload object. 
+  Payload  struct
+  # ChannelID is a identifier for an SSH channel, if applicable. -1 otherwise. 
+  ChannelID  *uint64
 }
 ```
 
@@ -72,8 +72,8 @@ PayloadConnect is the payload for TypeConnect messages.
 
 ```
 PayloadConnect {
-        RemoteAddr        string        # RemoteAddr contains the IP address of the connecting user. 
-        Country           string        # Country contains the country code looked up from the IP address. Contains "XX" if the lookup failed. 
+  RemoteAddr  string  # RemoteAddr contains the IP address of the connecting user. 
+  Country     string  # Country contains the country code looked up from the IP address. Contains "XX" if the lookup failed. 
 }
 ```
 
@@ -83,8 +83,8 @@ PayloadAuthPassword is a payload for a message that indicates an authentication 
 
 ```
 PayloadAuthPassword {
-        Username        string
-        Password        []uint8
+  Username  string
+  Password  []uint8
 }
 ```
 
@@ -94,8 +94,8 @@ PayloadAuthPassword is a payload for a message that indicates an authentication 
 
 ```
 PayloadAuthPassword {
-        Username        string
-        Password        []uint8
+  Username  string
+  Password  []uint8
 }
 ```
 
@@ -105,8 +105,8 @@ PayloadAuthPassword is a payload for a message that indicates an authentication 
 
 ```
 PayloadAuthPassword {
-        Username        string
-        Password        []uint8
+  Username  string
+  Password  []uint8
 }
 ```
 
@@ -116,9 +116,9 @@ PayloadAuthPasswordBackendError is a payload for a message that indicates a back
 
 ```
 PayloadAuthPasswordBackendError {
-        Username        string
-        Password        []uint8
-        Reason          string
+  Username  string
+  Password  []uint8
+  Reason    string
 }
 ```
 
@@ -128,8 +128,8 @@ PayloadAuthPubKey is a payload for a public key based authentication
 
 ```
 PayloadAuthPubKey {
-        Username        string
-        Key             string
+  Username  string
+  Key       string
 }
 ```
 
@@ -139,8 +139,8 @@ PayloadAuthPubKey is a payload for a public key based authentication
 
 ```
 PayloadAuthPubKey {
-        Username        string
-        Key             string
+  Username  string
+  Key       string
 }
 ```
 
@@ -150,8 +150,8 @@ PayloadAuthPubKey is a payload for a public key based authentication
 
 ```
 PayloadAuthPubKey {
-        Username        string
-        Key             string
+  Username  string
+  Key       string
 }
 ```
 
@@ -161,9 +161,9 @@ PayloadAuthPubKeyBackendError is a payload for a message indicating that there w
 
 ```
 PayloadAuthPubKeyBackendError {
-        Username        string
-        Key             string
-        Reason          string
+  Username  string
+  Key       string
+  Reason    string
 }
 ```
 
@@ -173,9 +173,9 @@ PayloadAuthKeyboardInteractiveChallenge is a message that indicates that a keybo
 
 ```
 PayloadAuthKeyboardInteractiveChallenge {
-        Username           string
-        Instruction        string
-        Questions          []struct
+  Username     string
+  Instruction  string
+  Questions    []struct
 }
 ```
 
@@ -185,8 +185,8 @@ PayloadAuthKeyboardInteractiveAnswer is a message that indicates a response to a
 
 ```
 PayloadAuthKeyboardInteractiveAnswer {
-        Username        string
-        Answers         []struct
+  Username  string
+  Answers   []struct
 }
 ```
 
@@ -196,7 +196,7 @@ PayloadAuthKeyboardInteractiveFailed indicates that a keyboard-interactive authe
 
 ```
 PayloadAuthKeyboardInteractiveFailed {
-        Username        string
+  Username  string
 }
 ```
 
@@ -206,8 +206,8 @@ PayloadAuthKeyboardInteractiveBackendError indicates an error in the authenticat
 
 ```
 PayloadAuthKeyboardInteractiveBackendError {
-        Username        string
-        Reason          string
+  Username  string
+  Reason    string
 }
 ```
 
@@ -217,7 +217,7 @@ PayloadGlobalRequestUnknown Is a payload for the TypeGlobalRequestUnknown messag
 
 ```
 PayloadGlobalRequestUnknown {
-        RequestType        string
+  RequestType  string
 }
 ```
 
@@ -227,7 +227,7 @@ PayloadNewChannel is a payload that signals a request for a new SSH channel
 
 ```
 PayloadNewChannel {
-        ChannelType        string
+  ChannelType  string
 }
 ```
 
@@ -237,7 +237,7 @@ PayloadNewChannelSuccessful is a payload that signals that a channel request was
 
 ```
 PayloadNewChannelSuccessful {
-        ChannelType        string
+  ChannelType  string
 }
 ```
 
@@ -247,8 +247,8 @@ PayloadNewChannelFailed is a payload that signals that a request for a new chann
 
 ```
 PayloadNewChannelFailed {
-        ChannelType        string
-        Reason             string
+  ChannelType  string
+  Reason       string
 }
 ```
 
@@ -258,9 +258,9 @@ PayloadChannelRequestUnknownType is a payload signaling that a channel request w
 
 ```
 PayloadChannelRequestUnknownType {
-        RequestID          uint64
-        RequestType        string
-        Payload            []uint8
+  RequestID    uint64
+  RequestType  string
+  Payload      []uint8
 }
 ```
 
@@ -270,10 +270,10 @@ PayloadChannelRequestDecodeFailed is a payload that signals a supported request 
 
 ```
 PayloadChannelRequestDecodeFailed {
-        RequestID          uint64
-        RequestType        string
-        Payload            []uint8
-        Reason             string
+  RequestID    uint64
+  RequestType  string
+  Payload      []uint8
+  Reason       string
 }
 ```
 
@@ -283,9 +283,9 @@ PayloadChannelRequestSetEnv is a payload signaling the request for an environmen
 
 ```
 PayloadChannelRequestSetEnv {
-        RequestID        uint64
-        Name             string
-        Value            string
+  RequestID  uint64
+  Name       string
+  Value      string
 }
 ```
 
@@ -295,8 +295,8 @@ PayloadChannelRequestExec is a payload signaling the request to execute a progra
 
 ```
 PayloadChannelRequestExec {
-        RequestID        uint64
-        Program          string
+  RequestID  uint64
+  Program    string
 }
 ```
 
@@ -306,13 +306,13 @@ PayloadChannelRequestPty is a payload signaling the request for an interactive t
 
 ```
 PayloadChannelRequestPty {
-        RequestID        uint64
-        Term             string
-        Columns          uint32
-        Rows             uint32
-        Width            uint32
-        Height           uint32
-        ModeList         []uint8
+  RequestID  uint64
+  Term       string
+  Columns    uint32
+  Rows       uint32
+  Width      uint32
+  Height     uint32
+  ModeList   []uint8
 }
 ```
 
@@ -322,7 +322,7 @@ PayloadChannelRequestShell is a payload signaling a request for a shell.
 
 ```
 PayloadChannelRequestShell {
-        RequestID        uint64
+  RequestID  uint64
 }
 ```
 
@@ -332,8 +332,8 @@ PayloadChannelRequestSignal is a payload signaling a signal request to be sent t
 
 ```
 PayloadChannelRequestSignal {
-        RequestID        uint64
-        Signal           string
+  RequestID  uint64
+  Signal     string
 }
 ```
 
@@ -343,8 +343,8 @@ PayloadChannelRequestSubsystem is a payload requesting a well-known subsystem (e
 
 ```
 PayloadChannelRequestSubsystem {
-        RequestID        uint64
-        Subsystem        string
+  RequestID  uint64
+  Subsystem  string
 }
 ```
 
@@ -354,11 +354,11 @@ PayloadChannelRequestWindow is a payload requesting the change in the terminal w
 
 ```
 PayloadChannelRequestWindow {
-        RequestID        uint64
-        Columns          uint32
-        Rows             uint32
-        Width            uint32
-        Height           uint32
+  RequestID  uint64
+  Columns    uint32
+  Rows       uint32
+  Width      uint32
+  Height     uint32
 }
 ```
 
@@ -368,10 +368,10 @@ PayloadExitSignal indicates the signal that caused a program to abort.
 
 ```
 PayloadExitSignal {
-        Signal              string
-        CoreDumped          bool
-        ErrorMessage        string
-        LanguageTag         string
+  Signal        string
+  CoreDumped    bool
+  ErrorMessage  string
+  LanguageTag   string
 }
 ```
 
@@ -381,7 +381,7 @@ PayloadExit is the payload for a message that is sent when a program exits.
 
 ```
 PayloadExit {
-        ExitStatus        uint32
+  ExitStatus  uint32
 }
 ```
 
@@ -391,8 +391,8 @@ PayloadIO The payload for I/O message types containing the data stream from/to t
 
 ```
 PayloadIO {
-        Stream        uint        # 0 = stdin, 1 = stdout, 2 = stderr 
-        Data          []uint8
+  Stream  uint  # 0 = stdin, 1 = stdout, 2 = stderr 
+  Data    []uint8
 }
 ```
 
@@ -402,8 +402,8 @@ PayloadRequestFailed is the payload for the TypeRequestFailed messages.
 
 ```
 PayloadRequestFailed {
-        RequestID        uint64
-        Reason           string
+  RequestID  uint64
+  Reason     string
 }
 ```
 
