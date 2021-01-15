@@ -6,8 +6,8 @@ However, before GZIP decoding you must provide/decode the **file header**. The f
 
 ```
 Header {
-    Magic   [32]byte # Must always be ContainerSSH-Auditlog\0
-    Version uint64   # Little endian encoding
+    Magic    [32]byte  # Must always be ContainerSSH-Auditlog\0
+    Version  uint64    # Little endian encoding
 }
 ```
 

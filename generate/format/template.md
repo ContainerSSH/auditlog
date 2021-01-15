@@ -6,8 +6,8 @@ However, before GZIP decoding you must provide/decode the **file header**. The f
 
 ```
 Header {
-    Magic   [{{ .MagicLength }}]byte # Must always be {{ .MagicValue }}\0
-    Version uint64   # Little endian encoding
+    Magic{{ "\t" }}[{{ .MagicLength }}]byte{{ "\t" }}# Must always be {{ .MagicValue }}\0
+    Version{{ "\t" }}uint64{{ "\t" }}# Little endian encoding
 }
 ```
 
