@@ -2,10 +2,8 @@ package message
 
 // PayloadConnect is the payload for TypeConnect messages.
 type PayloadConnect struct {
-	// RemoteAddr contains the IP address of the connecting user.
-	RemoteAddr string `json:"remoteAddr" yaml:"remoteAddr"`
-	// Country contains the country code looked up from the IP address. Contains "XX" if the lookup failed.
-	Country string `json:"country" yaml:"country"`
+	RemoteAddr string `json:"remoteAddr" yaml:"remoteAddr"` // RemoteAddr contains the IP address of the connecting user.
+	Country    string `json:"country" yaml:"country"`       // Country contains the country code looked up from the IP address. Contains "XX" if the lookup failed.
 }
 
 // Equals compares two PayloadConnect datasets.

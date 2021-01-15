@@ -4,6 +4,7 @@ config.yaml
 ssh_host_rsa_key
 vendor
 NOTICE.md
+FORMAT.md
 
 *.iml
 .idea

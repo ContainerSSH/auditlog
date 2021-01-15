@@ -17,7 +17,7 @@ const (
 
 // PayloadIO The payload for I/O message types containing the data stream from/to the application.
 type PayloadIO struct {
-	Stream Stream `json:"stream" yaml:"stream"`
+	Stream Stream `json:"stream" yaml:"stream"` // 0 = stdin, 1 = stdout, 2 = stderr
 	Data   []byte `json:"data" yaml:"data"`
 }
 

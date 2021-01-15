@@ -12,16 +12,11 @@ func MakeChannelID(n uint64) ChannelID {
 
 // Message is a basic element of audit logging. It contains the basic records of an interaction.
 type Message struct {
-	// ConnectionID is an opaque ID of the connection
-	ConnectionID ConnectionID `json:"connectionId" yaml:"connectionId"`
-	// Timestamp is a nanosecond timestamp when the message was created
-	Timestamp int64 `json:"timestamp" yaml:"timestamp"`
-	// Type of the Payload object
-	MessageType Type `json:"type" yaml:"type"`
-	// Payload is always a pointer to a payload object.
-	Payload Payload `json:"payload" yaml:"payload"`
-	// ChannelID is a identifier for an SSH channel, if applicable. -1 otherwise.
-	ChannelID ChannelID `json:"channelId" yaml:"channelId"`
+	ConnectionID ConnectionID `json:"connectionId" yaml:"connectionId"` // ConnectionID is an opaque ID of the connection.
+	Timestamp    int64        `json:"timestamp" yaml:"timestamp"`       // Timestamp is a nanosecond timestamp when the message was created.
+	MessageType  Type         `json:"type" yaml:"type"`                 // Type of the Payload object.
+	Payload      Payload      `json:"payload" yaml:"payload"`           // Payload is always a pointer to a payload object.
+	ChannelID    ChannelID    `json:"channelId" yaml:"channelId"`       // ChannelID is a identifier for an SSH channel, if applicable. -1 otherwise.
 }
 
 // Payload is an interface that makes sure all payloads with Message have a method to compare them.
@@ -30,7 +25,7 @@ type Payload interface {
 	Equals(payload Payload) bool
 }
 
-// Equals is a method to compare two messages with each other
+// Equals is a method to compare two messages with each other.
 func (m Message) Equals(other Message) bool {
 	if m.ConnectionID != other.ConnectionID {
 		return false

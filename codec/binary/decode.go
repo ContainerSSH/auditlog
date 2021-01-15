@@ -24,7 +24,7 @@ func (d *decoder) Decode(reader io.Reader) (<-chan message.Message, <-chan error
 	result := make(chan message.Message)
 	errors := make(chan error)
 
-	if err := readHeader(reader, currentVersion); err != nil {
+	if err := readHeader(reader, CurrentVersion); err != nil {
 		go func() {
 			errors <- err
 			close(result)
@@ -82,53 +82,10 @@ type decodedMessage struct {
 	ChannelID message.ChannelID `json:"channelId" yaml:"channelId"`
 }
 
-var messageTypeMap = map[message.Type]message.Payload{
-	message.TypeConnect:    message.PayloadConnect{},
-	message.TypeDisconnect: nil,
-
-	message.TypeAuthPassword:                        message.PayloadAuthPassword{},
-	message.TypeAuthPasswordSuccessful:              message.PayloadAuthPassword{},
-	message.TypeAuthPasswordFailed:                  message.PayloadAuthPassword{},
-	message.TypeAuthPasswordBackendError:            message.PayloadAuthPasswordBackendError{},
-	message.TypeAuthKeyboardInteractiveChallenge:    message.PayloadAuthKeyboardInteractiveChallenge{},
-	message.TypeAuthKeyboardInteractiveAnswer:       message.PayloadAuthKeyboardInteractiveAnswer{},
-	message.TypeAuthKeyboardInteractiveFailed:       message.PayloadAuthKeyboardInteractiveFailed{},
-	message.TypeAuthKeyboardInteractiveBackendError: message.PayloadAuthKeyboardInteractiveBackendError{},
-	message.TypeHandshakeFailed:                     message.PayloadHandshakeFailed{},
-	message.TypeHandshakeSuccessful:                 message.PayloadHandshakeSuccessful{},
-
-	message.TypeAuthPubKey:             message.PayloadAuthPubKey{},
-	message.TypeAuthPubKeySuccessful:   message.PayloadAuthPubKey{},
-	message.TypeAuthPubKeyFailed:       message.PayloadAuthPubKey{},
-	message.TypeAuthPubKeyBackendError: message.PayloadAuthPubKeyBackendError{},
-
-	message.TypeGlobalRequestUnknown: message.PayloadGlobalRequestUnknown{},
-	message.TypeNewChannel:           message.PayloadNewChannel{},
-	message.TypeNewChannelSuccessful: message.PayloadNewChannelSuccessful{},
-	message.TypeNewChannelFailed:     message.PayloadNewChannelFailed{},
-
-	message.TypeChannelRequestUnknownType:  message.PayloadChannelRequestUnknownType{},
-	message.TypeChannelRequestDecodeFailed: message.PayloadChannelRequestDecodeFailed{},
-	message.TypeChannelRequestSetEnv:       message.PayloadChannelRequestSetEnv{},
-	message.TypeChannelRequestExec:         message.PayloadChannelRequestExec{},
-	message.TypeChannelRequestPty:          message.PayloadChannelRequestPty{},
-	message.TypeChannelRequestShell:        message.PayloadChannelRequestShell{},
-	message.TypeChannelRequestSignal:       message.PayloadChannelRequestSignal{},
-	message.TypeChannelRequestSubsystem:    message.PayloadChannelRequestSubsystem{},
-	message.TypeChannelRequestWindow:       message.PayloadChannelRequestWindow{},
-	message.TypeIO:                         message.PayloadIO{},
-	message.TypeRequestFailed:              message.PayloadRequestFailed{},
-	message.TypeExit:                       message.PayloadExit{},
-	message.TypeExitSignal:                 message.PayloadExitSignal{},
-
-	message.TypeClose:      nil,
-	message.TypeWriteClose: nil,
-}
-
 func decodeMessage(v decodedMessage) (*message.Message, error) {
-	payload, ok := messageTypeMap[v.MessageType]
-	if !ok {
-		return nil, fmt.Errorf("invalid message type: %d", v.MessageType)
+	payload, err := v.MessageType.Payload()
+	if err != nil {
+		return nil, err
 	}
 
 	if payload != nil {

@@ -183,10 +183,8 @@ func (p PayloadHandshakeSuccessful) Equals(other Payload) bool {
 
 // KeyboardInteractiveQuestion is a description of a question during a keyboard-interactive authentication.
 type KeyboardInteractiveQuestion struct {
-	// Question is the question text.
-	Question string `json:"question" yaml:"question"`
-	// Echo is true if the Question was printed to the user.
-	Echo bool `json:"echo" yaml:"echo"`
+	Question string `json:"question" yaml:"question"` // The question text sent to the user.
+	Echo     bool   `json:"echo" yaml:"echo"`         // True if the input was visible on the screen.
 }
 
 // Equals compares two KeyboardInteractiveQuestion submessages.
@@ -196,10 +194,8 @@ func (q KeyboardInteractiveQuestion) Equals(q2 KeyboardInteractiveQuestion) bool
 
 // KeyboardInteractiveAnswer is the response from the user to a keyboard-interactive authentication.
 type KeyboardInteractiveAnswer struct {
-	// Question is the question text.
-	Question string `json:"question" yaml:"question"`
-	// Answer is the answer the user provided.
-	Answer string `json:"answer" yaml:"question"`
+	Question string `json:"question" yaml:"question"` // The question text sent to the user.
+	Answer   string `json:"answer" yaml:"question"`   // The response from the user.
 }
 
 // Equals compares two KeyboardInteractiveAnswer submessages.

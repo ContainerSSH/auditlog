@@ -7,48 +7,54 @@ import (
 	"io"
 )
 
-const fileFormat string = "ContainerSSH-Auditlog"
-const fileFormatLength = 32
-const currentVersion = uint64(1)
+// FileFormatMagic is the magic string that needs to appear in the header.
+const FileFormatMagic string = "ContainerSSH-Auditlog"
+
+// FileFormatLength describes the length of the magic string. The non-used bytes need to be filled up with \000.
+const FileFormatLength = 32
+
+// CurrentVersion describes the current binary log version number
+const CurrentVersion = uint64(1)
 
 var fileFormatBytes []byte
 
-type header struct {
-	fileFormat []byte
-	version    uint64
+// Header is the structure of the audit log header.
+type Header struct {
+	Magic   []byte
+	Version uint64
 }
 
-func (h header) getBytes() []byte {
+func (h Header) getBytes() []byte {
 	versionBytes := make([]byte, 8)
-	binary.LittleEndian.PutUint64(versionBytes, h.version)
-	result := make([]byte, fileFormatLength+8)
-	for i := 0; i < fileFormatLength; i++ {
+	binary.LittleEndian.PutUint64(versionBytes, h.Version)
+	result := make([]byte, FileFormatLength+8)
+	for i := 0; i < FileFormatLength; i++ {
 		result[i] = fileFormatBytes[i]
 	}
 	for i := 0; i < 8; i++ {
-		result[i+fileFormatLength] = versionBytes[i]
+		result[i+FileFormatLength] = versionBytes[i]
 	}
 	return result
 }
 
-func newHeader(version uint64) header {
-	return header{
-		fileFormat: fileFormatBytes,
-		version:    version,
+func newHeader(version uint64) Header {
+	return Header{
+		Magic:   fileFormatBytes,
+		Version: version,
 	}
 }
 
 func readHeader(reader io.Reader, maxVersion uint64) error {
-	headerBytes := make([]byte, fileFormatLength+8)
+	headerBytes := make([]byte, FileFormatLength+8)
 
-	_, err := io.ReadAtLeast(reader, headerBytes, fileFormatLength+8)
+	_, err := io.ReadAtLeast(reader, headerBytes, FileFormatLength+8)
 	if err != nil {
 		return err
 	}
-	if !bytes.Equal(headerBytes[:fileFormatLength], fileFormatBytes) {
-		return fmt.Errorf("invalid file format header: %v", headerBytes[:fileFormatLength])
+	if !bytes.Equal(headerBytes[:FileFormatLength], fileFormatBytes) {
+		return fmt.Errorf("invalid file format header: %v", headerBytes[:FileFormatLength])
 	}
-	version := binary.LittleEndian.Uint64(headerBytes[fileFormatLength:])
+	version := binary.LittleEndian.Uint64(headerBytes[FileFormatLength:])
 	if version > maxVersion {
 		return fmt.Errorf("file format version is higher than supported: %d", version)
 	}
@@ -56,11 +62,11 @@ func readHeader(reader io.Reader, maxVersion uint64) error {
 }
 
 func init() {
-	fileFormatBytes = make([]byte, fileFormatLength)
-	for i := 0; i < len(fileFormat); i++ {
-		fileFormatBytes[i] = fileFormat[i]
+	fileFormatBytes = make([]byte, FileFormatLength)
+	for i := 0; i < len(FileFormatMagic); i++ {
+		fileFormatBytes[i] = FileFormatMagic[i]
 	}
-	for i := len(fileFormat); i < fileFormatLength; i++ {
+	for i := len(FileFormatMagic); i < FileFormatLength; i++ {
 		fileFormatBytes[i] = "\000"[0]
 	}
 }

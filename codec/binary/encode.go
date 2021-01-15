@@ -34,7 +34,7 @@ func (e *encoder) GetFileExtension() string {
 }
 
 func (e *encoder) Encode(messages <-chan message.Message, storage storage.Writer) error {
-	header := newHeader(currentVersion).getBytes()
+	header := newHeader(CurrentVersion).getBytes()
 	if _, err := storage.Write(header); err != nil {
 		return err
 	}
