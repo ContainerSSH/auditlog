@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.9.8: Handling messages after disconnect
+
+This release fixes a race condition where a close message is being sent after the disconnect.
+
 ## 0.9.7: Added methods for sshserver 0.9.16
 
 This release adds new methods and messages for the new features implemented in sshserver 0.9.16.
