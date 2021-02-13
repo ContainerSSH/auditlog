@@ -9,7 +9,7 @@
 
 This is an audit logging library for [ContainerSSH](https://containerssh.github.io). Among others, it contains the encoder and decoder for the [ContainerSSH Audit Log Format](FORMAT.v1.md) written in Go. This readme will guide you through the process of using this library.
 
-<p align="center"><strong>Note: This is a developer documentation.</strong><br />The user documentation for ContainerSSH is located at <a href="https://containerssh.github.io">containerssh.github.io</a>.</p>
+<p align="center"><strong>⚠⚠⚠ Warning: This is a developer documentation. ⚠⚠⚠</strong><br />The user documentation for ContainerSSH is located at <a href="https://containerssh.io">containerssh.io</a>.</p>
 
 ## Setting up a logging pipeline
 
