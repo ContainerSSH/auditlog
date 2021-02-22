@@ -7,7 +7,7 @@ require (
 	github.com/aws/aws-sdk-go v1.36.27
 	github.com/containerd/containerd v1.4.3 // indirect
 	github.com/containerssh/geoip v0.9.4
-	github.com/containerssh/log v0.9.9
+	github.com/containerssh/log v0.9.10
 	github.com/docker/distribution v2.7.1+incompatible // indirect
 	github.com/docker/docker v20.10.2+incompatible
 	github.com/docker/go-connections v0.4.0
