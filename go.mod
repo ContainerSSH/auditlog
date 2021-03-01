@@ -9,7 +9,7 @@ require (
 	github.com/containerssh/geoip v0.9.4
 	github.com/containerssh/log v0.9.9
 	github.com/docker/distribution v2.7.1+incompatible // indirect
-	github.com/docker/docker v20.10.2+incompatible
+	github.com/docker/docker v20.10.4+incompatible
 	github.com/docker/go-connections v0.4.0
 	github.com/docker/go-units v0.4.0 // indirect
 	github.com/fxamacker/cbor v1.5.1
