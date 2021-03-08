@@ -6,6 +6,8 @@ github.com/Microsoft/go-winio v0.4.16 h1:FtSW/jqD+l4ba5iPBj9CODVtgfYAD8w2wS923g/
 github.com/Microsoft/go-winio v0.4.16/go.mod h1:XB6nPKklQyQ7GC9LdcBEcBl8PF76WugXOPRXwdLnMv0=
 github.com/aws/aws-sdk-go v1.36.27 h1:wc3xLJJHog2SwiqlLnrLUuct/n+dBjB45QhuZw2psVE=
 github.com/aws/aws-sdk-go v1.36.27/go.mod h1:hcU610XS61/+aQV88ixoOzUoG7v3b31pl2zKMmprdro=
+github.com/aws/aws-sdk-go v1.37.26 h1:D9Qvyjlr6xFR0CspZ0imdASc5Y1WE/Sgyte4l+cUp44=
+github.com/aws/aws-sdk-go v1.37.26/go.mod h1:hcU610XS61/+aQV88ixoOzUoG7v3b31pl2zKMmprdro=
 github.com/census-instrumentation/opencensus-proto v0.2.1/go.mod h1:f6KPmirojxKA12rnyqOA5BBL4O983OfeGPqjHWSTneU=
 github.com/client9/misspell v0.3.4/go.mod h1:qj6jICC3Q7zFZvVWo7KLAzC3yx5G7kyvSDkc90ppPyw=
 github.com/cncf/udpa/go v0.0.0-20201120205902-5459f2c99403/go.mod h1:WmhPx2Nbnhtbo57+VJT5O0JRkEi1Wbu0z5j0R8u5Hbk=
@@ -15,6 +17,10 @@ github.com/containerssh/geoip v0.9.4 h1:ugkbESJpitdObbSHdYNQfpoFJOlvxwNCX2ZHHnlV
 github.com/containerssh/geoip v0.9.4/go.mod h1:JxyH+hKj7LfoXWmOMR5lQVrNJCpy42N3GNWSPEguq24=
 github.com/containerssh/log v0.9.9 h1:JNgeUs5PxCy1qT80RgNSjGBHsS6ukwsKRsZphVJ4yLY=
 github.com/containerssh/log v0.9.9/go.mod h1:NBMzkhOLZ4z45ShSBKQ/Ij6Hqqg15DgOKy6HlSITx0s=
+github.com/containerssh/log v0.9.10 h1:c5cYbopsWKX+f5AdDCeMHaRQmkFexpAEgY8MlpLMkAo=
+github.com/containerssh/log v0.9.10/go.mod h1:NBMzkhOLZ4z45ShSBKQ/Ij6Hqqg15DgOKy6HlSITx0s=
+github.com/containerssh/log v0.9.13 h1:jBSrFaxZNGwkjHU6y/efYI8lyG8KIFR5aOIeOnNzquE=
+github.com/containerssh/log v0.9.13/go.mod h1:uVuUPoZsJYi2KoV9+lgPeB/gWuXeUTD3AoVxc4y+tKY=
 github.com/containerssh/structutils v0.9.0 h1:pz4xl5ZrPnpdSx7B/ru8Fj3oU3vOtx1jprIuSkm5s7o=
 github.com/containerssh/structutils v0.9.0/go.mod h1:zirdwNXan3kuTpsJp9Gl3W6VQz0fexqMySqxmfviSjw=
 github.com/creack/pty v1.1.11 h1:07n33Z8lZxZ2qwegKbObQohDhXDQxiMMz1NOUGYlesw=

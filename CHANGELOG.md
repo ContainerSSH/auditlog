@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.9.9: Message codes
+
+This release adds log message codes.
+
 ## 0.9.8: Handling messages after disconnect
 
 This release fixes a race condition where a close message is being sent after the disconnect.
