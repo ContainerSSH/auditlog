@@ -90,18 +90,8 @@ func (m *minio) setupStorage(
 	bucket string,
 	endpoint string,
 ) error {
-	logger, err := log.New(
-		log.Config{
-			Level:  log.LevelDebug,
-			Format: log.FormatText,
-		},
-		"audit",
-		os.Stdout,
-	)
-	if err != nil {
-		assert.Fail(t, "failed to create logger (%v)", err)
-		return err
-	}
+	logger := log.NewTestLogger(t)
+	var err error
 	m.storage, err = s3.NewStorage(
 		s3.Config{
 			Local:           m.dir,

@@ -55,7 +55,7 @@ func newTestCase(t *testing.T) (*testCase, error) {
 			},
 		},
 	}
-	if err := tc.setUpLogger(); err != nil {
+	if err := tc.setUpLogger(t); err != nil {
 		assert.Fail(t, "failed to set up test case", err)
 		return nil, err
 	}
@@ -70,19 +70,9 @@ type testCase struct {
 	config      auditlog.Config
 }
 
-func (c *testCase) setUpLogger() error {
+func (c *testCase) setUpLogger(t *testing.T) error {
 	var err error
-	c.logger, err = log.New(
-		log.Config{
-			Level:  log.LevelDebug,
-			Format: log.FormatText,
-		},
-		"audit",
-		os.Stdout,
-	)
-	if err != nil {
-		return err
-	}
+	c.logger = log.NewTestLogger(t)
 	geoIPLookupProvider, _ := dummy.New()
 	auditLogger, err := auditlog.New(c.config, geoIPLookupProvider, c.logger)
 	if err != nil {

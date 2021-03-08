@@ -73,7 +73,7 @@ func (l *loggerImplementation) OnConnect(connectionID message.ConnectionID, ip n
 		defer l.wg.Done()
 		err := l.encoder.Encode(conn.messageChannel, writer)
 		if err != nil {
-			l.logger.Emergencye(err)
+			l.logger.Emergency(err)
 		}
 	}()
 	conn.log(message.Message{

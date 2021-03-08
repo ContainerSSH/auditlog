@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"os"
 	"strings"
 	"testing"
 	"time"
@@ -56,17 +55,7 @@ func sendMessagesAndReturnWrittenData(
 	t *testing.T,
 	messages []message.Message,
 ) (asciinema.Header, []asciinema.Frame, error) {
-	logger, err := log.New(
-		log.Config{
-			Level:  log.LevelDebug,
-			Format: log.FormatText,
-		},
-		"audit",
-		os.Stdout,
-	)
-	if err != nil {
-		return asciinema.Header{}, nil, err
-	}
+	logger := log.NewTestLogger(t)
 	geoIPProvider, _ := dummy.New()
 	encoder := asciinema.NewEncoder(logger, geoIPProvider)
 	msgChannel := make(chan message.Message)
