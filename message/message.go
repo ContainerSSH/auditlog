@@ -19,6 +19,19 @@ type Message struct {
 	ChannelID    ChannelID    `json:"channelId" yaml:"channelId"`       // ChannelID is a identifier for an SSH channel, if applicable. -1 otherwise.
 }
 
+// GetExtendedMessage returns a message with the added human-readable typeName field.
+func (m Message) GetExtendedMessage() ExtendedMessage {
+	return ExtendedMessage{
+		m.ConnectionID,
+		m.Timestamp,
+		m.MessageType,
+		m.MessageType.ID(),
+		m.MessageType.Name(),
+		m.Payload,
+		m.ChannelID,
+	}
+}
+
 // Payload is an interface that makes sure all payloads with Message have a method to compare them.
 type Payload interface {
 	// Equals compares if the current payload is identical to the provided other payload.

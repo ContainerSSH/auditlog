@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.9.10: Extended message
+
+This release adds the `ExtendedMessage` structure which can be obtained from the `Message` struct by calling `GetExtendedMessage`. This structure adds human-readable type IDs and type names.
+
 ## 0.9.9: Message codes
 
 This release adds log message codes.
