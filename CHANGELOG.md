@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.0: First stable release
+
+This is the first stable tag of this library for ContainerSSH 0.4.0.
+
 ## 0.9.10: Extended message
 
 This release adds the `ExtendedMessage` structure which can be obtained from the `Message` struct by calling `GetExtendedMessage`. This structure adds human-readable type IDs and type names.

@@ -26,4 +26,5 @@
 | `AUDIT_S3_SINGLE_UPLOAD` | ContainerSSH is uploading the full audit log in a single upload to the S3-compatible object storage. This happens when the audit log size is below the minimum size for a multi-part upload. |
 | `AUDIT_S3_SINGLE_UPLOAD_COMPLETE` | ContainerSSH successfully uploaded the audit log as a single upload. |
 | `AUDIT_S3_SINGLE_UPLOAD_FAILED` | ContainerSSH failed to upload the audit log as a single upload. |
+| `AUDIT_STORAGE_CLOSE_FAILED` | ContainerSSH failed to close the audit log storage handler. |
 

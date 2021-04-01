@@ -80,3 +80,6 @@ const EMultipartAborting = "AUDIT_S3_MULTIPART_ABORTING"
 
 // ContainerSSH found a previously aborted multipart upload locally and is now attempting to recover the upload.
 const MRecovering = "AUDIT_S3_RECOVERING"
+
+// ContainerSSH failed to close the audit log storage handler.
+const EAuditLogStorageCloseFailed = "AUDIT_STORAGE_CLOSE_FAILED"
