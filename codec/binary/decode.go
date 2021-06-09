@@ -8,7 +8,7 @@ import (
 	"github.com/containerssh/auditlog/codec"
 	"github.com/containerssh/auditlog/message"
 
-	"github.com/fxamacker/cbor"
+	"github.com/fxamacker/cbor/v2"
 	"github.com/mitchellh/mapstructure"
 )
 
