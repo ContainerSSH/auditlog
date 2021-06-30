@@ -13,8 +13,8 @@ github.com/containerd/containerd v1.4.3 h1:ijQT13JedHSHrQGWFcGEwzcNKrAGIiZ+jSD5Q
 github.com/containerd/containerd v1.4.3/go.mod h1:bC6axHOhabU15QhwfG7w5PipXdVtMXFTttgp+kVtyUA=
 github.com/containerssh/geoip v1.0.0 h1:7igZyJW9g6jwBhoYqCOVQ9hRXbW1p0DNyiz0/bXL0qY=
 github.com/containerssh/geoip v1.0.0/go.mod h1:W6gNUH6EXmYb5Tk0EG5Qp57YsySLxmQGCMlYufinYuo=
-github.com/containerssh/log v1.0.0 h1:nOSqNqh7cXIa+Iy+Lx2CA+wpkrqDqcQh4EVoEvSaxU8=
-github.com/containerssh/log v1.0.0/go.mod h1:7Gy+sx0H1UDtjYBySvK0CnXRRHPHZPXMsa9MYmLBI0I=
+github.com/containerssh/log v1.1.6 h1:5fBBZA2MZss5NMUP2FgJ/iERNwN4y+68uwRE8XjbEKA=
+github.com/containerssh/log v1.1.6/go.mod h1:JER/AjoAHhb8arGN6bsAPF1r1S8p6sUAnvBOL4s32ZU=
 github.com/containerssh/structutils v1.0.0 h1:XwNSnjmoJpMP8hxX5YbDJRGcU66znRWP5jKUYI2Kh4s=
 github.com/containerssh/structutils v1.0.0/go.mod h1:Dp5tCtnkT19A9BFNP4+flL5R+THvBgp95eO640fR+ow=
 github.com/creack/pty v1.1.11 h1:07n33Z8lZxZ2qwegKbObQohDhXDQxiMMz1NOUGYlesw=
