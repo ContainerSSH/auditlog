@@ -10,7 +10,7 @@ import (
 	"github.com/containerssh/auditlog/storage"
 
 	"github.com/containerssh/geoip/geoipprovider"
-	"github.com/fxamacker/cbor"
+	"github.com/fxamacker/cbor/v2"
 )
 
 // NewEncoder creates an encoder that encodes messages in CBOR+GZIP format as documented
@@ -42,7 +42,7 @@ func (e *encoder) Encode(messages <-chan message.Message, storage storage.Writer
 	var gzipHandle *gzip.Writer
 	var encoder *cbor.Encoder
 	gzipHandle = gzip.NewWriter(storage)
-	encoder = cbor.NewEncoder(gzipHandle, cbor.EncOptions{})
+	encoder = cbor.NewEncoder(gzipHandle)
 	if err := encoder.StartIndefiniteArray(); err != nil {
 		return fmt.Errorf("failed to start infinite array (%w)", err)
 	}
