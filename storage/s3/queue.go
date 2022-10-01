@@ -4,7 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"os"
 	"path"
 	"sync"
@@ -60,7 +60,7 @@ type queueEntry struct {
 	metadata      queueEntryMetadata
 }
 
-// This method marks the the part as available if it has not been marked yet. This unfreezes the upload loop waiting in
+// This method marks the part as available if it has not been marked yet. This unfreezes the upload loop waiting in
 // waitPartAvailable()
 func (e *queueEntry) markPartAvailable() {
 	select {
@@ -327,7 +327,7 @@ func (q *uploadQueue) recover(name string) error {
 func (q *uploadQueue) readMetadataFile(name string, file string, metadata *queueEntryMetadata) {
 	metadataHandle, err := os.Open(fmt.Sprintf("%s.metadata.json", file))
 	if err == nil {
-		readBytes, err := ioutil.ReadAll(metadataHandle)
+		readBytes, err := io.ReadAll(metadataHandle)
 		if err != nil {
 			q.logger.Error(
 				log.Wrap(

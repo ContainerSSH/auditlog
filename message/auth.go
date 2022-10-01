@@ -3,7 +3,8 @@ package message
 import "bytes"
 
 // PayloadAuthPassword is a payload for a message that indicates an authentication attempt, successful, or failed
-//                     authentication.
+//
+//	authentication.
 type PayloadAuthPassword struct {
 	Username string `json:"username" yaml:"username"`
 	Password []byte `json:"password" yaml:"password"`
@@ -50,7 +51,8 @@ func (p PayloadAuthPubKey) Equals(other Payload) bool {
 }
 
 // PayloadAuthPubKeyBackendError is a payload for a message indicating that there was a backend error while
-//                               authenticating with public key.
+//
+//	authenticating with public key.
 type PayloadAuthPubKeyBackendError struct {
 	Username string `json:"username" yaml:"username"`
 	Key      string `json:"key" yaml:"key"`
@@ -167,7 +169,7 @@ func (p PayloadHandshakeFailed) Equals(other Payload) bool {
 	return p.Reason == p2.Reason
 }
 
-// PayloadAuthPubKey is a payload for a successful handshake.
+// PayloadHandshakeSuccessful is a payload for a successful handshake.
 type PayloadHandshakeSuccessful struct {
 	Username string `json:"username" yaml:"username"`
 }

@@ -197,7 +197,7 @@ func (messageType Type) ID() string {
 	return "invalid"
 }
 
-// ID converts the numeric message type to a string representation for human consumption.
+// Name converts the numeric message type to a string representation for human consumption.
 func (messageType Type) Name() string {
 	if val, ok := typeToName[messageType]; ok {
 		return val
@@ -207,7 +207,7 @@ func (messageType Type) Name() string {
 
 // Code returns a numeric code for this message type.
 func (messageType Type) Code() int32 {
-	return int32(messageType)
+	return messageType
 }
 
 // Payload returns a typed struct for a payload. May be nil if the payload is empty.

@@ -78,7 +78,7 @@ type decodedMessage struct {
 	MessageType message.Type `json:"type" yaml:"type"`
 	// Payload is always a pointer to a payload object.
 	Payload map[string]interface{} `json:"payload" yaml:"payload"`
-	// ChannelID is a identifier for an SSH channel, if applicable. -1 otherwise.
+	// ChannelID is an identifier for an SSH channel, if applicable. -1 otherwise.
 	ChannelID message.ChannelID `json:"channelId" yaml:"channelId"`
 }
 

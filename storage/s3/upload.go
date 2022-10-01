@@ -283,7 +283,7 @@ func (q *uploadQueue) processUpload(
 			uploadedBytes, completedParts = q.doMultipartUpload(entry, uploadedBytes, s3Connection, name, stat, uploadID, completedParts)
 		}
 	} else if entry.finished && remainingBytes == 0 {
-		//If the entry is finished and no data is left to be uploaded, finalize the upload.
+		// If the entry is finished and no data is left to be uploaded, finalize the upload.
 		if uploadID != nil {
 			err := q.finalizeUpload(s3Connection, name, *uploadID, completedParts)
 			if err != nil {

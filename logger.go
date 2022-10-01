@@ -77,7 +77,7 @@ type Connection interface {
 	OnNewChannelSuccess(channelID message.ChannelID, channelType string) Channel
 }
 
-// Channel is an audit logger for one specific hannel
+// Channel is an audit logger for one specific channel
 type Channel interface {
 	// OnRequestUnknown creates an audit log message for a channel request that is not supported.
 	OnRequestUnknown(requestID uint64, requestType string, payload []byte)
@@ -93,21 +93,21 @@ type Channel interface {
 	OnRequestExec(requestID uint64, program string)
 	// OnRequestPty creates an audit log message for a channel request to create an interactive terminal.
 	OnRequestPty(requestID uint64, term string, columns uint32, rows uint32, width uint32, height uint32, modeList []byte)
-	// OnRequestExec creates an audit log message for a channel request to execute a shell.
+	// OnRequestShell creates an audit log message for a channel request to execute a shell.
 	OnRequestShell(requestID uint64)
-	// OnRequestExec creates an audit log message for a channel request to send a signal to the currently running
+	// OnRequestSignal creates an audit log message for a channel request to send a signal to the currently running
 	//               program.
 	OnRequestSignal(requestID uint64, signal string)
-	// OnRequestExec creates an audit log message for a channel request to execute a well-known subsystem (e.g. SFTP)
+	// OnRequestSubsystem creates an audit log message for a channel request to execute a well-known subsystem (e.g. SFTP)
 	OnRequestSubsystem(requestID uint64, subsystem string)
 	// OnRequestWindow creates an audit log message for a channel request to resize the current window.
 	OnRequestWindow(requestID uint64, columns uint32, rows uint32, width uint32, height uint32)
 
 	// GetStdinProxy creates an intercepting audit log reader proxy for the standard input.
 	GetStdinProxy(stdin io.Reader) io.Reader
-	// GetStdinProxy creates an intercepting audit log writer proxy for the standard output.
+	// GetStdoutProxy creates an intercepting audit log writer proxy for the standard output.
 	GetStdoutProxy(stdout io.Writer) io.Writer
-	// GetStdinProxy creates an intercepting audit log writer proxy for the standard error.
+	// GetStderrProxy creates an intercepting audit log writer proxy for the standard error.
 	GetStderrProxy(stderr io.Writer) io.Writer
 
 	// OnExit is called when the executed program quits. The exitStatus parameter contains the exit code of the
