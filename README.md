@@ -3,13 +3,9 @@
 <!--suppress HtmlDeprecatedAttribute -->
 <h1 align="center">ContainerSSH Audit Logging Library</h1>
 
-[![Go Report Card](https://goreportcard.com/badge/github.com/containerssh/auditlog?style=for-the-badge)](https://goreportcard.com/report/github.com/containerssh/auditlog)
-[![LGTM Alerts](https://img.shields.io/lgtm/alerts/github/ContainerSSH/auditlog?style=for-the-badge)](https://lgtm.com/projects/g/ContainerSSH/auditlog/)
-
+<p align="center"><strong>⚠⚠⚠ Deprecated: ⚠⚠⚠</strong><br />This repository is deprecated in favor of <a href="https://github.com/ContainerSSH/libcontainerssh">libcontainerssh</a> for ContainerSSH 0.5.</p>
 
 This is an audit logging library for [ContainerSSH](https://containerssh.github.io). Among others, it contains the encoder and decoder for the [ContainerSSH Audit Log Format](FORMAT.v1.md) written in Go. This readme will guide you through the process of using this library.
-
-<p align="center"><strong>⚠⚠⚠ Warning: This is a developer documentation. ⚠⚠⚠</strong><br />The user documentation for ContainerSSH is located at <a href="https://containerssh.io">containerssh.io</a>.</p>
 
 ## Setting up a logging pipeline
 
